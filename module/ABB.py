@@ -282,6 +282,12 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
         [build_dir / ver.target / 'libstdc++-v3/src/c++23/print.o'],
       )
 
+    # add libatomic to libgcc for convenience
+    if ver.target == 'i386-w64-mingw32' or ver.target == 'i486-w64-mingw32':
+      libgcc_a = paths.layer_ABB.gcc / 'lib/gcc' / ver.target / str(v.major) / 'libgcc.a'
+      atomic_objects = (build_dir / ver.target / 'libatomic').glob('*.o')
+      add_objects_to_static_lib(f'{ver.target}-ar', libgcc_a, atomic_objects)
+
 def _gdb(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   with overlayfs_ro('/usr/local', [
     paths.layer_AAB.binutils / 'usr/local',

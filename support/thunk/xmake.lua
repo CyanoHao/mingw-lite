@@ -17,6 +17,7 @@ target('thunk')
   set_exceptions('none')
   if is_arch('i386') then
     add_files(
+      'src/4.0/**.cc|**.test.cc',
       'src/5.0/**.cc|**.test.cc',
       'src/5.1/**.cc|**.test.cc',
       'src/5.2/**.cc|**.test.cc')
@@ -37,6 +38,7 @@ target('test')
   set_exceptions('none')
   if is_arch('i386') then
     add_files(
+      'src/4.0/**.cc',
       'src/5.0/**.cc',
       'src/5.1/**.cc',
       'src/5.2/**.cc')

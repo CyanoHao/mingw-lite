@@ -55,6 +55,10 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths):
     else:
       _patch(paths.src_dir.binutils, paths.patch_dir / 'binutils' / 'fix-path-corruption_2.41.patch')
 
+    # Ignore 9x long path
+    if ver.min_os.major < 4:
+      _patch(paths.src_dir.binutils, paths.patch_dir / 'binutils' / 'ignore-9x-long-path.patch')
+
     patch_done(paths.src_dir.binutils)
 
 def _expat(ver: BranchProfile, paths: ProjectPaths):
@@ -99,6 +103,10 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths):
         _patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'disable-vectorized-lexer_15.patch')
       else:
         _patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'disable-vectorized-lexer_13.patch')
+
+    # Fix i386 atomic alias
+    if v.major == 15:
+      _patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'fix-i386-atomic-alias.patch')
 
     # Fix gc alloc_page
     if v.major == 16:
