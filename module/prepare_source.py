@@ -55,6 +55,10 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths):
     else:
       _patch(paths.src_dir.binutils, paths.patch_dir / 'binutils' / 'fix-path-corruption_2.41.patch')
 
+    # Ignore 9x long path
+    if ver.min_os.major < 4:
+      _patch(paths.src_dir.binutils, paths.patch_dir / 'binutils' / 'ignore-9x-long-path.patch')
+
     patch_done(paths.src_dir.binutils)
 
 def _expat(ver: BranchProfile, paths: ProjectPaths):
@@ -93,6 +97,14 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths):
     # libcpp defines `setlocale` if `HAVE_SETLOCALE` not defined, but its configure.ac does not check `setlocale` at all
     _patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'fix-libcpp-setlocale.patch')
 
+    # Disable vectorized lexer
+    if ver.min_os.major < 5:
+      _patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'disable-vectorized-lexer.patch')
+
+    # Fix i386 atomic alias
+    if v.major == 15:
+      _patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'fix-i386-atomic-alias.patch')
+
     # Parser-friendly diagnostics
     po_dir = paths.src_dir.gcc / 'gcc' / 'po'
     po_files = list(po_dir.glob('*.po'))
@@ -126,6 +138,10 @@ def _gdb(ver: BranchProfile, paths: ProjectPaths):
 
     # Fix pythondir
     _patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'fix-pythondir.patch')
+
+    # Fix ui-style regex init
+    if v.major >= 16:
+      _patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'fix-ui-style-regex-init.patch')
 
     patch_done(paths.src_dir.gdb)
 
@@ -176,7 +192,7 @@ def _mingw_host(ver: BranchProfile, paths: ProjectPaths):
       '-a', ver.arch,
       '--level', 'toolchain',
       '--nt-ver', str(ver.min_os),
-    ], cwd = paths.root_dir / 'thunk', check = True)
+    ], cwd = paths.in_tree_src_tree.thunk, check = True)
 
     _autoreconf(paths.src_dir.mingw_host / 'mingw-w64-crt')
     _automake(paths.src_dir.mingw_host / 'mingw-w64-crt')
@@ -203,7 +219,7 @@ def _mingw_target(ver: BranchProfile, paths: ProjectPaths):
       '-a', ver.arch,
       '--level', 'core',
       '--nt-ver', str(ver.min_os),
-    ], cwd = paths.root_dir / 'thunk', check = True)
+    ], cwd = paths.in_tree_src_tree.thunk, check = True)
 
     _autoreconf(paths.src_dir.mingw_target / 'mingw-w64-crt')
     _automake(paths.src_dir.mingw_target / 'mingw-w64-crt')
@@ -255,6 +271,8 @@ def _xmake(ver: BranchProfile, paths: ProjectPaths):
   url = f'https://github.com/xmake-io/xmake/releases/download/v{ver.xmake}/{release_name}'
   validate_and_download(paths.src_arx.xmake, url)
   if check_and_extract(paths.src_dir.xmake, paths.src_arx.xmake):
+    tbox = paths.src_dir.xmake / 'core/src/tbox/tbox'
+
     # disable werror
     xmake_lua = paths.src_dir.xmake / 'core' / 'xmake.lua'
     with open(xmake_lua, 'r') as f:
@@ -268,6 +286,9 @@ def _xmake(ver: BranchProfile, paths: ProjectPaths):
 
     # Fix module mapper path
     _patch(paths.src_dir.xmake, paths.patch_dir / 'xmake' / 'fix-module-mapper-path.patch')
+
+    # Tbox: ignore process group
+    _patch(tbox, paths.patch_dir / 'xmake' / 'tbox-ignore-process-group.patch')
 
     patch_done(paths.src_dir.xmake)
 

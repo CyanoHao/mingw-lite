@@ -337,6 +337,75 @@ PROFILES: Dict[str, ProfileInfo] = {
     win32_winnt = 0x0A00,
     min_os = '6.0',
   ),
+
+  # profile variants
+  '64-ucrt_ws2003': ProfileInfo(
+    arch = '64',
+    target = 'x86_64-w64-mingw32',
+
+    default_crt = 'ucrt',
+    exception = 'seh',
+    thread = 'posix',
+
+    win32_winnt = 0x0A00,
+    min_os = '5.2',
+  ),
+  '64-msvcrt_ws2003': ProfileInfo(
+    arch = '64',
+    target = 'x86_64-w64-mingw32',
+
+    default_crt = 'msvcrt',
+    exception = 'seh',
+    thread = 'posix',
+
+    win32_winnt = 0x0A00,
+    min_os = '5.2',
+  ),
+
+  '32-ucrt_winxp': ProfileInfo(
+    arch = '32',
+    target = 'i686-w64-mingw32',
+
+    default_crt = 'ucrt',
+    exception = 'dwarf',
+    thread = 'posix',
+
+    win32_winnt = 0x0A00,
+    min_os = '5.1',
+  ),
+  '32-msvcrt_winnt40': ProfileInfo(
+    arch = '32',
+    target = 'i686-w64-mingw32',
+
+    default_crt = 'msvcrt',
+    exception = 'dwarf',
+    thread = 'posix',
+
+    win32_winnt = 0x0A00,
+    min_os = '4.0',
+  ),
+  '32_486-msvcrt_win95': ProfileInfo(
+    arch = '32',
+    target = 'i486-w64-mingw32',
+
+    default_crt = 'msvcrt',
+    exception = 'dwarf',
+    thread = 'posix',
+
+    win32_winnt = 0x0A00,
+    min_os = '3.9999',
+  ),
+  '32_386-msvcrt_win95': ProfileInfo(
+    arch = '32',
+    target = 'i386-w64-mingw32',
+
+    default_crt = 'msvcrt',
+    exception = 'dwarf',
+    thread = 'posix',
+
+    win32_winnt = 0x0A00,
+    min_os = '3.9999',
+  ),
 }
 
 def resolve_profile(config: argparse.Namespace) -> BranchProfile:
