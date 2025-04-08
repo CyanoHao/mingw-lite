@@ -384,6 +384,28 @@ PROFILES: Dict[str, ProfileInfo] = {
     win32_winnt = 0x0A00,
     min_os = '4.0',
   ),
+  '32_486-msvcrt_win95': ProfileInfo(
+    arch = '32',
+    target = 'i486-w64-mingw32',
+
+    default_crt = 'msvcrt',
+    exception = 'dwarf',
+    thread = 'posix',
+
+    win32_winnt = 0x0A00,
+    min_os = '3.9999',
+  ),
+  '32_386-msvcrt_win95': ProfileInfo(
+    arch = '32',
+    target = 'i386-w64-mingw32',
+
+    default_crt = 'msvcrt',
+    exception = 'dwarf',
+    thread = 'posix',
+
+    win32_winnt = 0x0A00,
+    min_os = '3.9999',
+  ),
 }
 
 def resolve_profile(config: argparse.Namespace) -> BranchProfile:

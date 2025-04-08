@@ -1,6 +1,25 @@
 from packaging.version import Version
 
 THUNK_LIST_TOOLCHAIN = {
+  '4.0': {
+    'kernel32': [
+      'CreateFileW',
+      'DeleteFileW',
+      'GetFileAttributesW',
+      'GetFullPathNameW',
+      'GetHandleInformation',
+      'IsDebuggerPresent',
+      'MoveFileExW',
+      'RemoveDirectoryW',
+      'SetProcessAffinityMask',
+      'TryEnterCriticalSection',
+      'WriteConsoleW',
+      '__sync_fetch_and_add_4',   # xmake (libtbox.a:pipe.c.obj)
+    ],
+    'msvcrt': [
+      '_wfopen',
+    ],
+  },
   '5.0': {
     'advapi32': [
       'ConvertStringSecurityDescriptorToSecurityDescriptorW',

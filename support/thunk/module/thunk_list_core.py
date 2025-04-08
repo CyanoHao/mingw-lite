@@ -1,4 +1,10 @@
 THUNK_LIST_CORE = {
+  '4.0': {
+    'kernel32': [
+      '__sync_bool_compare_and_swap_4',
+      '__sync_val_compare_and_swap_4',
+    ],
+  },
   '5.0': {
     'msvcrt': [
       ('_fstat64', lambda v_major: v_major < 13),
