@@ -59,6 +59,10 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths):
     else:
       _patch(paths.binutils, paths.patch / 'binutils' / 'fix-path-corruption_2.41.patch')
 
+    # Ignore 9x long path
+    if ver.min_os.major < 4:
+      _patch(paths.binutils, paths.patch / 'binutils' / 'ignore-9x-long-path.patch')
+
     _patch_done(paths.binutils)
 
 def _expat(ver: BranchProfile, paths: ProjectPaths):
@@ -107,6 +111,14 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths):
     # libcpp defines `setlocale` if `HAVE_SETLOCALE` not defined, but its configure.ac does not check `setlocale` at all
     _patch(paths.gcc, paths.patch / 'gcc' / 'fix-libcpp-setlocale.patch')
 
+    # Disable vectorized lexer
+    if ver.min_os.major < 5:
+      _patch(paths.gcc, paths.patch / 'gcc' / 'disable-vectorized-lexer.patch')
+
+    # Fix i386 atomic alias
+    if v.major == 15:
+      _patch(paths.gcc, paths.patch / 'gcc' / 'fix-i386-atomic-alias.patch')
+
     # Parser-friendly diagnostics
     po_dir = paths.gcc / 'gcc' / 'po'
     po_files = list(po_dir.glob('*.po'))
@@ -146,6 +158,10 @@ def _gdb(ver: BranchProfile, paths: ProjectPaths):
 
     # Fix pythondir
     _patch(paths.gdb, paths.patch / 'gdb' / 'fix-pythondir.patch')
+
+    # Fix ui-style regex init
+    if v.major >= 16:
+      _patch(paths.gdb, paths.patch / 'gdb' / 'fix-ui-style-regex-init.patch')
 
     _patch_done(paths.gdb)
 
@@ -283,6 +299,8 @@ def _xmake(ver: BranchProfile, paths: ProjectPaths):
   url = f'https://github.com/xmake-io/xmake/releases/download/v{ver.xmake}/{paths.xmake_arx.name}'
   validate_and_download(paths.xmake_arx, url)
   if check_and_extract(paths.xmake, paths.xmake_arx):
+    tbox = paths.xmake / 'core' / 'src' / 'tbox' / 'tbox'
+
     # disable werror
     xmake_lua = paths.xmake / 'core' / 'xmake.lua'
     with open(xmake_lua, 'r') as f:
@@ -296,6 +314,9 @@ def _xmake(ver: BranchProfile, paths: ProjectPaths):
 
     # Fix module mapper path
     _patch(paths.xmake, paths.patch / 'xmake' / 'fix-module-mapper-path.patch')
+
+    # Tbox: ignore process group
+    _patch(tbox, paths.patch / 'xmake' / 'tbox-ignore-process-group.patch')
 
     _patch_done(paths.xmake)
 

@@ -1,5 +1,6 @@
 #include <thunk/_common.h>
 #include <thunk/yy/api-ms-win-core-path.h>
+#include <thunk/yy/strsafe.h>
 
 // workaround mingw-w64 11.0.1
 #define STRSAFE_NO_DEPRECATE
@@ -36,11 +37,11 @@ namespace mingw_thunk
       if (cchPath < 8)
         return E_INVALIDARG;
 
-      return StringCchCopyW(pszPath + 2, cchPath - 2, pszPath + 8);
+      return internal::StringCchCopyW(pszPath + 2, cchPath - 2, pszPath + 8);
     } else if ((L'A' <= pszPath[4] && pszPath[4] <= L'Z' ||
                 L'a' <= pszPath[4] && pszPath[4] <= L'z') &&
                pszPath[5] == L':') {
-      return StringCchCopyW(pszPath, cchPath, pszPath + 4);
+      return internal::StringCchCopyW(pszPath, cchPath, pszPath + 4);
     } else {
       return S_FALSE;
     }

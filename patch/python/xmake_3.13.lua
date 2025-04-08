@@ -12,6 +12,11 @@ add_includedirs(
   'Include',
   'PC')
 
+option('emulated-win-cv')
+  set_default('0')
+  set_description('Emulated condition variables ones that work with XP and later')
+  add_defines('_PY_EMULATED_WIN_CV=$(emulated-win-cv)')
+
 target('python')
   set_kind('binary')
   add_deps('pythoncore')
@@ -23,6 +28,7 @@ target('python')
 
 target('pythoncore')
   set_kind('static')
+  add_options('emulated-win-cv')
   add_links(
     'bcrypt',
     'pathcch',

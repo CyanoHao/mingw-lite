@@ -5,13 +5,13 @@
 // YY-Thunks 1.1.6
 namespace mingw_thunk::internal
 {
-  inline bool __fastcall IsHexDigitWorker(wchar_t ch)
+  static bool __fastcall IsHexDigitWorker(wchar_t ch)
   {
     return (ch >= L'0' && ch <= L'9') || (ch >= L'A' && ch <= L'F') ||
            (ch >= L'a' && ch <= L'f');
   }
 
-  inline bool __fastcall StringIsGUIDWorker(LPCWSTR szStr)
+  static bool __fastcall StringIsGUIDWorker(LPCWSTR szStr)
   {
     return szStr[0] == L'{' && IsHexDigitWorker(szStr[1]) &&
            IsHexDigitWorker(szStr[2]) && IsHexDigitWorker(szStr[3]) &&
@@ -34,7 +34,7 @@ namespace mingw_thunk::internal
            IsHexDigitWorker(szStr[36]) && szStr[37] == L'}';
   }
 
-  inline bool __fastcall PathIsVolumeGUIDWorker(LPCWSTR pszPath)
+  static bool __fastcall PathIsVolumeGUIDWorker(LPCWSTR pszPath)
   {
     return pszPath[0] == L'\\' && pszPath[1] == L'\\' && pszPath[2] == L'?' &&
            pszPath[3] == L'\\' && (pszPath[4] == L'V' || pszPath[4] == L'v') &&
@@ -53,7 +53,7 @@ namespace mingw_thunk::internal
   不能包含 ' ' , '\' 以及 '.'
 
   */
-  inline bool __fastcall IsValidExtensionWorker(LPCWSTR pszExt)
+  static bool __fastcall IsValidExtensionWorker(LPCWSTR pszExt)
   {
     if (pszExt == nullptr)
       return false;
@@ -85,13 +85,13 @@ namespace mingw_thunk::internal
   }
 
   // 长命名？
-  inline bool __fastcall IsExtendedLengthDosDevicePath(LPCWSTR pszPath)
+  static bool __fastcall IsExtendedLengthDosDevicePath(LPCWSTR pszPath)
   {
     return pszPath[0] == L'\\' && pszPath[1] == L'\\' && pszPath[2] == L'?' &&
            pszPath[3] == L'\\';
   }
 
-  inline LPCWSTR __fastcall FindPreviousBackslashWorker(LPCWSTR szPathStart,
+  static LPCWSTR __fastcall FindPreviousBackslashWorker(LPCWSTR szPathStart,
                                                         LPCWSTR szPathEnd)
   {
     for (; szPathStart < szPathEnd;) {
@@ -104,7 +104,7 @@ namespace mingw_thunk::internal
     return nullptr;
   }
 
-  inline bool __fastcall PathIsRelativeWorker(LPCWSTR szPath)
+  static bool __fastcall PathIsRelativeWorker(LPCWSTR szPath)
   {
     return szPath[0] != L'\\' && (((L'A' <= szPath[0] && szPath[0] <= L'Z') ||
                                    (L'a' <= szPath[0] && szPath[0] <= L'z')) &&

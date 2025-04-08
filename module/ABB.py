@@ -208,6 +208,12 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       logging.critical(message)
       raise Exception(message)
 
+  # add libatomic to libgcc for convenience
+  if ver.target == 'i386-w64-mingw32' or ver.target == 'i486-w64-mingw32':
+    libgcc_a = paths.mingw_prefix / 'lib' / 'gcc' / ver.target / str(v.major) / 'libgcc.a'
+    atomic_objects = (build_dir / ver.target / 'libatomic').glob('*.o')
+    add_objects_to_static_lib(f'{ver.target}-ar', libgcc_a, atomic_objects)
+
 def _gdb(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   v = Version(ver.gdb)
   v_gcc = Version(ver.gcc)
@@ -345,6 +351,9 @@ def _licenses(ver: BranchProfile, paths: ProjectPaths):
 
   ensure(license_dir / 'mingw-w64')
   shutil.copy(paths.mingw_target / 'COPYING', license_dir / 'mingw-w64' / 'COPYING')
+
+  ensure(license_dir / 'thunk')
+  shutil.copy(paths.root / 'thunk' / 'LICENSE', license_dir / 'thunk' / 'LICENSE')
 
   ensure(license_dir / 'mingw-w64-libraries-winpthreads')
   shutil.copy(paths.mingw_target / 'mingw-w64-libraries' / 'winpthreads' / 'COPYING', license_dir / 'mingw-w64-libraries-winpthreads' / 'COPYING')

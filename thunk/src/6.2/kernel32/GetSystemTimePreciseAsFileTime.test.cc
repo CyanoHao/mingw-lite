@@ -5,7 +5,7 @@
 TEST_CASE("GetSystemTimePreciseAsFileTime")
 {
   FILETIME ft1;
-  RESET_TOUCH_FLAG();
+  CLEAR_TOUCH_FLAG();
   GetSystemTimePreciseAsFileTime(&ft1);
   REQUIRE_TOUCHED();
 

@@ -1,11 +1,126 @@
 from packaging.version import Version
 
 THUNK_LIST_TOOLCHAIN = {
-  '4.0': {},
-  '5.0': {},
-  '5.1': {},
-  '5.2': {},
-  '6.0': {},
+  '4.0': {
+    'kernel32': [
+      'CreateFileW',
+      'DeleteFileW',
+      'GetFileAttributesW',
+      'GetFullPathNameW',
+      'GetHandleInformation',
+      'IsDebuggerPresent',
+      'MoveFileExW',
+      'RemoveDirectoryW',
+      'SetProcessAffinityMask',
+      'TryEnterCriticalSection',
+      'WriteConsoleW',
+      '__sync_fetch_and_add_4',   # xmake (libtbox.a:pipe.c.obj)
+    ],
+    'msvcrt': [
+      '_wfopen',
+    ],
+  },
+  '5.0': {
+    'advapi32': [
+      'ConvertStringSecurityDescriptorToSecurityDescriptorW',
+    ],
+    'kernel32': [
+      'CreateHardLinkW',
+      'CreateToolhelp32Snapshot',
+      'FindFirstVolumeW',
+      'FindNextVolumeW',
+      'FindVolumeClose',
+      'GetCPInfoExA',
+      'GetFileSizeEx',
+      'GetLongPathNameW',
+      'GetVolumePathNameW',
+      'GlobalMemoryStatusEx',
+      'Module32First',
+      'Module32Next',
+      'SetFilePointerEx',
+    ],
+    'msvcrt': [
+      '_findfirst64',
+      '_findnext64',
+      '_fstat64',
+      '_futime64',
+      '_gmtime64',
+      '_localtime64',
+      '_stat64',
+      '_utime64',
+      '_wfindfirst64',
+      '_wfindnext64',
+      '_wstat64',
+      '_wutime64',
+    ],
+  },
+  '5.1': {
+    'kernel32': [
+      'AddVectoredExceptionHandler',
+      'GetConsoleProcessList',
+      'GetModuleHandleExW',
+      'GetNumaHighestNodeNumber',
+      'GetNumaNodeProcessorMask',
+      'GetSystemTimes',
+      'GetSystemWow64DirectoryA',
+      'GetVolumePathNamesForVolumeNameW',
+      'RemoveVectoredExceptionHandler',
+    ],
+    'msvcrt': [
+      '_aligned_free',
+      '_aligned_malloc',
+    ],
+    'ws2_32': [
+      'freeaddrinfo',
+      'getaddrinfo',
+    ],
+  },
+  '5.2': {
+    'advapi32': [
+      'RegDeleteKeyExA',
+      'RegDeleteKeyExW',
+    ],
+    'kernel32': [
+      'FlsAlloc',
+      'FlsFree',
+      'FlsGetValue',
+      'FlsSetValue',
+      'GetCurrentProcessorNumber',
+      'GetLargePageMinimum',
+      'NeedCurrentDirectoryForExePathA',
+      'NeedCurrentDirectoryForExePathW',
+    ],
+  },
+  '6.0': {
+    'bcrypt': [
+      'BCryptGenRandom',
+    ],
+    'kernel32': [
+      'CancelIoEx',
+      'CompareStringOrdinal',
+      'CreateSymbolicLinkA',
+      'CreateSymbolicLinkW',
+      'CreateWaitableTimerExW',
+      'DeleteProcThreadAttributeList',
+      'GetFileInformationByHandleEx',
+      'GetFinalPathNameByHandleA',
+      'GetFinalPathNameByHandleW',
+      'GetTickCount64',
+      'InitializeProcThreadAttributeList',
+      'LCMapStringEx',
+      'LocaleNameToLCID',
+      'SetFileInformationByHandle',
+      'UpdateProcThreadAttribute',
+    ],
+    'msvcrt': [
+      '_wputenv_s',
+      'wcscat_s',
+      'wcscpy_s',
+      'wcsncat_s',
+      'wcsncpy_s',
+      'wcstok_s',
+    ],
+  },
   '6.1': {
     'kernel32': [
       'GetActiveProcessorCount',
@@ -41,8 +156,10 @@ THUNK_LIST_TOOLCHAIN = {
       'PathIsUNCEx',
     ],
     'kernel32': [
+      'AddDllDirectory',
       'CopyFile2',
       'GetSystemTimePreciseAsFileTime',
+      'RemoveDllDirectory',
     ],
   },
 }

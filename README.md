@@ -57,3 +57,23 @@ Python (GDB scripting engine) often limits the toolchain’s minimum supported O
 | win32 | Windows Vista (NT 6.0) |
 | ucrt | Windows Vista (NT 6.0) |
 | msvcrt | Windows Vista (NT 6.0) |
+
+Some profiles have variants for even earlier Windows versions, as follows.
+
+| Profile variant | Minimum supported OS |
+| --------------- | -------------------- |
+| 64-ucrt_ws2003 | Windows Server 2003 (NT 5.2) |
+| 64-msvcrt_ws2003 | Windows Server 2003 (NT 5.2) |
+| 32-ucrt_winxp | Windows XP (NT 5.1) |
+| 32-msvcrt_winnt40 | Windows NT 4.0 |
+| 32_486-msvcrt_win95 | Windows NT 4.0; limited Windows 95 (4.00) |
+| 32_386-msvcrt_win95 | Windows NT 4.0; limited Windows 95 (4.00) |
+
+Limitations of `32_486-msvcrt_win95` and `32_386-msvcrt_win95`:
+
+- Target architecture is i486 or i386.
+  - Atomic operations will introduce heavy overhead by calling libatomic subroutines. (libatomic is merged into libgcc, so you don't need to specify `-latomic`.)
+- GCC needs `-fno-lto` on 95. ([KB118816](./doc/kb-118816.md))
+- GDB does not work on 9x.
+
+**Technical notes**: inspired by [YY-Thunks](https://github.com/Chuyu-Team/YY-Thunks), our legacy OS support is achieved by thunks. A thunk is small piece of code that wrap the original Win32 or CRT function, providing alternative implementation when the function is not available on the target OS. Absolutely necessary thunks that support C++ standard library are built into import libraries. No extra operation is required.

@@ -19,7 +19,7 @@ TEST_CASE("CopyFile2")
 
   COPYFILE2_EXTENDED_PARAMETERS params{sizeof(params)};
 
-  RESET_TOUCH_FLAG();
+  CLEAR_TOUCH_FLAG();
   HRESULT hr = CopyFile2(source, dest, &params);
   REQUIRE_TOUCHED();
 

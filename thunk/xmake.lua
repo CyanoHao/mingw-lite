@@ -15,7 +15,16 @@ target('thunk')
     '__USE_MINGW_ANSI_STDIO=0',
     '_WIN32_WINNT=0x0f00')
   set_exceptions('none')
+  if is_arch('i386') then
+    add_files(
+      'src/4.0/**.cc|**.test.cc',
+      'src/5.0/**.cc|**.test.cc',
+      'src/5.1/**.cc|**.test.cc',
+      'src/5.2/**.cc|**.test.cc')
+  end
   if is_arch('i386') or is_arch('x86_64') then
+    add_files('src/6.0/**.cc|**.test.cc')
+    add_files('src/6.1/**.cc|**.test.cc')
     add_files('src/6.2/**.cc|**.test.cc')
   end
 
@@ -27,7 +36,16 @@ target('test')
     '__USE_MINGW_ANSI_STDIO=0',
     '_WIN32_WINNT=0x0f00')
   set_exceptions('none')
+  if is_arch('i386') then
+    add_files(
+      'src/4.0/**.cc',
+      'src/5.0/**.cc',
+      'src/5.1/**.cc',
+      'src/5.2/**.cc')
+  end
   if is_arch('i386') or is_arch('x86_64') then
+    add_files('src/6.0/**.cc')
+    add_files('src/6.1/**.cc')
     add_files('src/6.2/**.cc')
   end
   add_ldflags('-static')
