@@ -1,4 +1,22 @@
 THUNK_LIST_CORE = {
+  '3.9999+4.10': {
+    'kernel32': [
+      # followings are i386 atomic thunks
+      # Windows 98 (4.10) claim to run on minimum i486, so we place them here
+      'EnterCriticalSection',
+      'LeaveCriticalSection',
+      '__sync_bool_compare_and_swap_4',
+      '__sync_val_compare_and_swap_4',
+    ]
+  },
+  '4.0': {
+    'kernel32': [
+      'IsDebuggerPresent',
+      'SetProcessAffinityMask',
+      'TryEnterCriticalSection',
+      'WriteConsoleW',
+    ],
+  },
   '5.0': {
     'kernel32': [
       'CreateHardLinkW',

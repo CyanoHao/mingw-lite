@@ -169,16 +169,16 @@ def main():
     return
 
   if not config.no_cross:
-    build_AAA_library(ver, paths, config)
-    build_AAA_tool(ver, paths, config)
+  #   build_AAA_library(ver, paths, config)
+  #   build_AAA_tool(ver, paths, config)
     build_AAB_compiler(ver, paths, config)
-    build_AAB_library(ver, paths, config)
-    package_cross(paths)
+  #   build_AAB_library(ver, paths, config)
+  #   package_cross(paths)
 
-  build_ABB_toolchain(ver, paths, config)
-  package_mingw(paths)
-  if config.qt:
-    package_mingw_qt(paths)
+  # build_ABB_toolchain(ver, paths, config)
+  # package_mingw(paths)
+  # if config.qt:
+  #   package_mingw_qt(paths)
   build_ABB_xmake(ver, paths, config)
   package_xmake(paths)
 

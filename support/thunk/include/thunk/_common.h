@@ -37,6 +37,7 @@ namespace mingw_thunk::internal
   inline module_handle module_kernel32{"kernel32.dll"};
   inline module_handle module_msvcrt{"msvcrt.dll"};
   inline module_handle module_ntdll{"ntdll.dll"};
+  inline module_handle module_shell32{"shell32.dll"};
   inline module_handle module_ws2_32{"ws2_32.dll"};
 
   inline module_handle module_api_ms_win_core_path_l1_1_0{

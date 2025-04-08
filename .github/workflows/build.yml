@@ -25,12 +25,13 @@ jobs:
             '64-ucrt_ws2003', '64-msvcrt_ws2003',
             '32-ucrt_winxp', '32-msvcrt_win2000',
             '32_686-msvcrt_winnt40',
-            '32_486-msvcrt_winnt40',
+            '32_486-msvcrt_win98',
+            '32_386-msvcrt_win95',
           ]
           release_old_profile = [
             '32-msvcrt_win2000',
             '32_686-msvcrt_winnt40',
-            '32_486-msvcrt_winnt40',
+            '32_486-msvcrt_win98',
           ]
 
           sat_group = [
@@ -56,7 +57,11 @@ jobs:
             },
             {
               'name': '32-nt40',
-              'profile': json.dumps(['32_686-msvcrt_winnt40', '32_486-msvcrt_winnt40']),
+              'profile': json.dumps(['32_686-msvcrt_winnt40']),
+            },
+            {
+              'name': '32-9x',
+              'profile': json.dumps(['32_486-msvcrt_win98', '32_386-msvcrt_win95']),
             },
           ]
 

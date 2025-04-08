@@ -24,6 +24,7 @@ def _xmake(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   ]):
     build_dir = paths.src_dir.xmake / 'core'
     xmake_config(build_dir, [
+      '-m', 'releasedbg',
       '--plat=mingw',
       f'--arch={XMAKE_ARCH_MAP[ver.arch]}',
     ])

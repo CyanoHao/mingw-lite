@@ -1,6 +1,59 @@
 from packaging.version import Version
 
 THUNK_LIST_TOOLCHAIN = {
+  '3.9999+4.10': {
+    'kernel32': [
+      'CreateWaitableTimerA',
+      'GetFileAttributesExA',
+      'SetWaitableTimer',
+      'SwitchToThread',
+      # followings are i386 atomic thunks
+      # Windows 98 (4.10) claim to run on minimum i486, so we place them here
+      '__sync_bool_compare_and_swap_4',
+      '__sync_fetch_and_add_4',
+      '__sync_val_compare_and_swap_4',
+    ]
+  },
+  '4.0': {
+    'kernel32': [
+      'CancelIo',
+      'CopyFileExA',
+      'CopyFileExW',
+      'CopyFileW',
+      'CreateDirectoryW',
+      'CreateFileW',
+      'CreateProcessW',
+      'CreateThread',
+      'CreateWaitableTimerW',
+      'DeleteFileW',
+      'FindFirstFileW',
+      'FindNextFileW',
+      'GetCurrentDirectoryW',
+      'GetEnvironmentVariableW',
+      'GetFileAttributesW',
+      'GetFileAttributesExW',
+      'GetFullPathNameW',
+      'GetHandleInformation',
+      'GetModuleFileNameW',
+      'GetTempPathW',
+      'IsDebuggerPresent',
+      'LockFileEx',
+      'MoveFileExA',
+      'MoveFileExW',
+      'RemoveDirectoryW',
+      'SetCurrentDirectoryW',
+      'SetEnvironmentVariableW',
+      'SetProcessAffinityMask',
+      'TryEnterCriticalSection',
+      'UnlockFileEx',
+    ],
+    'msvcrt': [
+      '_wfopen',
+    ],
+    'shell32': [
+      'CommandLineToArgvW',
+    ],
+  },
   '5.0': {
     'advapi32': [
       'ConvertStringSecurityDescriptorToSecurityDescriptorW',
