@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 import re
 import subprocess
+from tempfile import TemporaryDirectory
 from typing import Iterable, List
 
 from module.profile import ProfileInfo
@@ -181,7 +182,7 @@ def overlayfs_ro(merged: Path | str, lower: list[Path]):
         lower[0],
         merged,
         '-o', 'ro',
-      ])
+      ], check = True)
     else:
       lowerdir = ':'.join(map(str, lower))
       subprocess.run([
@@ -193,7 +194,35 @@ def overlayfs_ro(merged: Path | str, lower: list[Path]):
       ], check = True)
     yield
   finally:
-    subprocess.run(['umount', merged])
+    subprocess.run(['umount', merged], check = False)
+
+@contextmanager
+def temporary_rw_overlay(path: Path | str):
+  with TemporaryDirectory() as tmp:
+    try:
+      # in container, rootfs is overlayfs, which is not supported as upperdir.
+      # create a tmpfs to workaround.
+      subprocess.run([
+        'mount',
+        '-t', 'tmpfs',
+        'none',
+        tmp,
+      ], check = True)
+      upper = Path(tmp, 'upper')
+      work = Path(tmp, 'work')
+      ensure(upper)
+      ensure(work)
+      subprocess.run([
+        'mount',
+        '-t', 'overlay',
+        'none',
+        path,
+        '-o', f'lowerdir={path},upperdir={upper},workdir={work}',
+      ], check = True)
+      yield
+    finally:
+      subprocess.run(['umount', path], check = False)
+      subprocess.run(['umount', tmp], check = False)
 
 def xmake_build(cwd: Path, jobs: int):
   subprocess.run(

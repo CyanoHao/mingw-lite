@@ -45,6 +45,10 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     # Don't optimize out libtool wrapper magic
     patch(paths.src_dir.binutils, paths.patch_dir / 'binutils' / 'dont-optimize-out-libtool-wrapper-magic.patch')
 
+    # Ignore 9x long path
+    if ver.min_os.major < 4:
+      patch(paths.src_dir.binutils, paths.patch_dir / 'binutils' / 'ignore-9x-long-path.patch')
+
     patch_done(paths.src_dir.binutils)
 
 def _expat(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
@@ -117,6 +121,12 @@ def _gdb(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   if check_and_extract(paths.src_dir.gdb, paths.src_arx.gdb):
     v = Version(ver.gdb)
 
+    # Fix path corruption
+    if v.major >= 15:
+      patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'fix-path-corruption_15.patch')
+    else:
+      patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'fix-path-corruption_14.patch')
+
     # Fix thread
     if v.major >= 16:
       patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'fix-thread_16.patch')
@@ -132,6 +142,16 @@ def _gdb(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     # Fix ui-style regex init
     if v.major >= 16:
       patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'fix-ui-style-regex-init.patch')
+
+    if ver.min_os.major < 4:
+      # Ignore 9x long path
+      patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'ignore-9x-long-path.patch')
+
+      # Fix 9x select
+      patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'fix-9x-select.patch')
+
+      # Fix 9x CreateThread
+      patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'fix-9x-createthread.patch')
 
     patch_done(paths.src_dir.gdb)
 

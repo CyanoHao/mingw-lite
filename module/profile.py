@@ -239,6 +239,7 @@ BRANCHES: Dict[str, BranchVersions] = {
 _MINGW_ARCH_2_TRIPLET_MAP: dict[str, str] = {
   '64': 'x86_64-w64-mingw32',
   'arm64': 'aarch64-w64-mingw32',
+  # required by xmake, here we use i686 for -march=i486 and -march=i386
   '32': 'i686-w64-mingw32',
 }
 
@@ -249,6 +250,7 @@ _ARCH_VARIANT_2_MARCH_MAP: dict[str, str] = {
   '32': 'pentium4',
   '32_686': 'i686',
   '32_486': 'i486',
+  '32_386': 'i386',
 }
 
 _ARCH_VARIANT_2_FPMATH_MAP: dict[str, Optional[str]] = {
@@ -258,6 +260,7 @@ _ARCH_VARIANT_2_FPMATH_MAP: dict[str, Optional[str]] = {
   '32': 'sse',
   '32_686': None,
   '32_486': None,
+  '32_386': None,
 }
 
 _ARCH_VARIANT_2_OPTIMIZE_FOR_SIZE_MAP: dict[str, bool] = {
@@ -267,6 +270,7 @@ _ARCH_VARIANT_2_OPTIMIZE_FOR_SIZE_MAP: dict[str, bool] = {
   '32': True,
   '32_686': True,
   '32_486': True,
+  '32_386': True,
 }
 
 def _create_profile(arch: str, crt: str, thread: str, min_os: str) -> ProfileInfo:
@@ -329,6 +333,9 @@ PROFILES: Dict[str, ProfileInfo] = {
   '32_686-msvcrt_winnt40': _create_profile('32_686', 'msvcrt', 'posix', '4.0'),
 
   '32_486-msvcrt_winnt40': _create_profile('32_486', 'msvcrt', 'posix', '4.0'),
+  '32_486-msvcrt_win98':   _create_profile('32_486', 'msvcrt', 'posix', '3.9999+4.10'),
+
+  '32_386-msvcrt_win95': _create_profile('32_386', 'msvcrt', 'posix', '3.9999+4.00'),
 }
 
 def resolve_profile(config: argparse.Namespace) -> BranchProfile:

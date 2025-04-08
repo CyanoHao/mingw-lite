@@ -90,6 +90,13 @@ Some profiles have variants for even earlier Windows versions (and possibly olde
 | 32-ucrt_winxp | Windows XP (NT 5.1) |
 | 32-msvcrt_win2000 | Windows 2000 (NT 5.0) |
 | 32_686-msvcrt_winnt40 | Windows NT 4.0 |
-| 32_486-msvcrt_winnt40 | Windows NT 4.0 |
+| 32_486-msvcrt_win98 | Windows NT 4.0<br>Windows 98 (4.10) |
+| 32_386-msvcrt_win95 | Windows NT 4.0<br>Windows 98 (4.10)<br>Limited Windows 95 (4.00) |
+
+Limitations of `32_486-msvcrt_win98` and `32_386-msvcrt_win95`:
+
+- Atomic operations will introduce observable overhead by calling libatomic subroutines.
+  - These subroutines are built into libgcc, so you don't need to specify `-latomic`.
+- GCC needs `-fno-lto` on Windows 95. ([KB118816](./doc/kb-118816.md))
 
 **Technical notes**: inspired by [YY-Thunks](https://github.com/Chuyu-Team/YY-Thunks), our legacy OS support is achieved by thunks. A thunk is small piece of code that wrap the original Win32 or CRT function, providing alternative implementation when the function is not available on the target OS. Absolutely necessary thunks that support C++ standard library are built into import libraries. No extra operation is required.

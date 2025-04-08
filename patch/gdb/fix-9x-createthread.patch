@@ -1,0 +1,16 @@
+diff --git a/gdb/windows-nat.c b/gdb/windows-nat.c
+index 7a139c8d36f..61cbfc5d5ed 100644
+--- a/gdb/windows-nat.c
++++ b/gdb/windows-nat.c
+@@ -404,8 +404,10 @@ windows_nat_target::windows_nat_target ()
+     m_response_event (CreateEvent (nullptr, false, false, nullptr)),
+     m_wait_event (make_serial_event ())
+ {
++  // Windows 9x: tid is required.
++  DWORD tid = 0;
+   HANDLE bg_thread = CreateThread (nullptr, 64 * 1024,
+-				   process_thread_starter, this, 0, nullptr);
++				   process_thread_starter, this, 0, &tid);
+   CloseHandle (bg_thread);
+ }
+ 

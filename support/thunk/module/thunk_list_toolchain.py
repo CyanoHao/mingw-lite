@@ -1,6 +1,43 @@
 from packaging.version import Version
 
 THUNK_LIST_TOOLCHAIN = {
+  '3.9999+4.10': {
+    'kernel32': [
+      'CreateWaitableTimerA',
+      'GetFileAttributesExA',
+      'SetWaitableTimer',
+      'SwitchToThread',
+      # followings are i386 atomic thunks
+      # Windows 98 (4.10) claim to run on minimum i486, so we place them here
+      '__sync_bool_compare_and_swap_4',
+      '__sync_fetch_and_add_4',
+      '__sync_val_compare_and_swap_4',
+    ]
+  },
+  '4.0': {
+    'kernel32': [
+      'CancelIo',
+      'CopyFileExA',
+      'CopyFileExW',
+      'CreateFileW',
+      'CreateWaitableTimerW',
+      'DeleteFileW',
+      'GetFileAttributesW',
+      'GetFileAttributesExW',
+      'GetFullPathNameW',
+      'GetHandleInformation',
+      'IsDebuggerPresent',
+      'MoveFileExA',
+      'MoveFileExW',
+      'RemoveDirectoryW',
+      'SetProcessAffinityMask',
+      'TryEnterCriticalSection',
+      'WriteConsoleW',
+    ],
+    'msvcrt': [
+      '_wfopen',
+    ],
+  },
   '5.0': {
     'advapi32': [
       'ConvertStringSecurityDescriptorToSecurityDescriptorW',
