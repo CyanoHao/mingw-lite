@@ -1,8 +1,16 @@
 diff --git a/bfd/bfdio.c b/bfd/bfdio.c
-index 2a7f77fa8d4..54445268811 100644
+index 7063bcc1ae6..adcf4aa8519 100644
 --- a/bfd/bfdio.c
 +++ b/bfd/bfdio.c
-@@ -189,11 +189,7 @@ _bfd_real_fopen (const char *filename, const char *modes)
+@@ -122,7 +122,6 @@ _bfd_real_fopen (const char *filename, const char *modes)
+   const wchar_t   prefixDOS[] = L"\\\\?\\";
+   const wchar_t   prefixUNC[] = L"\\\\?\\UNC\\";
+   const wchar_t   prefixNone[] = L"";
+-  const size_t    partPathLen = strlen (filename) + 1;
+   const wchar_t * prefix;
+   size_t          sizeof_prefix;
+   bool            strip_network_prefix = false;
+@@ -189,11 +188,7 @@ _bfd_real_fopen (const char *filename, const char *modes)
      }
  
  #ifdef __MINGW32__
@@ -15,7 +23,14 @@ index 2a7f77fa8d4..54445268811 100644
  #else
    const unsigned int cp = CP_UTF8;
  #endif
-@@ -209,7 +205,7 @@ _bfd_real_fopen (const char *filename, const char *modes)
+@@ -203,13 +198,14 @@ _bfd_real_fopen (const char *filename, const char *modes)
+      2) Convert the string: Calling with cbMultiByte set to -1 includes the terminating null.  */
+   size_t     partPathWSize = MultiByteToWideChar (cp, 0, filename, -1, NULL, 0);
+   wchar_t *  partPath = calloc (partPathWSize, sizeof(wchar_t));
++  size_t     partPathLen = partPathWSize - 1;
+   size_t     ix;
+ 
+   MultiByteToWideChar (cp, 0, filename, -1, partPath, partPathWSize);
  
    /* Convert any UNIX style path separators into the DOS i.e. backslash separator.  */
    for (ix = 0; ix < partPathLen; ix++)
@@ -24,3 +39,53 @@ index 2a7f77fa8d4..54445268811 100644
        partPath[ix] = '\\';
  
    /* Getting the full path from the provided partial path.
+diff --git a/bfd/config.in b/bfd/config.in
+index 7458362922c..72daf30b887 100644
+--- a/bfd/config.in
++++ b/bfd/config.in
+@@ -79,10 +79,6 @@
+    don't. */
+ #undef HAVE_DECL_VASPRINTF
+ 
+-/* Define to 1 if you have the declaration of `___lc_codepage_func', and to 0
+-   if you don't. */
+-#undef HAVE_DECL____LC_CODEPAGE_FUNC
+-
+ /* Define to 1 if you have the <dlfcn.h> header file. */
+ #undef HAVE_DLFCN_H
+ 
+diff --git a/bfd/configure b/bfd/configure
+index f69df1272d2..19c97f27de6 100755
+--- a/bfd/configure
++++ b/bfd/configure
+@@ -15110,18 +15110,6 @@ cat >>confdefs.h <<_ACEOF
+ #define HAVE_DECL_STRNLEN $ac_have_decl
+ _ACEOF
+ 
+-ac_fn_c_check_decl "$LINENO" "___lc_codepage_func" "ac_cv_have_decl____lc_codepage_func" "#include <locale.h>
+-"
+-if test "x$ac_cv_have_decl____lc_codepage_func" = xyes; then :
+-  ac_have_decl=1
+-else
+-  ac_have_decl=0
+-fi
+-
+-cat >>confdefs.h <<_ACEOF
+-#define HAVE_DECL____LC_CODEPAGE_FUNC $ac_have_decl
+-_ACEOF
+-
+ 
+ 
+ case "${host}" in
+diff --git a/bfd/configure.ac b/bfd/configure.ac
+index e9942d215b0..e8a9e2fa733 100644
+--- a/bfd/configure.ac
++++ b/bfd/configure.ac
+@@ -234,7 +234,6 @@ AC_CHECK_FUNCS(fcntl fdopen fileno fls getgid getpagesize getrlimit getuid \
+ 	       sysconf)
+ 
+ AC_CHECK_DECLS([basename, ffs, stpcpy, asprintf, vasprintf, strnlen])
+-AC_CHECK_DECLS([___lc_codepage_func], [], [], [[#include <locale.h>]])
+ 
+ BFD_BINARY_FOPEN
+ 
