@@ -26,6 +26,24 @@ target("gnu++98/bits-stdc++")
   add_tests("default", {pass_outputs = "Hello, world!\n"})
   chimaera()
 
+target("c++11/thread")
+  set_languages("c++11")
+  add_files("c++11/thread.cc")
+  add_tests("default", {
+    pass_outputs =
+      "l = 1000000\n" ..
+      "l = 1000000\n" ..
+      "l = 1000000\n" ..
+      "l = 1000000\n" ..
+      "l = 1000000\n" ..
+      "l = 1000000\n" ..
+      "l = 1000000\n" ..
+      "l = 1000000\n" ..
+      "l = 1000000\n" ..
+      "l = 1000000\n" ..
+      "g = 10000000\n"})
+  chimaera()
+
 target("c++23/print")
   enable_if_cxx_header("print")
   set_languages("c++23")

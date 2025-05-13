@@ -59,7 +59,7 @@ def test_mingw_make_gdb_batch(ver: BranchProfile, paths: ProjectPaths):
   with open(paths.sat_dir / 'test_mingw_make_gdb.bat', 'wb') as f:
     content = (
       '@echo off\n'
-      f'set PATH=%CD%/{mingw}/bin;%PATH%\n'
+      f'set PATH=%~dp0{mingw}/bin;%PATH%\n'
       f'mkdir {build_dir}\n'
       f'mingw32-make DIR={build_dir} SUFFIX=.exe\n'
       'echo Please start gdbserver...\n'
@@ -72,7 +72,7 @@ def test_mingw_make_gdb_batch(ver: BranchProfile, paths: ProjectPaths):
   with open(paths.sat_dir / 'test_mingw_make_gdb_run_gdbserver.bat', 'wb') as f:
     content = (
       '@echo off\n'
-      f'set PATH=%CD%/{mingw}/bin;%PATH%\n'
+      f'set PATH=%~dp0{mingw}/bin;%PATH%\n'
       f'gdbserver localhost:1234 {inferior}\n'
       'pause\n'
     )
