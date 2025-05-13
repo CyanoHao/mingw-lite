@@ -9,7 +9,7 @@ LIBS     =
 $(DIR)/breakpoint$(SUFFIX): $(DIR)/breakpoint.o
 	$(CXX) $(LDFLAGS) $^ $(LIBS) -o $@
 
-$(DIR)/breakpoint.o: debug/breakpoint.c
+$(DIR)/breakpoint.o: debug/breakpoint.cc
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 clean:
