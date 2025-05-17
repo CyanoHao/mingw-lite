@@ -25,6 +25,17 @@ namespace mingw_thunk::internal
     return dst;
   }
 
+  inline char *stpncpy(char *dst, const char *src, size_t dsize) noexcept
+  {
+    char *dend = dst + dsize;
+    while (dst < dend && *src)
+      *dst++ = *src++;
+    char *ret = dst;
+    while (dst < dend)
+      *dst++ = 0;
+    return ret;
+  }
+
   inline void *memcpy(void *dest, const void *src, size_t size) noexcept
   {
     char *dest_char = static_cast<char *>(dest);

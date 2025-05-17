@@ -45,12 +45,12 @@ namespace mingw_thunk
       *name++ = 'C';
       *name++ = 'P';
       if (CodePage >= 10000)
-        *name++ = (char)(CodePage / 10000 + '0');
+        *name++ = '0' + CodePage / 10000;
       if (CodePage >= 1000)
-        *name++ = (char)((CodePage / 1000) % 10 + '0');
-      *name++ = (char)((CodePage / 100) % 10 + '0');
-      *name++ = (char)((CodePage / 10) % 10 + '0');
-      *name++ = (char)(CodePage % 10 + '0');
+        *name++ = '0' + CodePage / 1000 % 10;
+      *name++ = '0' + CodePage / 100 % 10;
+      *name++ = '0' + CodePage / 10 % 10;
+      *name++ = '0' + CodePage % 10;
       *name++ = '\0';
     }
 

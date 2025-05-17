@@ -21,6 +21,7 @@ THUNK_LIST_TOOLCHAIN = {
       'SetFilePointerEx',
     ],
     'msvcrt': [
+      '_ctime64',
       '_findfirst64',
       '_findnext64',
       '_fstat64',
@@ -28,6 +29,7 @@ THUNK_LIST_TOOLCHAIN = {
       '_gmtime64',
       '_localtime64',
       '_stat64',
+      '_time64',
       '_utime64',
       '_wfindfirst64',
       '_wfindnext64',
@@ -54,6 +56,7 @@ THUNK_LIST_TOOLCHAIN = {
     'ws2_32': [
       'freeaddrinfo',
       'getaddrinfo',
+      'getnameinfo',
     ],
   },
   '5.2': {
