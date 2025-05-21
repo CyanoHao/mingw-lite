@@ -1,5 +1,9 @@
 THUNK_LIST_CORE = {
-  '5.0': {},
+  '5.0': {
+    'msvcrt': [
+      ('_fstat64', lambda v_major: v_major < 13),
+    ]
+  },
   '5.1': {
     'kernel32': [
       # winpthreads: no longer required since 12
