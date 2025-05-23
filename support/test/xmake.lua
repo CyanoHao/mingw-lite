@@ -44,6 +44,13 @@ target("c++11/thread")
       "g = 10000000\n"})
   chimaera()
 
+target("c++17/filesystem")
+  enable_if_cxx_header("filesystem")
+  set_languages("c++17")
+  add_files("c++17/filesystem.cc")
+  add_tests("default", {pass_outputs = "Hello, world!\n"})
+  chimaera()
+
 target("c++17/fstream")
   enable_if_cxx_header("filesystem")
   set_languages("c++17")

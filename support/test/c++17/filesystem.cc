@@ -1,25 +1,35 @@
-#include <cstdio>
 #include <filesystem>
 #include <iostream>
 #include <set>
-using namespace std;
+#include <string_view>
+
 namespace fs = std::filesystem;
 
-string_view content[2] = {"test\r\n", "测试\r\n"};
+using std::cerr;
+using std::cout;
+using std::error_code;
+using std::string_view;
+
+const fs::path dir = fs::u8path("test--filesystem--‘dir’");
+
+string_view content[2] = {"test\n", "测试\n"};
 
 bool test_create_directory() {
   error_code ec;
-  fs::create_directory("test", ec);
-  if (ec)
-    cerr << "[filesystem:test_create_directory] create_directory failed: "
-         << ec.message() << endl;
-  return !ec;
+  fs::create_directory(dir, ec);
+  if (ec) {
+    cerr << "[test_create_directory] ";
+    cerr << "fs::create_directory failed: " << ec.message() << '\n';
+    return false;
+  }
+  return true;
 }
 
 bool do_write() {
   FILE *fp = fopen("test/test.txt", "wb");
   if (!fp) {
-    cerr << "[filesystem:do_write] do_write fopen failed" << endl;
+    cerr << "[do_write] ";
+    cerr << "fopen failed" << '\n';
     return false;
   }
   for (const auto &line : content)
@@ -32,31 +42,33 @@ bool test_copy_file() {
   error_code ec;
   fs::copy_file("test/test.txt", L"test/测试.txt",
                 fs::copy_options::overwrite_existing, ec);
-  if (ec)
-    cerr << "[filesystem:test_copy_file] copy_file failed: " << ec.message()
-         << endl;
-  return !ec;
+  if (ec) {
+    cerr << "[test_copy_file] ";
+    cerr << "fs::copy_file failed: " << ec.message() << '\n';
+    return false;
+  }
+  return true;
 }
 
 bool test_resize_file() {
   error_code ec;
   fs::resize_file("test/test.txt", content[0].size(), ec);
   if (ec) {
-    cerr << "[filesystem:test_resize_file] resize_file failed: " << ec.message()
-         << endl;
+    cerr << "[test_copy_file] ";
+    cerr << "fs::resize_file failed: " << ec.message() << '\n';
     return false;
   }
   FILE *fp = fopen("test/test.txt", "rb");
   if (!fp) {
-    cerr << "[filesystem:test_resize_file] test_resize_file fopen failed"
-         << endl;
+    cerr << "[test_copy_file] ";
+    cerr << "fopen failed" << '\n';
     return false;
   }
   fseek(fp, 0, SEEK_END);
   size_t len = ftell(fp);
   if (len != content[0].size()) {
-    cerr << "[filesystem:test_resize_file] test_resize_file length mismatch: "
-         << len << " != " << content[0].size() << endl;
+    cerr << "[test_copy_file] ";
+    cerr << "length mismatch: " << len << " != " << content[0].size() << '\n';
     return false;
   }
   fseek(fp, 0, SEEK_SET);
@@ -64,9 +76,8 @@ bool test_resize_file() {
   fread(buf, 1, len, fp);
   fclose(fp);
   if (content[0] != string_view(buf, len)) {
-    cerr << "[filesystem:test_resize_file] test_resize_file read content "
-            "mismatch"
-         << endl;
+    cerr << "[test_copy_file] ";
+    cerr << "read content mismatch" << '\n';
     return false;
   }
   return true;
@@ -77,39 +88,42 @@ bool test_copy() {
   fs::copy("test", L"测试",
            fs::copy_options::overwrite_existing | fs::copy_options::recursive,
            ec);
-  if (ec)
-    cerr << "[filesystem:test_copy] copy failed: " << ec.message() << endl;
-  return !ec;
+  if (ec) {
+    cerr << "[test_copy] ";
+    cerr << "fs::copy failed: " << ec.message() << '\n';
+    return false;
+  }
+  return true;
 }
 
 bool test_directory_iterator() {
   error_code ec;
   auto cwd = fs::current_path(ec);
   if (ec) {
-    cerr << "[filesystem:test_copy] current_path failed: " << ec.message()
-         << endl;
+    cerr << "[test_directory_iterator] ";
+    cerr << "fs::current_path failed: " << ec.message() << '\n';
     return false;
   }
 
   auto dir = fs::recursive_directory_iterator(".", ec);
   if (ec) {
-    cerr << "[filesystem:test_copy] recursive_directory_iterator failed: "
-         << ec.message() << endl;
+    cerr << "[test_directory_iterator] ";
+    cerr << "fs::recursive_directory_iterator failed: " << ec.message() << '\n';
     return false;
   }
 
-  set<fs::path> files;
+  std::set<fs::path> files;
   for (const auto &entry : dir) {
     auto rel = fs::relative(entry.path(), cwd, ec);
     if (ec) {
-      cerr << "[filesystem:test_copy] relative failed: " << ec.message()
-           << endl;
+      cerr << "[test_directory_iterator] ";
+      cerr << "fs::relative failed: " << ec.message() << '\n';
       return false;
     }
     files.insert(rel);
   }
   for (const auto &file : files)
-    cout << file << endl;
+    cout << file << '\n';
   return true;
 }
 
@@ -119,23 +133,25 @@ bool test_equivalent() {
 
   eq = fs::equivalent("test/test.txt", "test\\test.txt", ec);
   if (ec) {
-    cerr << "[filesystem:test_equivalent] equivalent failed: " << ec.message()
-         << endl;
+    cerr << "[test_equivalent] ";
+    cerr << "fs::equivalent failed: " << ec.message() << '\n';
     return false;
   }
   if (!eq) {
-    cerr << "[filesystem:test_equivalent] equivalent returned false" << endl;
+    cerr << "[test_equivalent] ";
+    cerr << "fs::equivalent returned false" << '\n';
     return false;
   }
 
   eq = fs::equivalent("test/test.txt", "test/测试.txt", ec);
   if (ec) {
-    cerr << "[filesystem:test_equivalent] equivalent failed: " << ec.message()
-         << endl;
+    cerr << "[test_equivalent] ";
+    cerr << "fs::equivalent failed: " << ec.message() << '\n';
     return false;
   }
   if (eq) {
-    cerr << "[filesystem:test_equivalent] equivalent returned true" << endl;
+    cerr << "[test_equivalent] ";
+    cerr << "fs::equivalent returned true" << '\n';
     return false;
   }
   return true;
@@ -145,50 +161,57 @@ bool test_rename() {
   error_code ec;
   fs::rename("test/test.txt", "test/test2.txt", ec);
   if (ec) {
-    cerr << "[filesystem:test_rename] rename failed: " << ec.message() << endl;
+    cerr << "[test_rename] ";
+    cerr << "fs::rename failed: " << ec.message() << '\n';
     return false;
   }
   bool exist = fs::exists("test/test.txt", ec);
   if (ec) {
-    cerr << "[filesystem:test_rename] exists failed: " << ec.message() << endl;
+    cerr << "[test_rename] ";
+    cerr << "fs::exists failed: " << ec.message() << '\n';
     return false;
   }
   if (exist) {
-    cerr << "[filesystem:test_rename] test_rename failed" << endl;
+    cerr << "[test_rename] ";
+    cerr << "rename failed" << '\n';
     return false;
   }
 
   // check size
   size_t size = fs::file_size("test/test2.txt", ec);
   if (ec) {
-    cerr << "[filesystem:test_rename] file_size failed: " << ec.message()
-         << endl;
+    cerr << "[test_rename] ";
+    cerr << "fs::file_size failed: " << ec.message() << '\n';
     return false;
   }
   if (size == size_t(-1)) {
-    cerr << "[filesystem:test_rename] file_size returned -1" << endl;
+    cerr << "[test_rename] ";
+    cerr << "fs::file_size returned -1" << '\n';
     return false;
   }
   if (size != content[0].size()) {
-    cerr << "[filesystem:test_rename] size mismatch: " << size
-         << " != " << content[0].size() << endl;
+    cerr << "[test_rename] ";
+    cerr << "size mismatch: " << size << " != " << content[0].size() << '\n';
   }
 
   // check content
   FILE *fp = fopen("test/test2.txt", "rb");
   if (!fp) {
-    cerr << "[filesystem:test_rename] fopen failed" << endl;
+    cerr << "[test_rename] ";
+    cerr << "fopen failed" << '\n';
     return false;
   }
   char buf[1024];
   size_t len = fread(buf, 1, size, fp);
   if (len != size) {
-    cerr << "[filesystem:test_rename] fread failed" << endl;
+    cerr << "[test_rename] ";
+    cerr << "fread failed" << '\n';
     return false;
   }
   fclose(fp);
   if (content[0] != string_view(buf, len)) {
-    cerr << "[filesystem:test_rename] read content mismatch" << endl;
+    cerr << "[test_rename] ";
+    cerr << "read content mismatch" << '\n';
     return false;
   }
   return true;
@@ -198,28 +221,32 @@ bool test_remove() {
   error_code ec;
   fs::remove(L"test/测试.txt", ec);
   if (ec) {
-    cerr << "[filesystem:test_remove] remove failed: " << ec.message() << endl;
+    cerr << "[test_remove] ";
+    cerr << "fs::remove failed: " << ec.message() << '\n';
     return false;
   }
   bool exist = fs::exists(L"test/测试.txt", ec);
   if (ec) {
-    cerr << "[filesystem:test_remove] exists failed: " << ec.message() << endl;
+    cerr << "[test_remove] ";
+    cerr << "fs::exists failed: " << ec.message() << '\n';
     return false;
   }
   if (exist) {
-    cerr << "[filesystem:test_remove] failed" << endl;
+    cerr << "[test_remove] ";
+    cerr << "failed" << '\n';
     return false;
   }
 
   fs::remove_all("test", ec);
   if (ec) {
-    cerr << "[filesystem:test_remove] remove_all failed: " << ec.message()
-         << endl;
+    cerr << "[test_remove] ";
+    cerr << "fs::remove_all failed: " << ec.message() << '\n';
     return false;
   }
   exist = fs::exists("test", ec);
   if (ec) {
-    cerr << "[filesystem:test_remove] exists failed: " << ec.message() << endl;
+    cerr << "[test_remove] ";
+    cerr << "fs::exists failed: " << ec.message() << '\n';
     return false;
   }
 
