@@ -1,6 +1,9 @@
 THUNK_LIST_CORE = {
   '4.0': {
     'kernel32': [
+      'IsDebuggerPresent',
+      'SetProcessAffinityMask',
+      'TryEnterCriticalSection',
       '__sync_bool_compare_and_swap_4',
       '__sync_val_compare_and_swap_4',
     ],

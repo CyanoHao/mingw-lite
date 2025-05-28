@@ -3,9 +3,11 @@ from packaging.version import Version
 THUNK_LIST_TOOLCHAIN = {
   '4.0': {
     'kernel32': [
+      'CancelIo',
       'CreateFileW',
       'DeleteFileW',
       'GetFileAttributesW',
+      'GetFileAttributesExW',
       'GetFullPathNameW',
       'GetHandleInformation',
       'IsDebuggerPresent',
@@ -14,7 +16,9 @@ THUNK_LIST_TOOLCHAIN = {
       'SetProcessAffinityMask',
       'TryEnterCriticalSection',
       'WriteConsoleW',
-      '__sync_fetch_and_add_4',   # xmake (libtbox.a:pipe.c.obj)
+      '__sync_bool_compare_and_swap_4',
+      '__sync_fetch_and_add_4',
+      '__sync_val_compare_and_swap_4',
     ],
     'msvcrt': [
       '_wfopen',
