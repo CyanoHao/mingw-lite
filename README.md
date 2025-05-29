@@ -81,10 +81,10 @@ Some profiles have variants for even earlier Windows versions, as follows.
 | 64-msvcrt_ws2003 | Windows Server 2003 (NT 5.2) |
 | 32-ucrt_winxp | Windows XP (NT 5.1) |
 | 32-msvcrt_winnt40 | Windows NT 4.0 |
-| 32_486-msvcrt_win95 | Windows NT 4.0; limited Windows 95 (4.00) |
+| 32_486-msvcrt_win98 | Windows NT 4.0; limited Windows 98 (4.00) |
 | 32_386-msvcrt_win95 | Windows NT 4.0; limited Windows 95 (4.00) |
 
-Limitations of `32_486-msvcrt_win95` and `32_386-msvcrt_win95`:
+Limitations of `32_486-msvcrt_win98` and `32_386-msvcrt_win95`:
 
 - Target architecture is i486 or i386.
   - Atomic operations will introduce heavy overhead by calling libatomic subroutines. (libatomic is merged into libgcc, so you don't need to specify `-latomic`.)

@@ -83,7 +83,7 @@ class ProfileInfo:
     thread: str,
 
     win32_winnt: int,
-    min_os: str,
+    min_os: Version,
   ):
     self.arch = arch
     self.target = target
@@ -93,7 +93,7 @@ class ProfileInfo:
     self.thread = thread
 
     self.win32_winnt = win32_winnt
-    self.min_os = Version(min_os)
+    self.min_os = min_os
 
 class BranchProfile(BranchVersions):
   arch: str
@@ -213,199 +213,94 @@ BRANCHES: Dict[str, BranchVersions] = {
   ),
 }
 
+_ARCH_VARIANT_2_MINGW_ARCH_MAP: dict[str, str] = {
+  '64': '64',
+  'arm64': 'arm64',
+  '32': '32',
+  '32_586': '32',
+  '32_486': '32',
+  '32_386': '32',
+}
+
+_ARCH_VARIANT_2_TRIPLET_MAP: dict[str, str] = {
+  '64': 'x86_64-w64-mingw32',
+  'arm64': 'aarch64-w64-mingw32',
+  '32': 'i686-w64-mingw32',
+  '32_586': 'i586-w64-mingw32',
+  '32_486': 'i486-w64-mingw32',
+  '32_386': 'i386-w64-mingw32',
+}
+
+_MINGW_ARCH_2_EXCEPTION_MAP: dict[str, str] = {
+  '64': 'seh',
+  'arm64': 'seh',
+  '32': 'dwarf',
+}
+
+def _create_profile(arch: str, crt: str, thread: str, min_os: str) -> ProfileInfo:
+  mingw_arch = _ARCH_VARIANT_2_MINGW_ARCH_MAP[arch]
+  triplet = _ARCH_VARIANT_2_TRIPLET_MAP[arch]
+
+  return ProfileInfo(
+    arch = mingw_arch,
+    target = triplet,
+
+    default_crt = crt,
+    exception = 'dwarf' if mingw_arch == '32' else 'seh',
+    thread = thread,
+
+    win32_winnt = 0x0A00,
+    min_os = Version(min_os),
+  )
+
 PROFILES: Dict[str, ProfileInfo] = {
-  '64-mcf': ProfileInfo(
-    arch = '64',
-    target = 'x86_64-w64-mingw32',
+  '64-mcf':    _create_profile('64', 'ucrt',   'mcf',   '6.1'),
+  '64-win32':  _create_profile('64', 'ucrt',   'win32', '6.0'),
+  '64-ucrt':   _create_profile('64', 'ucrt',   'posix', '6.0'),
+  '64-msvcrt': _create_profile('64', 'msvcrt', 'posix', '6.0'),
 
-    default_crt = 'ucrt',
-    exception = 'seh',
-    thread = 'mcf',
+  'arm64-mcf':   _create_profile('arm64', 'ucrt', 'mcf',   '10.0.16299'),
+  'arm64-win32': _create_profile('arm64', 'ucrt', 'win32', '10.0.16299'),
+  'arm64-ucrt':  _create_profile('arm64', 'ucrt', 'posix', '10.0.16299'),
 
-    win32_winnt = 0x0A00,
-    min_os = '6.1',
-  ),
-  '64-win32': ProfileInfo(
-    arch = '64',
-    target = 'x86_64-w64-mingw32',
+  '32-mcf':    _create_profile('32', 'ucrt',   'mcf',   '6.1'),
+  '32-win32':  _create_profile('32', 'ucrt',   'win32', '6.0'),
+  '32-ucrt':   _create_profile('32', 'ucrt',   'posix', '6.0'),
+  '32-msvcrt': _create_profile('32', 'msvcrt', 'posix', '6.0'),
 
-    default_crt = 'ucrt',
-    exception = 'seh',
-    thread = 'win32',
+  ## profile variants for earlier Windows versions
 
-    win32_winnt = 0x0A00,
-    min_os = '6.0',
-  ),
-  '64-ucrt': ProfileInfo(
-    arch = '64',
-    target = 'x86_64-w64-mingw32',
+  '64-ucrt_ws2003':   _create_profile('64', 'ucrt',   'posix', '5.2'),
+  '64-msvcrt_ws2003': _create_profile('64', 'msvcrt', 'posix', '5.2'),
 
-    default_crt = 'ucrt',
-    exception = 'seh',
-    thread = 'posix',
+  '32-ucrt_ws2003':    _create_profile('32', 'ucrt',   'posix', '5.2'),
+  '32-ucrt_winxp':     _create_profile('32', 'ucrt',   'posix', '5.1'),
+  '32-msvcrt_ws2003':  _create_profile('32', 'msvcrt', 'posix', '5.2'),
+  '32-msvcrt_winxp':   _create_profile('32', 'msvcrt', 'posix', '5.1'),
+  '32-msvcrt_win2000': _create_profile('32', 'msvcrt', 'posix', '5.0'),
+  '32-msvcrt_winnt40': _create_profile('32', 'msvcrt', 'posix', '4.0'),
+  '32-msvcrt_winme':   _create_profile('32', 'msvcrt', 'posix', '3.9999+4.90'),
+  '32-msvcrt_win98':   _create_profile('32', 'msvcrt', 'posix', '3.9999+4.10'),
+  '32-msvcrt_win95':   _create_profile('32', 'msvcrt', 'posix', '3.9999+4.00'),
 
-    win32_winnt = 0x0A00,
-    min_os = '6.0',
-  ),
-  '64-msvcrt': ProfileInfo(
-    arch = '64',
-    target = 'x86_64-w64-mingw32',
+  '32_586-ucrt_ws2003':    _create_profile('32_586', 'ucrt',   'posix', '5.2'),
+  '32_586-ucrt_winxp':     _create_profile('32_586', 'ucrt',   'posix', '5.1'),
+  '32_586-msvcrt_ws2003':  _create_profile('32_586', 'msvcrt', 'posix', '5.2'),
+  '32_586-msvcrt_winxp':   _create_profile('32_586', 'msvcrt', 'posix', '5.1'),
+  '32_586-msvcrt_win2000': _create_profile('32_586', 'msvcrt', 'posix', '5.0'),
+  '32_586-msvcrt_winnt40': _create_profile('32_586', 'msvcrt', 'posix', '4.0'),
+  '32_586-msvcrt_winme':   _create_profile('32_586', 'msvcrt', 'posix', '3.9999+4.90'),
+  '32_586-msvcrt_win98':   _create_profile('32_586', 'msvcrt', 'posix', '3.9999+4.10'),
+  '32_586-msvcrt_win95':   _create_profile('32_586', 'msvcrt', 'posix', '3.9999+4.00'),
 
-    default_crt = 'msvcrt',
-    exception = 'seh',
-    thread = 'posix',
+  '32_486-msvcrt_win2000': _create_profile('32_486', 'msvcrt', 'posix', '5.0'),
+  '32_486-msvcrt_winnt40': _create_profile('32_486', 'msvcrt', 'posix', '4.0'),
+  '32_486-msvcrt_winme':   _create_profile('32_486', 'msvcrt', 'posix', '3.9999+4.90'),
+  '32_486-msvcrt_win98':   _create_profile('32_486', 'msvcrt', 'posix', '3.9999+4.10'),
+  '32_486-msvcrt_win95':   _create_profile('32_486', 'msvcrt', 'posix', '3.9999+4.00'),
 
-    win32_winnt = 0x0A00,
-    min_os = '6.0',
-  ),
-
-  'arm64-mcf': ProfileInfo(
-    arch = 'arm64',
-    target = 'aarch64-w64-mingw32',
-
-    default_crt = 'ucrt',
-    exception = 'seh',
-    thread = 'mcf',
-
-    win32_winnt = 0x0A00,
-    min_os = '10.0.16299',
-  ),
-  'arm64-win32': ProfileInfo(
-    arch = 'arm64',
-    target = 'aarch64-w64-mingw32',
-
-    default_crt = 'ucrt',
-    exception = 'seh',
-    thread = 'win32',
-
-    win32_winnt = 0x0A00,
-    min_os = '10.0.16299',
-  ),
-  'arm64-ucrt': ProfileInfo(
-    arch = 'arm64',
-    target = 'aarch64-w64-mingw32',
-
-    default_crt = 'ucrt',
-    exception = 'seh',
-    thread = 'posix',
-
-    win32_winnt = 0x0A00,
-    min_os = '10.0.16299',
-  ),
-
-  '32-mcf': ProfileInfo(
-    arch = '32',
-    target = 'i686-w64-mingw32',
-
-    default_crt = 'ucrt',
-    exception = 'dwarf',
-    thread = 'mcf',
-
-    win32_winnt = 0x0A00,
-    min_os = '6.1',
-  ),
-  '32-win32': ProfileInfo(
-    arch = '32',
-    target = 'i686-w64-mingw32',
-
-    default_crt = 'ucrt',
-    exception = 'dwarf',
-    thread = 'win32',
-
-    win32_winnt = 0x0A00,
-    min_os = '6.0',
-  ),
-  '32-ucrt': ProfileInfo(
-    arch = '32',
-    target = 'i686-w64-mingw32',
-
-    default_crt = 'ucrt',
-    exception = 'dwarf',
-    thread = 'posix',
-
-    win32_winnt = 0x0A00,
-    min_os = '6.0',
-  ),
-  '32-msvcrt': ProfileInfo(
-    arch = '32',
-    target = 'i686-w64-mingw32',
-
-    default_crt = 'msvcrt',
-    exception = 'dwarf',
-    thread = 'posix',
-
-    win32_winnt = 0x0A00,
-    min_os = '6.0',
-  ),
-
-  # profile variants
-  '64-ucrt_ws2003': ProfileInfo(
-    arch = '64',
-    target = 'x86_64-w64-mingw32',
-
-    default_crt = 'ucrt',
-    exception = 'seh',
-    thread = 'posix',
-
-    win32_winnt = 0x0A00,
-    min_os = '5.2',
-  ),
-  '64-msvcrt_ws2003': ProfileInfo(
-    arch = '64',
-    target = 'x86_64-w64-mingw32',
-
-    default_crt = 'msvcrt',
-    exception = 'seh',
-    thread = 'posix',
-
-    win32_winnt = 0x0A00,
-    min_os = '5.2',
-  ),
-
-  '32-ucrt_winxp': ProfileInfo(
-    arch = '32',
-    target = 'i686-w64-mingw32',
-
-    default_crt = 'ucrt',
-    exception = 'dwarf',
-    thread = 'posix',
-
-    win32_winnt = 0x0A00,
-    min_os = '5.1',
-  ),
-  '32-msvcrt_winnt40': ProfileInfo(
-    arch = '32',
-    target = 'i686-w64-mingw32',
-
-    default_crt = 'msvcrt',
-    exception = 'dwarf',
-    thread = 'posix',
-
-    win32_winnt = 0x0A00,
-    min_os = '4.0',
-  ),
-  '32_486-msvcrt_win95': ProfileInfo(
-    arch = '32',
-    target = 'i486-w64-mingw32',
-
-    default_crt = 'msvcrt',
-    exception = 'dwarf',
-    thread = 'posix',
-
-    win32_winnt = 0x0A00,
-    min_os = '3.9999',
-  ),
-  '32_386-msvcrt_win95': ProfileInfo(
-    arch = '32',
-    target = 'i386-w64-mingw32',
-
-    default_crt = 'msvcrt',
-    exception = 'dwarf',
-    thread = 'posix',
-
-    win32_winnt = 0x0A00,
-    min_os = '3.9999',
-  ),
+  '32_386-msvcrt_win98': _create_profile('32_386', 'msvcrt', 'posix', '3.9999+4.00'),
+  '32_386-msvcrt_win95': _create_profile('32_386', 'msvcrt', 'posix', '3.9999+4.00'),
 }
 
 def resolve_profile(config: argparse.Namespace) -> BranchProfile:
