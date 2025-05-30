@@ -268,7 +268,9 @@ PROFILES: Dict[str, ProfileInfo] = {
   '32-ucrt':   _create_profile('32', 'ucrt',   'posix', '6.0'),
   '32-msvcrt': _create_profile('32', 'msvcrt', 'posix', '6.0'),
 
-  ## profile variants for earlier Windows versions
+  #################################################
+  # profile variants for earlier Windows versions #
+  #################################################
 
   '64-ucrt_ws2003':   _create_profile('64', 'ucrt',   'posix', '5.2'),
   '64-msvcrt_ws2003': _create_profile('64', 'msvcrt', 'posix', '5.2'),
@@ -283,8 +285,27 @@ PROFILES: Dict[str, ProfileInfo] = {
   '32-msvcrt_win98':   _create_profile('32', 'msvcrt', 'posix', '3.9999+4.10'),
   '32-msvcrt_win95':   _create_profile('32', 'msvcrt', 'posix', '3.9999+4.00'),
 
-  '32_586-ucrt_ws2003':    _create_profile('32_586', 'ucrt',   'posix', '5.2'),
-  '32_586-ucrt_winxp':     _create_profile('32_586', 'ucrt',   'posix', '5.1'),
+  ##########################################################################
+  # profile variants for legacy micro architectures (and Windows versions) #
+  ##########################################################################
+
+  # Minimum CPU requirements:
+  #
+  # | OS             | Documented | Actual |
+  # | -------------- | ---------- | ------ |
+  # | Windows Vista  | i686 +mmx* | i686   |
+  # | Windows XP     | i586       | i586   |
+  # | Windows 2000   | i586       | i486   |
+  # | Windows NT 4.0 | i486       | i486   |
+  # | Windows ME     | i586       | i486   |
+  # | Windows 98     | i486       | i386   |
+  # | Windows 95     | i386       | i386   |
+  #
+  # * implied by “800 MHz”, which points to Pentium III (i686 +mmx +sse) or K7 (i686 +mmx +3dnow)
+
+  # Therefore, i586/Vista+, i486/XP+, i386/ME+ make no sense.
+  # Additionally, combining UCRT, which requires SSE, with legacy micro architecture makes no sense.
+
   '32_586-msvcrt_ws2003':  _create_profile('32_586', 'msvcrt', 'posix', '5.2'),
   '32_586-msvcrt_winxp':   _create_profile('32_586', 'msvcrt', 'posix', '5.1'),
   '32_586-msvcrt_win2000': _create_profile('32_586', 'msvcrt', 'posix', '5.0'),
