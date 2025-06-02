@@ -16,17 +16,14 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
     f'--prefix=/usr/local',
     f'--target={ver.target}',
     f'--build={config.build}',
-    # static build
-    '--disable-plugins',
+    # prefer static
     '--disable-shared',
     '--enable-static',
-    '--disable-werror',
     # features
     '--disable-install-libbfd',
     '--disable-multilib',
     '--disable-nls',
-    # libtool eats `-static`
-    *cflags_A(ld_extra = ['--static']),
+    *cflags_A(),
   ])
   make_default('binutils', build_dir, config.jobs)
   make_destdir_install('binutils', build_dir, paths.layer_AAB.binutils)
@@ -76,18 +73,16 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       f'--with-gcc-major-version-only',
       f'--target={ver.target}',
       f'--build={config.build}',
-      # static build
-      '--disable-plugin',
+      # prefer static
       '--disable-shared',
       '--enable-static',
-      '--without-pic',
       # features
       '--disable-bootstrap',
       '--enable-checking=release',
+      '--enable-host-pie',
       '--enable-languages=c,c++',
       '--disable-libgomp',
       '--disable-libmpx',
-      '--disable-lto',
       '--disable-multilib',
       '--disable-nls',
       f'--enable-threads={ver.thread}',
@@ -95,12 +90,8 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       f'--with-arch={ver.march}',
       '--without-libcc1',
       *config_flags,
-      # libtool eats `-static`
-      *cflags_A(ld_extra = ['--static']),
-      *cflags_B('_FOR_TARGET',
-        cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        ld_extra = ['--static'],
-      ),
+      *cflags_A(),
+      *cflags_B('_FOR_TARGET', cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}']),
     ])
 
     make_custom('gcc (all-gcc)', build_dir, ['all-gcc'], config.jobs)
@@ -176,7 +167,6 @@ def _crt(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       f'--host={ver.target}',
       f'--build={config.build}',
       f'--with-default-msvcrt={ver.default_crt}',
-      # use target definition since we use same source for both
       f'--with-default-win32-winnt=0x{ver.win32_winnt:04X}',
       *multilib_flags,
       *cflags_B(),

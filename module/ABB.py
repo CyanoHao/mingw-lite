@@ -52,16 +52,17 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
       f'--host={ver.target}',
       f'--target={ver.target}',
       f'--build={config.build}',
-      # static build
-      '--with-static-standard-libraries',
+      # prefer static
+      '--disable-shared',
+      '--enable-static',
       # features
       '--disable-install-libbfd',
       '--disable-multilib',
       '--enable-nls',
-      # libtool eats `-static`
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        ld_extra = ['--static'],
+        common_extra = ['-flto'],
+        ld_extra = ['-O2', f'-flto={config.jobs}'],
       ),
     ])
     make_default('binutils', build_dir, config.jobs)
@@ -231,10 +232,8 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       f'--host={ver.target}',
       f'--build={config.build}',
       # prefer static
-      '--disable-plugin',
       '--disable-shared',
       '--enable-static',
-      '--without-pic',
       # features
       '--disable-bootstrap',
       '--enable-checking=release',
@@ -251,7 +250,8 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       *config_flags,
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        ld_extra = ['--static'],
+        common_extra = ['-flto'],
+        ld_extra = ['-O2', f'-flto={config.jobs}'],
       ),
       *cflags_B('_FOR_TARGET',
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
@@ -269,7 +269,6 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
         #
         # here we add minimal debug info, so gdb will not be fooled.
         common_extra = ['-g1'],
-        ld_extra = ['--static'],
       ),
     ])
     make_default('gcc', build_dir, config.jobs)
