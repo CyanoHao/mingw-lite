@@ -47,22 +47,33 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
   ]):
     build_dir = paths.src_dir.binutils / 'build-ABB'
     ensure(build_dir)
+
+    cflags_lto = []
+
+    if not ver.optimize_for_size:
+      cflags_lto.append('-O2')
+      cflags_lto.append(f'-flto={config.jobs}')
+
     configure('binutils', build_dir, [
       '--prefix=',
       f'--host={ver.target}',
       f'--target={ver.target}',
       f'--build={config.build}',
-      # static build
-      '--with-static-standard-libraries',
+      # prefer static
+      '--disable-shared',
+      '--enable-static',
       # features
       '--disable-install-libbfd',
       '--disable-multilib',
       '--enable-nls',
-      # libtool eats `-static`
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        ld_extra = ['--static'],
+        common_extra = [*cflags_lto],
+        ld_extra = [*cflags_lto],
+        optimize_for_size = ver.optimize_for_size,
       ),
+      f'AR={ver.target}-gcc-ar',
+      f'RANLIB={ver.target}-gcc-ranlib',
     ])
     make_default('binutils', build_dir, config.jobs)
     make_custom('binutils (install)', build_dir, [
@@ -113,7 +124,7 @@ def _crt(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       f'--with-default-msvcrt={ver.default_crt}',
       f'--with-default-win32-winnt=0x{max(ver.win32_winnt, 0x0400):04X}',
       *multilib_flags,
-      *cflags_B(),
+      *cflags_B(optimize_for_size = ver.optimize_for_size),
     ])
     make_default('crt', build_dir, config.jobs)
     make_destdir_install('crt', build_dir, paths.layer_ABB.crt)
@@ -135,6 +146,7 @@ def _winpthreads(ver: BranchProfile, paths: ProjectPaths, config: argparse.Names
       '--disable-shared',
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
+        optimize_for_size = ver.optimize_for_size,
       ),
     ])
     make_default('winpthreads', build_dir, config.jobs)
@@ -166,6 +178,7 @@ def _mcfgthread(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namesp
       'env',
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
+        optimize_for_size = ver.optimize_for_size,
       ),
       'meson',
       'compile',
@@ -209,6 +222,7 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
     ensure(build_dir)
 
     config_flags = []
+    cflags_lto = []
 
     if ver.exception == 'dwarf':
       config_flags.append('--disable-sjlj-exceptions')
@@ -223,6 +237,10 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
     if ver.fpmath:
       config_flags.append(f'--with-fpmath={ver.fpmath}')
 
+    if not ver.optimize_for_size:
+      cflags_lto.append('-O2')
+      cflags_lto.append(f'-flto={config.jobs}')
+
     configure('gcc', build_dir, [
       '--prefix=',
       '--libexecdir=/lib',
@@ -231,10 +249,8 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       f'--host={ver.target}',
       f'--build={config.build}',
       # prefer static
-      '--disable-plugin',
       '--disable-shared',
       '--enable-static',
-      '--without-pic',
       # features
       '--disable-bootstrap',
       '--enable-checking=release',
@@ -251,7 +267,9 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       *config_flags,
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        ld_extra = ['--static'],
+        common_extra = [*cflags_lto],
+        ld_extra = [*cflags_lto],
+        optimize_for_size = ver.optimize_for_size,
       ),
       *cflags_B('_FOR_TARGET',
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
@@ -269,8 +287,10 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
         #
         # here we add minimal debug info, so gdb will not be fooled.
         common_extra = ['-g1'],
-        ld_extra = ['--static'],
+        optimize_for_size = ver.optimize_for_size,
       ),
+      f'AR={ver.target}-gcc-ar',
+      f'RANLIB={ver.target}-gcc-ranlib',
     ])
     make_default('gcc', build_dir, config.jobs)
     make_destdir_install('gcc', build_dir, paths.layer_ABB.gcc)
@@ -325,6 +345,7 @@ def _gdb(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
         '-D__MINGW_USE_VC2005_COMPAT',
       ],
       c_extra = c_extra,
+      optimize_for_size = ver.optimize_for_size,
     )
 
     configure('gdb', build_dir, [
@@ -394,6 +415,7 @@ def _gmake(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
         c_extra = c_extra,
+        optimize_for_size = ver.optimize_for_size,
       ),
     ])
     make_default('make', build_dir, config.jobs)
