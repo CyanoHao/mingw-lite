@@ -33,7 +33,7 @@ def cflags_A(
   cxx_extra: List[str] = [],
 ) -> List[str]:
   cpp = ['-DNDEBUG']
-  common = ['-Os']
+  common = ['-O2', '-pipe']
   ld = ['-s']
   return [
     f'CPPFLAGS{suffix}=' + ' '.join(cpp + cpp_extra),
@@ -51,7 +51,7 @@ def cflags_B(
   cxx_extra: List[str] = [],
 ) -> List[str]:
   cpp = ['-DNDEBUG']
-  common = ['-Os']
+  common = ['-O2', '-pipe']
   ld = ['-s']
   return [
     f'CPPFLAGS{suffix}=' + ' '.join(cpp + cpp_extra),
