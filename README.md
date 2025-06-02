@@ -60,6 +60,14 @@ A profile is composed of bitness and predefined ABI variant. The combination of 
 | ucrt (ucrt, posix) | 64-ucrt | 32-ucrt |
 | msvcrt (msvcrt, posix) | 64-msvcrt | 32-msvcrt |
 
+## Micro Architecture
+
+The main profiles listed above are very conservative in micro architecture. The “64”-bit profiles target the baseline “x86-64” (sse2, 2003); the “32”-bit profiles target “pentium4” (sse2, 2000).
+
+For better performance, there are “64”-bit “x86-64-v3” (avx2, 2013) variants: 64_v3-mcf, 64_v3-win32, 64_v3-ucrt, 64_v3-msvcrt.
+
+For compatibility with older (physical or virtual) CPUs, there is “32”-bit “i686” (cmov, 1995) variant: 32_686-msvcrt. There is also “32”-bit “i486” variant for earlier Windows versions (see below).
+
 ## Supported OS Versions
 
 The default `_WIN32_WINNT` value for each branch is based on the earliest Windows version that is supported at the freeze point, the winter solstice after GCC’s release. (Currently 0x0A00 for all branches.)
@@ -69,9 +77,11 @@ Python (GDB scripting engine) often limits the toolchain’s minimum supported O
 | ABI variant | Minimum supported OS |
 | ----------- | -------------------- |
 | mcf | Windows 7 (NT 6.1) |
-| win32 | Windows Vista (NT 6.0) |
-| ucrt | Windows Vista (NT 6.0) |
-| msvcrt | Windows Vista (NT 6.0) |
+| win32 | Windows Vista (NT 6.0)* |
+| ucrt | Windows Vista (NT 6.0)* |
+| msvcrt | Windows Vista (NT 6.0)* |
+
+\* The “64_v3” variants require Windows 7.
 
 Some profiles have variants for even earlier Windows versions, as follows.
 
@@ -80,6 +90,8 @@ Some profiles have variants for even earlier Windows versions, as follows.
 | 64-ucrt_ws2003 | Windows Server 2003 (NT 5.2) |
 | 64-msvcrt_ws2003 | Windows Server 2003 (NT 5.2) |
 | 32-ucrt_winxp | Windows XP (NT 5.1) |
-| 32-msvcrt_winnt40 | Windows NT 4.0 |
+| 32-msvcrt_win2000 | Windows 2000 (NT 5.0) |
+| 32_686-msvcrt_winnt40 | Windows NT 4.0 |
+| 32_486-msvcrt_winnt40 | Windows NT 4.0 |
 
 **Technical notes**: inspired by [YY-Thunks](https://github.com/Chuyu-Team/YY-Thunks), our legacy OS support is achieved by thunks. A thunk is small piece of code that wrap the original Win32 or CRT function, providing alternative implementation when the function is not available on the target OS. Absolutely necessary thunks that support C++ standard library are built into import libraries. No extra operation is required.
