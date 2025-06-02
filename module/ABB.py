@@ -55,15 +55,14 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
       f'--target={ver.target}',
       f'--build={config.build}',
       # static build
-      '--with-static-standard-libraries',
+      '--disable-shared',
+      '--enable-static',
       # features
       '--disable-install-libbfd',
       '--disable-multilib',
       '--enable-nls',
-      # libtool eats `-static`
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        ld_extra = ['--static'],
       ),
     ])
     make_default('binutils', build_dir, config.jobs)
@@ -234,7 +233,6 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       '--disable-plugin',
       '--disable-shared',
       '--enable-static',
-      '--without-pic',
       # features
       '--disable-bootstrap',
       '--enable-checking=release',

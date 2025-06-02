@@ -33,8 +33,8 @@ def cflags_A(
   cxx_extra: List[str] = [],
 ) -> List[str]:
   cpp = ['-DNDEBUG']
-  common = ['-Os']
-  ld = ['-s']
+  common = ['-O2', '-pipe']
+  ld = ['-O2', '-pipe', '-s']
   return [
     f'CPPFLAGS{suffix}=' + ' '.join(cpp + cpp_extra),
     f'CFLAGS{suffix}=' + ' '.join(common + common_extra + c_extra),
@@ -51,8 +51,8 @@ def cflags_B(
   cxx_extra: List[str] = [],
 ) -> List[str]:
   cpp = ['-DNDEBUG']
-  common = ['-Os']
-  ld = ['-s']
+  common = ['-O2', '-pipe', '-flto', '-ffat-lto-objects']
+  ld = ['-O2', '-pipe', '-flto', '-s']
   return [
     f'CPPFLAGS{suffix}=' + ' '.join(cpp + cpp_extra),
     f'CFLAGS{suffix}=' + ' '.join(common + common_extra + c_extra),
@@ -150,7 +150,7 @@ def xmake_build(component: str, cwd: Path, jobs: int):
 
 def xmake_config(component: str, cwd: Path, extra_args: List[str]):
   res = subprocess.run(
-    ['xmake', 'config', *extra_args],
+    ['xmake', 'config', '--policies=build.optimization.lto', *extra_args],
     cwd = cwd,
   )
   if res.returncode != 0:
