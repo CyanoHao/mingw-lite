@@ -17,7 +17,7 @@ Extremely fast MinGW GCC build scripts for easy experiments.
 
 1. Prepare build environment. Linux:
    ```bash
-   podman build -t mingw-lite/buildenv-ubuntu support/buildenv-ubuntu
+   podman build -t mingw-lite/buildenv support/buildenv
    ```
    For Windows host, [create an exclusive WSL distro for mingw-lite](doc/wsl-buildenv.md).
 2. Launch build environment. Linux:
@@ -25,7 +25,7 @@ Extremely fast MinGW GCC build scripts for easy experiments.
    podman run -it --rm \
      --cap-add=sys_admin \
      -v $PWD:/mnt -w /mnt \
-     mingw-lite/buildenv-ubuntu
+     mingw-lite/buildenv
    ```
    To expose build directories for debugging:
    ```bash
@@ -34,7 +34,7 @@ Extremely fast MinGW GCC build scripts for easy experiments.
      -v $PWD:/mnt -w /mnt \
      -v $PWD/build:/tmp/build \
      -v $PWD/layer:/tmp/layer \
-     mingw-lite/buildenv-ubuntu
+     mingw-lite/buildenv
    ```
    Windows: in “Terminal”, select “mingw-lite-buildenv” from the dropdown list.
 3. In the build environment, run:
