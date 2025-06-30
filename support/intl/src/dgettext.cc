@@ -1,23 +1,28 @@
 #include <libintl.h>
 
-#include <algorithm>
-#include <cstdint>
-#include <map>
-#include <string>
-#include <string_view>
+#include <stdint.h>
 
 #include <windows.h>
 
+#include "eastl.h"
+#include "file.h"
 #include "internal-state.h"
-
-using std::map;
-using std::string;
-using std::string_view;
-using std::wstring;
-using std::wstring_view;
 
 namespace intl
 {
+
+  using eastl::string_view;
+  using eastl::wstring_view;
+
+  using string = eastl::basic_string<char, eastl::allocator_malloc>;
+  using wstring = eastl::basic_string<wchar_t, eastl::allocator_malloc>;
+
+  template <typename Key, typename Value, typename Compare = eastl::less<Key>>
+  using map = eastl::map<Key, Value, Compare, eastl::allocator_malloc>;
+
+  template <typename Key>
+  using vector = eastl::vector<Key, eastl::allocator_malloc>;
+
   // https://www.gnu.org/software/gettext/manual/html_node/MO-Files.html
   struct mo_header
   {
@@ -46,10 +51,12 @@ namespace intl
 
   struct domain_cache
   {
-    string data;
+  public:
+    vector<char> data;
     map<string_view, char *> cached_translations_utf8;
     map<string_view, string> cached_translations_local;
 
+  public:
     char *gettext(string_view msgid)
     {
       if (data.empty())
@@ -71,13 +78,13 @@ namespace intl
       mo_string *o_table = (mo_string *)(data.data() + header->O);
       mo_string *t_table = (mo_string *)(data.data() + header->T);
 
-      auto compare = [this](mo_string elem,
-                                              string_view msgid) {
+      auto compare = [this](mo_string elem, string_view msgid) {
         string_view s = {data.data() + elem.offset, elem.length};
         return s < msgid;
       };
 
-      auto it = std::lower_bound(o_table, o_table + header->N, msgid, compare);
+      auto it =
+          eastl::lower_bound(o_table, o_table + header->N, msgid, compare);
       if (it == o_table + header->N)
         return (char *)msgid.data();
 
@@ -108,26 +115,25 @@ namespace intl
         string abuf(alen, 0);
         WideCharToMultiByte(
             CP_ACP, 0, wbuf.data(), wlen, abuf.data(), alen, nullptr, nullptr);
-        cached_translations_local[o_sv] = std::move(abuf);
+        cached_translations_local[o_sv] = eastl::move(abuf);
         return cached_translations_local[o_sv].data();
       }
     }
 
-    static domain_cache from_file(FILE *fp) // take_ownership
+  public:
+    static domain_cache from_file(file &&fp)
     {
-      std::unique_ptr<FILE, decltype(&fclose)> fp_guard(fp, &fclose);
-
       domain_cache result;
 
-      fseek(fp, 0, SEEK_END);
-      size_t size = ftell(fp);
-      fseek(fp, 0, SEEK_SET);
+      fp.seek(0, SEEK_END);
+      size_t size = fp.tell();
+      fp.seek(0, SEEK_SET);
 
       if (sizeof(mo_header) > size)
         return result;
 
-      string data(size, 0);
-      if (fread(data.data(), 1, size, fp) != size)
+      vector<char> data(size);
+      if (fp.read(data.data(), 1, size) != size)
         return result;
 
       mo_header *header = (mo_header *)data.data();
@@ -148,15 +154,17 @@ namespace intl
       }
 
       // okay, save it
-      result.data = std::move(data);
+      result.data = eastl::move(data);
       return result;
     }
   };
 
   struct cache_manager_t
   {
+  public:
     map<string, domain_cache> cached_domains;
 
+  public:
     domain_cache &operator[](const string &domain)
     {
       auto it = cached_domains.find(domain);
@@ -176,26 +184,27 @@ namespace intl
       // undocumented: GNU gettext will try GetThreadLocale()
       // undocumented: set console to UTF-8 breaks GetThreadLocale()
       // extension: use GetUserPreferredUILanguages() instead
-      FILE *fp;
-      if (const wchar_t *env_language = _wgetenv(L"LANGUAGE");
-          env_language != nullptr && *env_language != L'\0')
+      const wchar_t *env_language = _wgetenv(L"LANGUAGE");
+      const wchar_t *env_lc_all = _wgetenv(L"LC_ALL");
+      const wchar_t *env_lc_messages = _wgetenv(L"LC_MESSAGES");
+      const wchar_t *env_lang = _wgetenv(L"LANG");
+
+      file fp;
+      if (env_language != nullptr && *env_language != L'\0')
         fp = find_locale_file_by_env_language(prefix, env_language, domain);
-      else if (const wchar_t *env_lc_all = _wgetenv(L"LC_ALL");
-               env_lc_all != nullptr && *env_lc_all != L'\0')
+      else if (env_lc_all != nullptr && *env_lc_all != L'\0')
         fp = find_locale_file(prefix, env_lc_all, domain);
-      else if (const wchar_t *env_lc_messages = _wgetenv(L"LC_MESSAGES");
-               env_lc_messages != nullptr && *env_lc_messages != L'\0')
+      else if (env_lc_messages != nullptr && *env_lc_messages != L'\0')
         fp = find_locale_file(prefix, env_lc_messages, domain);
-      else if (const wchar_t *env_lang = _wgetenv(L"LANG");
-               env_lang != nullptr && *env_lang != L'\0')
+      else if (env_lang != nullptr && *env_lang != L'\0')
         fp = find_locale_file(prefix, env_lang, domain);
       else
         fp = find_locale_file_from_win32(prefix, domain);
       if (!fp)
         return cached_domains[domain];
 
-      auto entry = domain_cache::from_file(fp);
-      cached_domains[domain] = std::move(entry);
+      auto entry = domain_cache::from_file(eastl::move(fp));
+      cached_domains[domain] = eastl::move(entry);
       return cached_domains[domain];
     }
 
@@ -208,19 +217,23 @@ namespace intl
         return {};
 
       // \lib\gcc\<target>\<version>\cc1.exe
-      size_t pos = path.rfind(wstring_view{LR"(\lib\gcc\)"});
-      if (pos == wstring::npos)
-        pos = path.rfind(wstring_view{LR"(\bin\)"});
+      wstring_view target = LR"(\lib\gcc\)";
+      size_t pos = path.rfind(target.data(), wstring_view::npos, target.size());
+      if (pos == wstring::npos) {
+        target = LR"(\bin\)";
+        pos = path.rfind(target.data(), wstring_view::npos, target.size());
+      }
       if (pos == wstring::npos)
         return {};
 
       path.resize(pos);
-      return path + LR"(\share\locale\)";
+      path += LR"(\share\locale\)";
+      return path;
     }
 
-    FILE *find_locale_file_by_env_language(wstring_view prefix,
-                                           wstring_view env_language,
-                                           string_view domain)
+    file find_locale_file_by_env_language(wstring_view prefix,
+                                          wstring_view env_language,
+                                          string_view domain)
     {
       // LANGUAGE=zh_CN:en_US
       size_t b = 0;
@@ -231,23 +244,24 @@ namespace intl
           lang = env_language.substr(b);
         else
           lang = env_language.substr(b, e - b);
-        FILE *fp = find_locale_file(prefix, lang, domain);
+        file fp = find_locale_file(prefix, lang, domain);
         if (fp)
           return fp;
         b = e + 1;
       }
-      return nullptr;
+      return {};
     }
 
-    FILE *find_locale_file_by_win32_language_name(wstring_view prefix,
-                                                  wstring_view language_name,
-                                                  string_view domain)
+    file find_locale_file_by_win32_language_name(wstring_view prefix,
+                                                 wstring_view language_name,
+                                                 string_view domain)
     {
       // https://learn.microsoft.com/en-us/windows/win32/intl/language-names
 
       // remove supplemental: en-US-x-fabricam
       wstring_view infix = L"-x-";
-      if (auto pos = language_name.find(infix); pos != wstring_view::npos)
+      auto pos = language_name.find(infix);
+      if (pos != wstring_view::npos)
         language_name = language_name.substr(0, pos);
 
       auto pos1 = language_name.find(L'-');
@@ -267,44 +281,45 @@ namespace intl
         // Win32 script name differs from GNU ones, ignore it.
         wstring gnu_name{language_name.data(), pos1};
         gnu_name.push_back(L'_');
-        gnu_name += language_name.substr(pos2 + 1);
+        wstring_view region_code = language_name.substr(pos2 + 1);
+        gnu_name.append(region_code.data(), region_code.size());
         return find_locale_file(prefix, gnu_name, domain);
       }
     }
 
-    FILE *find_locale_file_from_win32(wstring_view prefix, string_view domain)
+    file find_locale_file_from_win32(wstring_view prefix, string_view domain)
     {
       static auto pfn = (decltype(&GetUserPreferredUILanguages))GetProcAddress(
           GetModuleHandleW(L"kernel32.dll"), "GetUserPreferredUILanguages");
       if (!pfn)
-        return nullptr;
+        return {};
 
       wchar_t lang_buf[MAX_PATH];
       ULONG lang_buf_len = MAX_PATH;
       ULONG n_lang = 0;
       if (!pfn(MUI_LANGUAGE_NAME, &n_lang, lang_buf, &lang_buf_len))
-        return nullptr;
+        return {};
 
       wchar_t *p = lang_buf;
       while (*p) {
         wstring_view language_name = p;
-        FILE *fp = find_locale_file_by_win32_language_name(
+        file fp = find_locale_file_by_win32_language_name(
             prefix, language_name, domain);
         if (fp)
           return fp;
-        p += language_name.length() + 1;
+        p += language_name.size() + 1;
       }
 
-      return nullptr;
+      return {};
     }
 
-    FILE *find_locale_file(wstring_view prefix,
-                           wstring_view locale,
-                           string_view domain)
+    file find_locale_file(wstring_view prefix,
+                          wstring_view locale,
+                          string_view domain)
     {
       // try full locale
       wstring path = compose_locale_file_path(prefix, locale, domain);
-      FILE *fp = _wfopen(path.c_str(), L"rb");
+      file fp(path.c_str(), L"rb");
       if (fp)
         return fp;
 
@@ -312,32 +327,35 @@ namespace intl
       size_t pos = locale.find_first_of(L".@");
       if (pos != string::npos) {
         path = compose_locale_file_path(prefix, locale.substr(0, pos), domain);
-        fp = _wfopen(path.c_str(), L"rb");
+        fp = file(path.c_str(), L"rb");
         if (fp)
           return fp;
       }
 
       // try without '_CC'
-      pos = locale.find_first_of(L"_");
+      pos = locale.find(L'_');
       if (pos != string::npos) {
         path = compose_locale_file_path(prefix, locale.substr(0, pos), domain);
-        fp = _wfopen(path.c_str(), L"rb");
+        fp = file(path.c_str(), L"rb");
         if (fp)
           return fp;
       }
 
-      return nullptr;
+      return {};
     }
 
     wstring compose_locale_file_path(wstring_view prefix,
                                      wstring_view locale,
                                      string_view domain)
     {
-      wstring result{prefix.data(), prefix.length()};
-      result += locale;
-      result += wstring_view{LR"(\LC_MESSAGES\)"};
-      std::copy(domain.begin(), domain.end(), std::back_inserter(result));
-      result += wstring_view{L".mo"};
+      constexpr wstring_view infix{LR"(\LC_MESSAGES\)"};
+      constexpr wstring_view suffix{L".mo"};
+
+      wstring result{prefix.data(), prefix.size()};
+      result.append(locale.data(), locale.size());
+      result.append(infix.data(), infix.size());
+      eastl::copy(domain.begin(), domain.end(), back_inserter(result));
+      result.append(suffix.data(), suffix.size());
       return result;
     }
   };
@@ -349,12 +367,9 @@ namespace intl
     if (!msgid)
       return nullptr;
 
-    if (!domainname) {
-      if (default_domain.empty())
-        return (char *)msgid;
-      else
-        domainname = default_domain.c_str();
-    }
+    const string &domainname_str = domainname ? domainname : default_domain;
+    if (domainname_str.empty())
+      return (char *)msgid;
 
     // special locales disable NLS
     // https://www.gnu.org/software/gettext/manual/html_node/Locale-Names.html
@@ -368,25 +383,21 @@ namespace intl
         L"POSIX.UTF-8",
         L"POSIX.utf8",
     };
-    if (const wchar_t *env_lc_all = _wgetenv(L"LC_ALL");
-        env_lc_all != nullptr && *env_lc_all != L'\0') {
+    const wchar_t *env_lc_all = _wgetenv(L"LC_ALL");
+    const wchar_t *env_lc_messages = _wgetenv(L"LC_MESSAGES");
+    if (env_lc_all != nullptr && *env_lc_all != L'\0') {
       for (auto locale : special_locale) {
         if (env_lc_all == locale)
           return (char *)msgid;
       }
-    } else if (const wchar_t *env_lc_messages = _wgetenv(L"LC_MESSAGES");
-               env_lc_messages != nullptr && *env_lc_messages != L'\0') {
+    } else if (env_lc_messages != nullptr && *env_lc_messages != L'\0') {
       for (auto locale : special_locale) {
         if (env_lc_messages == locale)
           return (char *)msgid;
       }
     }
 
-    try {
-      auto &domain = cache_manager[domainname];
-      return domain.gettext(msgid);
-    } catch (const std::bad_alloc &) {
-      return (char *)msgid;
-    }
+    auto &domain = cache_manager[domainname_str];
+    return domain.gettext(msgid);
   }
 } // namespace intl
