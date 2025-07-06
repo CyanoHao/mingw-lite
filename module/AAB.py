@@ -533,18 +533,18 @@ def _python(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace)
     ], check = True, cwd = python_lib)
 
 def build_AAB_library(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
-  # _gmp(ver, paths, config)
+  _gmp(ver, paths, config)
 
-  # _mpfr(ver, paths, config)
+  _mpfr(ver, paths, config)
 
-  # _mpc(ver, paths, config)
+  _mpc(ver, paths, config)
 
-  # _expat(ver, paths, config)
+  _expat(ver, paths, config)
 
-  # _iconv(ver, paths, config)
+  _iconv(ver, paths, config)
 
   _intl(ver, paths, config)
 
-  # _pdcurses(ver, paths, config)
+  _pdcurses(ver, paths, config)
 
-  # _python(ver, paths, config)
+  _python(ver, paths, config)
