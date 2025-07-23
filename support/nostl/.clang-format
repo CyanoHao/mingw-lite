@@ -16,3 +16,4 @@ BraceWrapping:
 BreakBeforeBraces: Custom
 IndentPPDirectives: BeforeHash
 NamespaceIndentation: All
+SortUsingDeclarations: Never
