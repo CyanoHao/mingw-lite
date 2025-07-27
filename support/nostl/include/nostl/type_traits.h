@@ -12,8 +12,7 @@ namespace NS_NOSTL
   ///////////////////////
 
   template <typename T, T v>
-  struct integral_constant
-  {
+  struct integral_constant {
     static constexpr T value = v;
     using value_type = T;
     using type = integral_constant<T, v>;
@@ -36,17 +35,25 @@ namespace NS_NOSTL
   template <bool B>
   using bool_constant = integral_constant<bool, B>;
 
+  ///////////////////
+  // argument_sink //
+  ///////////////////
+
+  struct argument_sink {
+    template <typename... Args>
+    argument_sink(Args &&...)
+    {
+    }
+  };
+
   ///////////////////////////
   // enable_if, disable_if //
   ///////////////////////////
 
   template <bool B, typename T = void>
-  struct enable_if
-  {
-  };
+  struct enable_if {};
   template <typename T>
-  struct enable_if<true, T>
-  {
+  struct enable_if<true, T> {
     using type = T;
   };
 
@@ -54,25 +61,77 @@ namespace NS_NOSTL
   using enable_if_t = typename enable_if<B, T>::type;
 
   template <bool B, typename T>
-  struct disable_if
-  {
-  };
+  struct disable_if {};
   template <typename T>
-  struct disable_if<false, T>
-  {
+  struct disable_if<false, T> {
     using type = T;
   };
 
   template <bool B, typename T>
   using disable_if_t = typename disable_if<B, T>::type;
 
+  /////////////////
+  // conditional //
+  /////////////////
+
+  template <bool B, typename T, typename F>
+  struct conditional {
+    using type = T;
+  };
+  template <typename T, typename F>
+  struct conditional<false, T, F> {
+    using type = F;
+  };
+
+  template <bool B, typename T, typename F>
+  using conditional_t = typename conditional<B, T, F>::type;
+
+  /////////////////
+  // conjunction //
+  /////////////////
+
+  template <typename... B>
+  struct conjunction : true_type {};
+  template <typename B>
+  struct conjunction<B> : B {};
+  template <typename B, typename... Bn>
+  struct conjunction<B, Bn...>
+      : conditional_t<bool(B::value), conjunction<Bn...>, B> {};
+
+  template <typename... B>
+  constexpr bool conjunction_v = conjunction<B...>::value;
+
+  /////////////////
+  // disjunction //
+  /////////////////
+
+  template <typename... B>
+  struct disjunction : false_type {};
+  template <typename B>
+  struct disjunction<B> : B {};
+  template <typename B, typename... Bn>
+  struct disjunction<B, Bn...>
+      : conditional_t<bool(B::value), B, disjunction<Bn...>> {};
+
+  template <typename... B>
+  constexpr bool disjunction_v = disjunction<B...>::value;
+
+  //////////////
+  // negation //
+  //////////////
+
+  template <typename B>
+  struct negation : bool_constant<!bool(B::value)> {};
+
+  template <typename B>
+  constexpr bool negation_v = negation<B>::value;
+
   ///////////////////
   // type_identity //
   ///////////////////
 
   template <typename T>
-  struct type_identity
-  {
+  struct type_identity {
     using type = T;
   };
 
@@ -84,13 +143,9 @@ namespace NS_NOSTL
   /////////////
 
   template <typename T, typename U>
-  struct is_same : false_type
-  {
-  };
+  struct is_same : false_type {};
   template <typename T>
-  struct is_same<T, T> : true_type
-  {
-  };
+  struct is_same<T, T> : true_type {};
 
   template <typename T, typename U>
   constexpr bool is_same_v = is_same<T, U>::value;
@@ -100,13 +155,9 @@ namespace NS_NOSTL
   //////////////
 
   template <typename T>
-  struct is_const : false_type
-  {
-  };
+  struct is_const : false_type {};
   template <typename T>
-  struct is_const<const T> : true_type
-  {
-  };
+  struct is_const<const T> : true_type {};
 
   template <typename T>
   constexpr bool is_const_v = is_const<T>::value;
@@ -116,13 +167,9 @@ namespace NS_NOSTL
   /////////////////
 
   template <typename T>
-  struct is_volatile : false_type
-  {
-  };
+  struct is_volatile : false_type {};
   template <typename T>
-  struct is_volatile<volatile T> : true_type
-  {
-  };
+  struct is_volatile<volatile T> : true_type {};
 
   template <typename T>
   constexpr bool is_volatile_v = is_volatile<T>::value;
@@ -132,17 +179,11 @@ namespace NS_NOSTL
   ///////////////////
 
   template <typename T>
-  struct is_reference : false_type
-  {
-  };
+  struct is_reference : false_type {};
   template <typename T>
-  struct is_reference<T &> : true_type
-  {
-  };
+  struct is_reference<T &> : true_type {};
   template <typename T>
-  struct is_reference<T &&> : true_type
-  {
-  };
+  struct is_reference<T &&> : true_type {};
 
   template <typename T>
   constexpr bool is_reference_v = is_reference<T>::value;
@@ -152,9 +193,8 @@ namespace NS_NOSTL
   /////////////////
 
   template <typename T>
-  struct is_function : bool_constant<!is_reference_v<T> && !is_const_v<const T>>
-  {
-  };
+  struct is_function
+      : bool_constant<!is_reference_v<T> && !is_const_v<const T>> {};
 
   template <typename T>
   constexpr bool is_function_v = is_function<T>::value;
@@ -164,23 +204,19 @@ namespace NS_NOSTL
   //////////////////
 
   template <typename T>
-  struct remove_const
-  {
+  struct remove_const {
     using type = T;
   };
   template <typename T>
-  struct remove_const<const T>
-  {
+  struct remove_const<const T> {
     using type = T;
   };
   template <typename T>
-  struct remove_const<const T[]>
-  {
+  struct remove_const<const T[]> {
     using type = T[];
   };
   template <typename T, size_t N>
-  struct remove_const<const T[N]>
-  {
+  struct remove_const<const T[N]> {
     using type = T[N];
   };
 
@@ -192,23 +228,19 @@ namespace NS_NOSTL
   /////////////////////
 
   template <typename T>
-  struct remove_volatile
-  {
+  struct remove_volatile {
     using type = T;
   };
   template <typename T>
-  struct remove_volatile<volatile T>
-  {
+  struct remove_volatile<volatile T> {
     using type = T;
   };
   template <typename T>
-  struct remove_volatile<volatile T[]>
-  {
+  struct remove_volatile<volatile T[]> {
     using type = T[];
   };
   template <typename T, size_t N>
-  struct remove_volatile<volatile T[N]>
-  {
+  struct remove_volatile<volatile T[N]> {
     using type = T[N];
   };
 
@@ -220,8 +252,7 @@ namespace NS_NOSTL
   ///////////////
 
   template <typename T>
-  struct remove_cv
-  {
+  struct remove_cv {
     using type = remove_volatile_t<remove_const_t<T>>;
   };
 
@@ -233,18 +264,15 @@ namespace NS_NOSTL
   //////////////////////
 
   template <typename T>
-  struct remove_reference
-  {
+  struct remove_reference {
     using type = T;
   };
   template <typename T>
-  struct remove_reference<T &>
-  {
+  struct remove_reference<T &> {
     using type = T;
   };
   template <typename T>
-  struct remove_reference<T &&>
-  {
+  struct remove_reference<T &&> {
     using type = T;
   };
 
@@ -256,8 +284,7 @@ namespace NS_NOSTL
   //////////////////
 
   template <typename T>
-  struct remove_cvref
-  {
+  struct remove_cvref {
     using type = remove_volatile_t<remove_const_t<remove_reference_t<T>>>;
   };
 
@@ -272,16 +299,13 @@ namespace NS_NOSTL
   {
     template <typename T>
     auto try_add_lvalue_reference(int) -> type_identity<T &>;
-
     template <typename T>
     auto try_add_lvalue_reference(...) -> type_identity<T>;
   } // namespace internal
 
   template <typename T>
   struct add_lvalue_reference
-      : decltype(internal::try_add_lvalue_reference<T>(0))
-  {
-  };
+      : decltype(internal::try_add_lvalue_reference<T>(0)) {};
 
   template <typename T>
   using add_lvalue_reference_t = typename add_lvalue_reference<T>::type;
@@ -301,9 +325,7 @@ namespace NS_NOSTL
 
   template <typename T>
   struct add_rvalue_reference
-      : decltype(internal::try_add_rvalue_reference<T>(0))
-  {
-  };
+      : decltype(internal::try_add_rvalue_reference<T>(0)) {};
 
   template <typename T>
   using add_rvalue_reference_t = typename add_rvalue_reference<T>::type;
@@ -319,8 +341,7 @@ namespace NS_NOSTL
   // endian //
   ////////////
 
-  enum class endian
-  {
+  enum class endian {
     little = __ORDER_LITTLE_ENDIAN__,
     big = __ORDER_BIG_ENDIAN__,
     native = __BYTE_ORDER__,
@@ -328,6 +349,7 @@ namespace NS_NOSTL
 } // namespace NS_NOSTL
 
 // clang-format off
+#include "internal/type_fundamental.h"
 #include "internal/type_transformations.h"
 #include "internal/type_void_t.h"
 #include "internal/type_properties.h"

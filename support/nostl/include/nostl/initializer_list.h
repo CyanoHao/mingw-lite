@@ -5,8 +5,7 @@
 namespace std
 {
   template <typename E>
-  class initializer_list
-  {
+  class initializer_list {
   public:
     using value_type = E;
     using reference = const E &;

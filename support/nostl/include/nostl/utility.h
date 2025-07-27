@@ -8,14 +8,11 @@
 
 namespace NS_NOSTL
 {
-  struct pair_first_construct_t
-  {
-  };
+  struct pair_first_construct_t {};
   constexpr pair_first_construct_t pair_first_construct{};
 
   template <typename T1, typename T2>
-  struct pair
-  {
+  struct pair {
     using first_type = T1;
     using second_type = T2;
     using this_type = pair<T1, T2>;
@@ -116,7 +113,8 @@ namespace NS_NOSTL
       return *this;
     }
 
-    void swap(pair &p) noexcept(noexcept(swap(first, p.first)) && noexcept(swap(second, p.second)))
+    void swap(pair &p) noexcept(noexcept(swap(first, p.first)) &&
+                                noexcept(swap(second, p.second)))
     {
       iter_swap(&first, &p.first);
       iter_swap(&second, &p.second);

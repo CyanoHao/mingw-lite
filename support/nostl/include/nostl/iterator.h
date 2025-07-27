@@ -8,31 +8,17 @@
 
 namespace NS_NOSTL
 {
-  struct input_iterator_tag
-  {
-  };
-  struct output_iterator_tag
-  {
-  };
-  struct forward_iterator_tag : public input_iterator_tag
-  {
-  };
-  struct bidirectional_iterator_tag : public forward_iterator_tag
-  {
-  };
-  struct random_access_iterator_tag : public bidirectional_iterator_tag
-  {
-  };
-  struct contiguous_iterator_tag : public random_access_iterator_tag
-  {
-  };
+  struct input_iterator_tag {};
+  struct output_iterator_tag {};
+  struct forward_iterator_tag : public input_iterator_tag {};
+  struct bidirectional_iterator_tag : public forward_iterator_tag {};
+  struct random_access_iterator_tag : public bidirectional_iterator_tag {};
+  struct contiguous_iterator_tag : public random_access_iterator_tag {};
 
   namespace internal
   {
     template <typename Iterator, typename = void>
-    struct default_iterator_traits
-    {
-    };
+    struct default_iterator_traits {};
 
     template <typename Iterator>
     struct default_iterator_traits<Iterator,
@@ -40,8 +26,7 @@ namespace NS_NOSTL
                                           typename Iterator::value_type,
                                           typename Iterator::difference_type,
                                           typename Iterator::pointer,
-                                          typename Iterator::reference>>
-    {
+                                          typename Iterator::reference>> {
       using iterator_category = typename Iterator::iterator_category;
       using value_type = typename Iterator::value_type;
       using difference_type = typename Iterator::difference_type;
@@ -51,13 +36,10 @@ namespace NS_NOSTL
   } // namespace internal
 
   template <typename Iterator>
-  struct iterator_traits : internal::default_iterator_traits<Iterator>
-  {
-  };
+  struct iterator_traits : internal::default_iterator_traits<Iterator> {};
 
   template <typename T>
-  struct iterator_traits<T *>
-  {
+  struct iterator_traits<T *> {
     using iterator_category = contiguous_iterator_tag;
     using value_type = T;
     using difference_type = ptrdiff_t;
@@ -66,8 +48,7 @@ namespace NS_NOSTL
   };
 
   template <typename T>
-  struct iterator_traits<const T *>
-  {
+  struct iterator_traits<const T *> {
     using iterator_category = contiguous_iterator_tag;
     using value_type = const T;
     using difference_type = ptrdiff_t;
@@ -76,8 +57,7 @@ namespace NS_NOSTL
   };
 
   template <typename Iterator>
-  class reverse_iterator
-  {
+  class reverse_iterator {
   public:
     using iterator_type = Iterator;
     using iterator_category =

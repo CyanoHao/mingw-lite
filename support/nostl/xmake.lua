@@ -1,5 +1,5 @@
 add_rules('mode.release')
-set_languages('c99', 'c++14')
+set_languages('c11', 'c++17')
 add_requires('catch2')
 
 target('nostl')
@@ -10,5 +10,6 @@ target('test')
     set_kind('binary')
     add_packages('catch2')
     add_deps('nostl')
+    add_includedirs('include')
     add_files('test/**.cc')
     add_ldflags('-static')
