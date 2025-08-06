@@ -62,11 +62,11 @@ A profile is composed of bitness and predefined ABI variant. The combination of 
 
 ## Micro Architecture
 
-The “64”-bit profiles target the baseline “x86-64” (sse2, 2003); the “32”-bit profiles target “pentium4” (sse2, 2000).
+By default, MinGW Lite is very conservative in micro architecture -- the “64”-bit profiles target the baseline “x86-64” (sse2, 2003); the “32”-bit profiles target “i686” (cmov, 1995).
 
-For better performance, there are “64”-bit “x86-64-v2” (sse4.2, 2008) variants: 64-v2-mcf, 64-v2-win32, 64-v2-ucrt, 64-v2-msvcrt. In addition, they are built with `-O2` instead of `-Os`, and have LTO enabled for GCC and Binutils.
+For better performance, there are “64”-bit “x86-64-v2” (sse4.2, 2008) variants: 64_v2-mcf, 64_v2-win32, 64_v2-ucrt, 64_v2-msvcrt. In addition, they are built with `-O2` instead of `-Os`, and have LTO enabled for GCC and Binutils.
 
-For compatibility with older CPUs, there are “32”-bit “i686” (cmov, 1995) and “i486” [atomic (bswap, cmpxchg, xadd), 1989] variants for earlier Windows versions (see below).
+For compatibility with older CPUs, there is “i486” [atomic (bswap, cmpxchg, xadd), 1989] variant for earlier Windows versions (see below).
 
 ## Supported OS Versions
 
@@ -88,8 +88,7 @@ Some profiles have variants for even earlier Windows versions (and possibly olde
 | 64-ucrt_ws2003 | Windows Server 2003 (NT 5.2) |
 | 64-msvcrt_ws2003 | Windows Server 2003 (NT 5.2) |
 | 32-ucrt_winxp | Windows XP (NT 5.1) |
-| 32-msvcrt_win2000 | Windows 2000 (NT 5.0) |
-| 32_686-msvcrt_winnt40 | Windows NT 4.0 |
+| 32-msvcrt_winnt40 | Windows NT 4.0 |
 | 32_486-msvcrt_winnt40 | Windows NT 4.0 |
 
 **Technical notes**: inspired by [YY-Thunks](https://github.com/Chuyu-Team/YY-Thunks), our legacy OS support is achieved by thunks. A thunk is small piece of code that wrap the original Win32 or CRT function, providing alternative implementation when the function is not available on the target OS. Absolutely necessary thunks that support C++ standard library are built into import libraries. No extra operation is required.

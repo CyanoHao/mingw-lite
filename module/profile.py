@@ -238,8 +238,8 @@ _ARCH_VARIANT_2_MARCH_MAP: dict[str, str] = {
   '64_v2': 'x86-64-v2',
   '64': 'x86-64',
   'arm64': 'armv8-a',
-  '32': 'pentium4',
-  '32_686': 'i686',
+  '32_sse': 'pentium4',
+  '32': 'i686',
   '32_486': 'i486',
 }
 
@@ -247,8 +247,8 @@ _ARCH_VARIANT_2_FPMATH_MAP: dict[str, Optional[str]] = {
   '64_v2': None,
   '64': None,
   'arm64': None,
-  '32': 'sse',
-  '32_686': None,
+  '32_sse': 'sse',
+  '32': None,
   '32_486': None,
 }
 
@@ -256,8 +256,12 @@ _ARCH_VARIANT_2_OPTIMIZE_FOR_SIZE_MAP: dict[str, bool] = {
   '64_v2': False,
   '64': True,
   'arm64': False,
+
+  # TODO: do we need performance-enhanced 32-bit edition?
+  # GCC miscompile psss_ipc_comdats::gate, making the stack unbalanced.
+  '32_sse': True,
+
   '32': True,
-  '32_686': True,
   '32_486': True,
 }
 
@@ -308,6 +312,11 @@ PROFILES: Dict[str, ProfileInfo] = {
   '64_v2-ucrt':   _create_profile('64_v2', 'ucrt',   'posix', '6.0'),
   '64_v2-msvcrt': _create_profile('64_v2', 'msvcrt', 'posix', '6.0'),
 
+  '32_sse-mcf':    _create_profile('32_sse', 'ucrt',   'mcf',   '6.1'),
+  '32_sse-win32':  _create_profile('32_sse', 'ucrt',   'win32', '6.0'),
+  '32_sse-ucrt':   _create_profile('32_sse', 'ucrt',   'posix', '6.0'),
+  '32_sse-msvcrt': _create_profile('32_sse', 'msvcrt', 'posix', '6.0'),
+
   #################################################
   # profile variants for earlier Windows versions #
   #################################################
@@ -316,9 +325,7 @@ PROFILES: Dict[str, ProfileInfo] = {
   '64-msvcrt_ws2003': _create_profile('64', 'msvcrt', 'posix', '5.2'),
 
   '32-ucrt_winxp':     _create_profile('32', 'ucrt',   'posix', '5.1'),
-  '32-msvcrt_win2000': _create_profile('32', 'msvcrt', 'posix', '5.0'),
-
-  '32_686-msvcrt_winnt40': _create_profile('32_686', 'msvcrt', 'posix', '4.0'),
+  '32-msvcrt_winnt40': _create_profile('32', 'msvcrt', 'posix', '4.0'),
 
   '32_486-msvcrt_winnt40': _create_profile('32_486', 'msvcrt', 'posix', '4.0'),
 }
