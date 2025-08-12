@@ -53,11 +53,10 @@ jobs:
         with:
           pattern: mingw${{ inputs.profile }}-*
           path: dist
+          merge-multiple: true
 
       - name: Create test archive
         run: |
-          mv dist/*/*.tar.zst dist/
-
           ./sat.py -b 16 -p ${{ inputs.profile }}
           ./sat.py -b 15 -p ${{ inputs.profile }}
           ./sat.py -b 14 -p ${{ inputs.profile }}
