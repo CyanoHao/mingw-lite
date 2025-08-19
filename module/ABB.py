@@ -241,6 +241,7 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       '--disable-bootstrap',
       '--enable-checking=release',
       '--enable-languages=c,c++',
+      '--enable-libgomp',
       '--disable-libmpx',
       '--disable-multilib',
       '--enable-nls',
@@ -278,6 +279,7 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       f'AR={ver.target}-gcc-ar',
       f'RANLIB={ver.target}-gcc-ranlib',
     ])
+    shell_here(build_dir)
     make_default('gcc', build_dir, config.jobs)
     make_destdir_install('gcc', build_dir, paths.layer_ABB.gcc)
 
@@ -465,21 +467,21 @@ def _licenses(ver: BranchProfile, paths: ProjectPaths):
   shutil.copy(paths.src_dir.z / 'LICENSE', license_dir / 'zlib' / 'LICENSE')
 
 def build_ABB_toolchain(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
-  _binutils(ver, paths, config)
+  # _binutils(ver, paths, config)
 
-  _headers(ver, paths, config)
+  # _headers(ver, paths, config)
 
-  _crt(ver, paths, config)
+  # _crt(ver, paths, config)
 
-  _winpthreads(ver, paths, config)
+  # _winpthreads(ver, paths, config)
 
-  if ver.thread == 'mcf':
-    _mcfgthread(ver, paths, config)
+  # if ver.thread == 'mcf':
+  #   _mcfgthread(ver, paths, config)
 
   _gcc(ver, paths, config)
 
-  _gdb(ver, paths, config)
+  # _gdb(ver, paths, config)
 
-  _gmake(ver, paths, config)
+  # _gmake(ver, paths, config)
 
-  _licenses(ver, paths)
+  # _licenses(ver, paths)
