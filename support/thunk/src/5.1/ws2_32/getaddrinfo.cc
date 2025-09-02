@@ -1,9 +1,10 @@
 #include <thunk/_common.h>
 #include <thunk/addrinfo.h>
-#include <thunk/libc/stdlib.h>
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
+#include <nocrt/stdlib.h>
 
 namespace mingw_thunk
 {
@@ -42,7 +43,7 @@ namespace mingw_thunk
 
     int port = 0;
     if (pServiceName)
-      port = internal::atoi(pServiceName);
+      port = libc::atoi(pServiceName);
 
     struct hostent *host = gethostbyname(pNodeName);
     if (!host)

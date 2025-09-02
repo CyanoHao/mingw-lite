@@ -1,5 +1,6 @@
 #include <thunk/_common.h>
-#include <thunk/libc/ctype.h>
+
+#include <nocrt/ctype.h>
 
 #include <windows.h>
 
@@ -22,7 +23,7 @@ namespace mingw_thunk
       return FALSE;
     }
 
-    if (!internal::isalpha(lpszFileName[0]) || lpszFileName[1] != L':' ||
+    if (!libc::isalpha(lpszFileName[0]) || lpszFileName[1] != L':' ||
         lpszFileName[2] != L'\\') {
       wchar_t system_directory[MAX_PATH];
       GetSystemDirectoryW(system_directory, MAX_PATH);

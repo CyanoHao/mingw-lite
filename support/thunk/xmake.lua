@@ -2,7 +2,7 @@ set_plat('mingw')
 add_rules('mode.release')
 set_languages('c11', 'cxx17')
 
-add_requires("catch2")
+includes('dep/catch2')
 
 target('thunk')
   set_kind('static')
@@ -12,8 +12,12 @@ target('thunk')
     '-fno-threadsafe-statics')
   add_includedirs('include')
   add_defines(
+    'NOSTL_NOCRT',
+    'NS_NOSTL=mingw_thunk::stl',
+    'NS_NOCRT=mingw_thunk::libc',
     '__USE_MINGW_ANSI_STDIO=0',
     '_WIN32_WINNT=0x0f00')
+  add_defines()
   set_exceptions('none')
   if is_arch('i386') then
     add_files(
@@ -28,10 +32,13 @@ target('thunk')
   end
 
 target('test')
-  add_packages('catch2')
+  add_deps('catch2')
   add_includedirs('include')
   add_defines(
     'ENABLE_TEST_OVERRIDE',
+    'NOSTL_NOCRT',
+    'NS_NOSTL=mingw_thunk::stl',
+    'NS_NOCRT=mingw_thunk::libc',
     '__USE_MINGW_ANSI_STDIO=0',
     '_WIN32_WINNT=0x0f00')
   set_exceptions('none')

@@ -1,8 +1,9 @@
 #include <thunk/_common.h>
 #include <thunk/findvolumedata.h>
-#include <thunk/libc/stdlib.h>
 
 #include <windows.h>
+
+#include <nocrt/stdlib.h>
 
 namespace mingw_thunk
 {
@@ -34,8 +35,8 @@ namespace mingw_thunk
       }
     }
 
-    auto *data = internal::malloc<internal::find_volume_data>(
-        sizeof(internal::find_volume_data));
+    auto *data = static_cast<internal::find_volume_data *>(
+        libc::malloc(sizeof(internal::find_volume_data)));
 
     if (!data) {
       SetLastError(ERROR_NOT_ENOUGH_MEMORY);

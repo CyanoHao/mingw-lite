@@ -1,7 +1,8 @@
 #include <thunk/_common.h>
-#include <thunk/libc/wchar.h>
 
 #include <windows.h>
+
+#include <nocrt/wchar.h>
 
 namespace mingw_thunk
 {
@@ -15,7 +16,7 @@ namespace mingw_thunk
     if (const auto pfn = try_get_NeedCurrentDirectoryForExePathW())
       return pfn(ExeName);
 
-    if (internal::wcschr(ExeName, L'\\'))
+    if (libc::wcschr(ExeName, L'\\'))
       return TRUE;
 
     char value[2];

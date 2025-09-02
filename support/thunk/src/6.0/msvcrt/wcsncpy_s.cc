@@ -1,10 +1,9 @@
 #include <thunk/_common.h>
-#include <thunk/libc/string.h>
-#include <thunk/libc/wchar.h>
 
 #include <errno.h>
 #include <stdint.h>
-#include <wchar.h>
+
+#include <nocrt/wchar.h>
 
 namespace mingw_thunk
 {
@@ -35,7 +34,7 @@ namespace mingw_thunk
       return EINVAL;
     }
 
-    size_t len = internal::wcsnlen(strSource, count);
+    size_t len = libc::wcsnlen(strSource, count);
 
     if (len >= numberOfElements) {
       *strDest = 0;
@@ -43,7 +42,7 @@ namespace mingw_thunk
       return ERANGE;
     }
 
-    internal::memcpy(strDest, strSource, len * sizeof(wchar_t));
+    libc::wmemcpy(strDest, strSource, len);
     strDest[len] = 0;
     return 0;
   }
