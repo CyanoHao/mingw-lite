@@ -1,9 +1,9 @@
 #include <thunk/_common.h>
-#include <thunk/libc/wchar.h>
 
 #include <errno.h>
 #include <stdint.h>
-#include <wchar.h>
+
+#include <nocrt/wchar.h>
 
 namespace mingw_thunk
 {
@@ -34,7 +34,7 @@ namespace mingw_thunk
       return EINVAL;
     }
 
-    size_t dest_len = internal::wcsnlen(strDest, numberOfElements);
+    size_t dest_len = libc::wcsnlen(strDest, numberOfElements);
     if (dest_len >= numberOfElements) {
       *strDest = 0;
       _set_errno(EINVAL);

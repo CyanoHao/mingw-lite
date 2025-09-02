@@ -1,7 +1,8 @@
 #include <thunk/_common.h>
-#include <thunk/libc/string.h>
 
 #include <windows.h>
+
+#include <nocrt/string.h>
 
 namespace mingw_thunk
 {
@@ -16,7 +17,7 @@ namespace mingw_thunk
       return pfn(ExeName);
 
     // WONTFIX: DBCS can contain '\' in second byte.
-    if (internal::strchr(ExeName, '\\'))
+    if (libc::strchr(ExeName, '\\'))
       return TRUE;
 
     char value[2];

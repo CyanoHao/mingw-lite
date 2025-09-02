@@ -1,8 +1,9 @@
 #include <thunk/_common.h>
-#include <thunk/libc/wchar.h>
 
 #include <pathcch.h>
 #include <windows.h>
+
+#include <nocrt/wchar.h>
 
 namespace mingw_thunk
 {
@@ -25,7 +26,7 @@ namespace mingw_thunk
     if (pcchRemaining)
       *pcchRemaining = 0;
 
-    auto nLength = internal::wcslen(pszPath);
+    auto nLength = libc::wcslen(pszPath);
 
     HRESULT hr = S_FALSE;
 
