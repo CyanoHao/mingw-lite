@@ -1,9 +1,9 @@
 #include <thunk/_common.h>
 #include <thunk/addrinfo.h>
-#include <thunk/libc/stdlib.h>
-#include <thunk/libc/string.h>
 
 #include <ws2tcpip.h>
+
+#include <nocrt/string.h>
 
 namespace mingw_thunk
 {
@@ -57,7 +57,7 @@ namespace mingw_thunk
         return WSANO_DATA;
 
       if (pNodeBuffer && NodeBufferLength > 0) {
-        internal::stpncpy(pNodeBuffer, host->h_name, NodeBufferLength);
+        libc::stpncpy(pNodeBuffer, host->h_name, NodeBufferLength);
         pNodeBuffer[NodeBufferLength - 1] = '\0';
       }
       return 0;
@@ -69,7 +69,7 @@ namespace mingw_thunk
         return WSANO_DATA;
 
       if (pNodeBuffer && NodeBufferLength > 0) {
-        internal::stpncpy(pNodeBuffer, host->h_name, NodeBufferLength);
+        libc::stpncpy(pNodeBuffer, host->h_name, NodeBufferLength);
         pNodeBuffer[NodeBufferLength - 1] = '\0';
       }
       return 0;

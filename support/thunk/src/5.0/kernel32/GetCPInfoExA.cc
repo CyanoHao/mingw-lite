@@ -1,5 +1,6 @@
 #include <thunk/_common.h>
-#include <thunk/libc/string.h>
+
+#include <nocrt/string.h>
 
 #include <windows.h>
 
@@ -33,13 +34,13 @@ namespace mingw_thunk
     if (!GetCPInfo(CodePage, &info))
       return FALSE;
 
-    internal::memcpy(lpCPInfoEx, &info, sizeof(CPINFO));
+    libc::memcpy(lpCPInfoEx, &info, sizeof(CPINFO));
 
     lpCPInfoEx->UnicodeDefaultChar = L'?';
     lpCPInfoEx->CodePage = CodePage;
 
     if (CodePage == CP_UTF8)
-      internal::strcpy(lpCPInfoEx->CodePageName, "UTF-8");
+      libc::strcpy(lpCPInfoEx->CodePageName, "UTF-8");
     else {
       char *name = lpCPInfoEx->CodePageName;
       *name++ = 'C';

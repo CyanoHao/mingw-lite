@@ -1,6 +1,7 @@
 #include <thunk/_common.h>
-#include <thunk/libc/rand.h>
-#include <thunk/libc/string.h>
+
+#include <nocrt/stdlib.h>
+#include <nocrt/string.h>
 
 #include <stdint.h>
 
@@ -35,11 +36,11 @@ namespace mingw_thunk
     uint32_t *buffer = reinterpret_cast<uint32_t *>(pbBuffer);
 
     for (size_t i = 0; i < blocks; ++i)
-      buffer[i] = internal::rand();
+      buffer[i] = libc::__rand32();
 
     if (remainder) {
-      uint32_t value = internal::rand();
-      internal::memcpy(buffer + blocks, &value, remainder);
+      uint32_t value = libc::__rand32();
+      libc::memcpy(buffer + blocks, &value, remainder);
     }
 
     return STATUS_SUCCESS;

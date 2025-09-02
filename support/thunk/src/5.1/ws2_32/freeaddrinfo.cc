@@ -1,7 +1,8 @@
 #include <thunk/_common.h>
-#include <thunk/libc/stdlib.h>
 
 #include <ws2tcpip.h>
+
+#include <nocrt/stdlib.h>
 
 namespace mingw_thunk
 {
@@ -13,8 +14,8 @@ namespace mingw_thunk
 
     while (pAddrInfo) {
       auto *next = pAddrInfo->ai_next;
-      internal::free(pAddrInfo->ai_addr);
-      internal::free(pAddrInfo);
+      libc::free(pAddrInfo->ai_addr);
+      libc::free(pAddrInfo);
       pAddrInfo = next;
     }
   }

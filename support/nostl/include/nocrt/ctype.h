@@ -1,9 +1,11 @@
 #pragma once
 
-namespace mingw_thunk::internal
+#include "__config.h"
+
+namespace NS_NOCRT
 {
   inline int isalpha(int c)
   {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
   }
-} // namespace mingw_thunk::internal
+} // namespace NS_NOCRT
