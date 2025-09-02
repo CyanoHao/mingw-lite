@@ -1,8 +1,8 @@
 #include <thunk/_common.h>
-#include <thunk/libc/string.h>
-#include <thunk/libc/wchar.h>
 
 #include <windows.h>
+
+#include <nocrt/wchar.h>
 
 namespace mingw_thunk
 {
@@ -21,11 +21,11 @@ namespace mingw_thunk
 
     // TODO: special handling Windows 9x
 
-    size_t len = internal::wcslen(lpszShortPath);
+    size_t len = libc::wcslen(lpszShortPath);
     if (len >= cchBuffer)
       return len + 1;
 
-    internal::memcpy(lpszLongPath, lpszShortPath, len * sizeof(wchar_t));
+    libc::wmemcpy(lpszLongPath, lpszShortPath, len);
     lpszLongPath[len] = 0;
     return len;
   }

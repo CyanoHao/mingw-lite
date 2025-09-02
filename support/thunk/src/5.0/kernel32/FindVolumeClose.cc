@@ -1,8 +1,9 @@
 #include <thunk/_common.h>
 #include <thunk/findvolumedata.h>
-#include <thunk/libc/stdlib.h>
 
 #include <windows.h>
+
+#include <nocrt/stdlib.h>
 
 namespace mingw_thunk
 {
@@ -12,7 +13,7 @@ namespace mingw_thunk
     if (const auto pfn = try_get_FindVolumeClose())
       return pfn(hFindVolume);
 
-    internal::free(hFindVolume);
+    libc::free(hFindVolume);
     return TRUE;
   }
 } // namespace mingw_thunk

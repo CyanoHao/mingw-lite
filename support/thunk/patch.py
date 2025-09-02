@@ -75,10 +75,8 @@ def resolve_modules_and_add_thunk_sources(args, modules, thunk_list):
     v_mingw_major_str = v_mingw_major_pattern.search(f.read()).group(1)
     v_mingw_major = int(v_mingw_major_str)
 
-  thunk_dir = args.source / 'mingw-w64-crt'/ 'thunk'
-  thunk_dir.mkdir(parents = True, exist_ok = True)
-
-  shutil.copytree('include/thunk', thunk_dir, dirs_exist_ok = True)
+  crt_dir = args.source / 'mingw-w64-crt'
+  shutil.copytree('include', crt_dir, dirs_exist_ok = True)
 
   for (ver_str, mod_list) in thunk_list.items():
     v = Version(ver_str)
@@ -92,7 +90,7 @@ def resolve_modules_and_add_thunk_sources(args, modules, thunk_list):
           func_name, cond = func_name
           if not cond(v_mingw_major):
             continue
-        shutil.copy(f'src/{ver_str}/{mod_name}/{func_name}.cc', thunk_dir)
+        shutil.copy(f'src/{ver_str}/{mod_name}/{func_name}.cc', crt_dir / f'thunk/{func_name}.cc')
         modules[mod_name].append(func_name)
 
 def locate_mod_def_file(possible_paths):
@@ -131,7 +129,10 @@ def patch_automake_template(args, modules):
   if cflags_line < 0 or cxxflags_line < 0:
     raise RuntimeError('Cannot find cflags or cxxflags in Makefile.am')
   cflags = cflags_pattern.sub('', am_content[cflags_line]).strip().split()
-  cxxflags = ['-nostdinc++', '-fno-exceptions', '-fno-threadsafe-statics']
+  cxxflags = [
+    '-nostdinc++', '-fno-exceptions', '-fno-threadsafe-statics',
+    '-DNOSTL_NOCRT', '-DNS_NOSTL=mingw_thunk::stl', '-DNS_NOCRT=mingw_thunk::libc',
+  ]
   for flag in cflags:
     if flag.startswith('-std='):
       cxxflags.append('-std=gnu++17')

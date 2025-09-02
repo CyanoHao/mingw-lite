@@ -1,6 +1,7 @@
 #include <thunk/_common.h>
-#include <thunk/stl/algorithm.h>
 #include <thunk/yy/api-ms-win-core-path.h>
+
+#include <nostl/__algorithm/min.h>
 
 #include <pathcch.h>
 #include <windows.h>
@@ -29,7 +30,7 @@ namespace mingw_thunk
     const auto bExtendedLengthDosDevicePath =
         internal::IsExtendedLengthDosDevicePath(pszPath);
     if (!bExtendedLengthDosDevicePath) {
-      cchPath = internal::min<size_t>(MAX_PATH, cchPath);
+      cchPath = stl::min<size_t>(MAX_PATH, cchPath);
     }
 
     PWSTR pszPathExt;
