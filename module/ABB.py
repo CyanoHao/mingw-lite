@@ -215,7 +215,7 @@ def _mcfgthread(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namesp
     paths.layer_AAB.crt / 'usr/local',
   ]):
     v = Version(ver.mcfgthread.replace('-ga', ''))
-    build_dir = 'build-AAB'
+    build_dir = 'build-ABB'
 
     if v >= Version('2.2'):
       cross_file = f'cross/gcc.{ver.target}'
@@ -240,11 +240,12 @@ def _mcfgthread(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namesp
       targets = ['mcfgthread:static_library'],
     )
 
-  # as the basis of gthread interface, it should be considered as part of gcc
-  full_build_dir = paths.src_dir.mcfgthread / build_dir
-  lib_dir = paths.layer_ABB.gcc / 'lib'
-  ensure(lib_dir)
-  shutil.copy(full_build_dir / 'libmcfgthread.a', lib_dir / 'libmcfgthread.a')
+    # as the basis of gthread interface, it should be considered as part of gcc
+    full_build_dir = paths.src_dir.mcfgthread / build_dir
+    lib_dir = paths.layer_ABB.gcc / 'lib'
+    ensure(lib_dir)
+    shutil.copy(full_build_dir / 'libmcfgthread.a', lib_dir / 'libmcfgthread.a')
+    subprocess.run([f'{ver.target}-strip', '--strip-debug', lib_dir / 'libmcfgthread.a'], check = True)
 
   include_dir = paths.layer_ABB.gcc / 'include' / 'mcfgthread'
   ensure(include_dir)
@@ -327,20 +328,29 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       ),
       *cflags_B('_FOR_TARGET',
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        # C++ standard library:
-        #   ostream &ostream::operator<<(ostream &(*func)(ostream &))
-        #   {
-        #     return func(*this);
-        #   }
-        # is compiled into single instruction:
-        #   jmp *rdx
-        # hence there's no complete frame info.
-        #
-        # when debugging, gdb fails to resolve frame info,
-        # and will stop here if we want to "step over" it.
-        #
-        # here we add minimal debug info, so gdb will not be fooled.
-        common_extra = ['-g1'],
+        common_extra = [
+          # C++ standard library:
+          #   ostream &ostream::operator<<(ostream &(*func)(ostream &))
+          #   {
+          #     return func(*this);
+          #   }
+          # is compiled into single instruction:
+          #   jmp *rdx
+          # hence there's no complete frame info.
+          #
+          # when debugging, gdb fails to resolve frame info,
+          # and will stop here if we want to "step over" it.
+          #
+          # here we add minimal debug info, so gdb will not be fooled.
+          '-g1',
+          # cross toolchain system headers
+          '-fdebug-prefix-map=/usr/local=/src/debug/gcc/_x_prefix',
+          # files that references the source directory
+          f'-fdebug-prefix-map={paths.src_dir.gcc}=/src/debug/gcc',
+          # files that references the build directory
+          # (should be specified after source directory)
+          f'-fdebug-prefix-map={build_dir}=/src/debug/gcc/build',
+        ],
         optimize_for_size = ver.optimize_for_size,
       ),
       f'AR={ver.target}-gcc-ar',
@@ -356,6 +366,37 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
         paths.layer_ABB.gcc / 'lib/libstdc++.a',
         [build_dir / ver.target / 'libstdc++-v3/src/c++23/print.o'],
       )
+
+    # collect and install target library sources
+    target_lib_src: set[str] = set()
+    for lib in (paths.layer_ABB.gcc / 'lib').glob('**/*.a'):
+      srcs = subprocess.run([
+        'llvm-dwarfdump', '--show-sources', lib,
+      ], capture_output = True, check = True)
+      for src in srcs.stdout.decode().splitlines():
+        if src.endswith('<built-in>'):
+          continue
+        canonical_src = os.path.realpath(src)
+        target_lib_src.add(canonical_src)
+
+    target_lib_src_dir = paths.layer_ABB.gcc / 'src/debug/gcc'
+    for src in target_lib_src:
+      if src.startswith('/src/debug/gcc/_x_prefix/'):
+        rel_src = src[len('/src/debug/gcc/_x_prefix/'):]
+        copy_src = Path('/usr/local') / rel_src
+        copy_tar = target_lib_src_dir / '_x_prefix' / rel_src
+      elif src.startswith('/src/debug/gcc/build/'):
+        rel_src = src[len('/src/debug/gcc/build/'):]
+        copy_src = build_dir / rel_src
+        copy_tar = target_lib_src_dir / 'build' / rel_src
+      elif src.startswith('/src/debug/gcc/'):
+        rel_src = src[len('/src/debug/gcc/'):]
+        copy_src = paths.src_dir.gcc / rel_src
+        copy_tar = target_lib_src_dir / rel_src
+      else:
+        raise Exception(f'Unexpected library source: {src}')
+      ensure(copy_tar.parent)
+      shutil.copy(copy_src, copy_tar)
 
     # add libatomic to libgcc for convenience
     if ver.march in ['i386', 'i486']:
@@ -430,6 +471,7 @@ def _gdb(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       '--enable-tui',
       # packages
       f'--with-python=/usr/local/{ver.target}/python-config.sh',
+      f'--with-relocated-sources=/src',
       f'--with-system-gdbinit=/share/gdb/gdbinit',
       *cflags,
     ])
