@@ -3,7 +3,6 @@ THUNK_LIST_TOOLCHAIN = {
     'kernel32': [
       'CancelIo',
       'CreateWaitableTimerA',
-      'GetFileAttributesExA',
       'SetWaitableTimer',
       'SwitchToThread',
     ]
@@ -23,6 +22,7 @@ THUNK_LIST_TOOLCHAIN = {
       'GetModuleFileNameW',
       'GetTempPathW',
       'LockFileEx',
+      'ReadDirectoryChangesW',
       'SetCurrentDirectoryW',
       'SetEnvironmentVariableW',
       'SetHandleInformation',
@@ -57,6 +57,7 @@ THUNK_LIST_TOOLCHAIN = {
       'GetSystemTimes',
       'GetSystemWow64DirectoryA',
       'GetVolumePathNamesForVolumeNameW',
+      'LCMapStringW',
       ('RemoveVectoredExceptionHandler', lambda v_major: v_major >= 12),
     ],
     'ws2_32': [
