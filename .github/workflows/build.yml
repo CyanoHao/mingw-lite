@@ -209,12 +209,12 @@ jobs:
           wsl --shutdown
 
           mkdir assets
-          wsl --export mingw-lite-buildenv assets/buildenv.vhdx --format vhd
+          wsl --export mingw-lite-buildenv - | zstd -9 -o assets/buildenv.tar.zst
 
       - uses: actions/upload-artifact@v4
         with:
           name: wsl-buildenv
-          path: assets/buildenv.vhdx
+          path: assets/buildenv.tar.zst
 
   wsl_build:
     name: Build (WSL)
