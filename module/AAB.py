@@ -197,8 +197,11 @@ def _crt(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
     make_default(build_dir, config.jobs)
     make_destdir_install(build_dir, paths.layer_AAB.crt)
 
-    # The future belongs to UTF-8.
-    # Piping is used so widely in GNU toolchain that we have to apply UTF-8 manifest to all programs.
+    # CRT hacks:
+    # 1. Apply UTF-8 manifest to all programs so the GNU toolchain can freely piping.
+    # 2. Automatically set console code page to match ACP (especially UTF-8).
+    # 3. Set stdio to binary mode to workaround CRT's bugged "double translation".
+    crt_hack_objs = []
     if ver.min_os.major >= 6:
       subprocess.run([
         f'{ver.target}-gcc',
@@ -207,21 +210,30 @@ def _crt(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
         paths.utf8_src_dir / 'utf8-init.c',
         '-o', build_dir / 'utf8-init.o',
       ], check = True)
+      crt_hack_objs.append(build_dir / 'utf8-init.o')
       subprocess.run([
         f'{ver.target}-windres',
         '-O', 'coff',
         paths.utf8_src_dir / 'utf8-manifest.rc',
         '-o', build_dir / 'utf8-manifest.o',
       ], check = True)
-      for crt_object in ['crt1.o', 'crt1u.o', 'crt2.o', 'crt2u.o']:
-        subprocess.run([
-          f'{ver.target}-gcc',
-          '-r',
-          build_dir / f'lib{ver.arch}' / crt_object,
-          build_dir / 'utf8-init.o',
-          build_dir / 'utf8-manifest.o',
-          '-o', paths.layer_AAB.crt / 'usr/local' / ver.target / 'lib' / crt_object,
-        ], check = True)
+      crt_hack_objs.append(build_dir / 'utf8-manifest.o')
+    subprocess.run([
+      f'{ver.target}-gcc',
+      '-std=c11',
+      '-Os', '-c',
+      paths.utf8_src_dir / 'binary-stdio.c',
+      '-o', build_dir / 'binary-stdio.o',
+    ], check = True)
+    crt_hack_objs.append(build_dir / 'binary-stdio.o')
+    for crt_object in ['crt1.o', 'crt1u.o', 'crt2.o', 'crt2u.o']:
+      subprocess.run([
+        f'{ver.target}-gcc',
+        '-r',
+        build_dir / f'lib{ver.arch}' / crt_object,
+        *crt_hack_objs,
+        '-o', paths.layer_AAB.crt / 'usr/local' / ver.target / 'lib' / crt_object,
+      ], check = True)
 
 def _winpthreads(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   with overlayfs_ro('/usr/local', [

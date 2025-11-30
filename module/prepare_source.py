@@ -89,9 +89,6 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     # Fix VT sequence
     patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'fix-vt-seq.patch')
 
-    # Fix UCRT pipe
-    patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'fix-ucrt-pipe.patch')
-
     # Fix libcpp setlocale
     # libcpp defines `setlocale` if `HAVE_SETLOCALE` not defined, but its configure.ac does not check `setlocale` at all
     patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'fix-libcpp-setlocale.patch')
