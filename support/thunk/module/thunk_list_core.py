@@ -1,4 +1,4 @@
-THUNK_LIST_CORE = {
+THUNK_LIST_CORE_WIN32 = {
   '3.9999+4.10': {
     'kernel32': [
       'GetFileAttributesExA',
@@ -43,4 +43,15 @@ THUNK_LIST_CORE = {
   },
   '5.2': {},
   '6.0': {},
+}
+
+THUNK_LIST_CORE_MSVCRT = {
+  '5.0': [
+    ('_fstat64', lambda v_major: v_major < 13),
+    ('_wstat64', lambda v_major: v_major < 13),
+  ],
+  '5.1': [
+    ('_aligned_free', lambda v_major: v_major < 13),
+    ('_aligned_malloc', lambda v_major: v_major < 13),
+  ],
 }

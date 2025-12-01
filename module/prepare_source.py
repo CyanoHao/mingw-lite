@@ -278,9 +278,9 @@ def _mingw_host(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     patch(paths.src_dir.mingw_host, paths.patch_dir / 'crt-host' / 'hack-console.patch')
 
     # CRT: Add mingw thunks
-    msvcrt_flag = []
+    thunk_flags = []
     if ver.default_crt == 'msvcrt':
-      msvcrt_flag.append('--msvcrt')
+      thunk_flags.append('--msvcrt')
 
     subprocess.run([
       './patch.py',
@@ -288,7 +288,7 @@ def _mingw_host(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
       '-a', ver.arch,
       '--level', 'toolchain',
       '--nt-ver', str(ver.min_os),
-      *msvcrt_flag,
+      *thunk_flags,
     ], cwd = paths.in_tree_src_tree.thunk, check = True)
 
     _autoreconf(paths.src_dir.mingw_host / 'mingw-w64-crt')
@@ -302,9 +302,11 @@ def _mingw_target(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
 
   if check_and_sync(paths.src_dir.mingw_target, paths.src_dir.mingw):
     # CRT: Add mingw thunks
-    msvcrt_flag = []
+    thunk_flags = []
     if ver.default_crt == 'msvcrt':
-      msvcrt_flag.append('--msvcrt')
+      thunk_flags.append('--msvcrt')
+    if ver.thunk_free:
+      thunk_flags.append('--assert-thunk-free')
 
     subprocess.run([
       './patch.py',
@@ -312,7 +314,7 @@ def _mingw_target(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
       '-a', ver.arch,
       '--level', 'core',
       '--nt-ver', str(ver.min_os),
-      *msvcrt_flag,
+      *thunk_flags,
     ], cwd = paths.in_tree_src_tree.thunk, check = True)
 
     _autoreconf(paths.src_dir.mingw_target / 'mingw-w64-crt')
