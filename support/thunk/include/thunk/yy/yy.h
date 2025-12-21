@@ -1,12 +1,17 @@
 #pragma once
 
-#include <thunk/try_get.h>
+#include <thunk/_ntdll.h>
 
 #define _In_NLS_string_(s)
 
 #define __WarningMessage__(...)
 
 #define MAXIMUM_FILENAME_LENGTH 256
+
+namespace mingw_thunk
+{
+  using byte = unsigned char;
+}
 
 namespace mingw_thunk::internal
 {

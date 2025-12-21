@@ -1,4 +1,5 @@
 target('catch2')
-  set_kind('static')
-  add_includedirs('include', {public = true})
   add_files('src/catch_amalgamated.cpp')
+  add_includedirs('include', {public = true})
+  set_kind('static')
+  on_install(function (target) end)

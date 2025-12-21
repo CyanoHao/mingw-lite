@@ -79,7 +79,8 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     # Disable default utf8 manifest
     # We patch the CRT init objects, so GCC's manifest should be disabled.
     # But we want no `--disable-win32-utf8-manifest` in configure flags to avoid confusion.
-    patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'disable-default-utf8-manifest.patch')
+    if not ver.utf8_thunk:
+      patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'disable-default-utf8-manifest.patch')
 
     # Use Linux style tooldir
     # MinGW Lite install binutils with `tooldir=$prefix`, the common practice in Linux.
@@ -102,7 +103,8 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'allow-missing-shared-libgcc.patch')
 
     # Fix __FILE__ macro encoding
-    patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'fix-file-macro-encoding.patch')
+    if not ver.utf8_thunk:
+      patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'fix-file-macro-encoding.patch')
 
     # Fix VT sequence
     patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'fix-vt-seq.patch')
@@ -173,7 +175,8 @@ def _gdb(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'fix-iconv-cp65001.patch')
 
     # Fix pythondir
-    patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'fix-pythondir.patch')
+    if not ver.utf8_thunk:
+      patch(paths.src_dir.gdb, paths.patch_dir / 'gdb' / 'fix-pythondir.patch')
 
     if ver.min_os.major < 4:
       # Ignore 9x long path
@@ -276,6 +279,10 @@ def _mingw_host(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     return
 
   if check_and_sync(paths.src_dir.mingw_host, paths.src_dir.mingw):
+    # CRT: Hack UTF-8 startup
+    if ver.utf8_thunk:
+      patch(paths.src_dir.mingw_host, paths.patch_dir / 'crt-host' / 'hack-utf8-startup.patch')
+
     # CRT: Add mingw thunks
     thunk_flags = []
     if ver.default_crt == 'msvcrt':

@@ -1,0 +1,6 @@
+LIBRARY kernel32.dll
+EXPORTS
+  __ms_CreateProcessA@40 == CreateProcessA
+  __ms_CreateWaitableTimerA@12 == CreateWaitableTimerA
+  __ms_MultiByteToWideChar@24 == MultiByteToWideChar
+  __ms_WideCharToMultiByte@32 == WideCharToMultiByte
