@@ -17,10 +17,10 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get_SetEnvironmentVariableW()(lpName, lpValue);
 
-    stl::string a_name = internal::narrow(lpName);
+    stl::string a_name = internal::w2a(lpName);
     stl::string a_value;
     if (lpValue)
-      a_value = internal::narrow(lpValue);
+      a_value = internal::w2a(lpValue);
 
     return SetEnvironmentVariableA(a_name.c_str(),
                                    lpValue ? a_value.c_str() : nullptr);

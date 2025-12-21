@@ -12,7 +12,7 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get_DeleteFileW()(lpFileName);
 
-    auto aname = internal::narrow(lpFileName);
+    auto aname = internal::w2a(lpFileName);
     return DeleteFileA(aname.c_str());
   }
 } // namespace mingw_thunk

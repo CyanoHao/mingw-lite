@@ -17,7 +17,7 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get_CreateDirectoryW()(lpPathName, lpSecurityAttributes);
 
-    auto a_path_name = internal::narrow(lpPathName);
+    auto a_path_name = internal::w2a(lpPathName);
     return CreateDirectoryA(a_path_name.c_str(), lpSecurityAttributes);
   }
 } // namespace mingw_thunk

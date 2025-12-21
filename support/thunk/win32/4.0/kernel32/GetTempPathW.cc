@@ -24,7 +24,7 @@ namespace mingw_thunk
     if (size == 0)
       return 0;
 
-    stl::wstring w_str = internal::widen(a_buffer, size);
+    stl::wstring w_str = internal::a2w(a_buffer, size);
     if (nBufferLength >= w_str.size() + 1) {
       libc::wmemcpy(lpBuffer, w_str.c_str(), w_str.size());
       lpBuffer[w_str.size()] = L'\0';

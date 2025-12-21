@@ -8,9 +8,12 @@ import re
 import shutil
 import subprocess
 
-from module.thunk_list_core import THUNK_LIST_CORE_WIN32, THUNK_LIST_CORE_MSVCRT
-from module.thunk_list_toolchain import THUNK_LIST_TOOLCHAIN_WIN32, THUNK_LIST_TOOLCHAIN_MSVCRT
+from module.thunk_list_core import THUNK_LIST_CORE_VCRT, THUNK_LIST_CORE_VCRTW
+from module.thunk_list_core import THUNK_LIST_CORE_WIN32, THUNK_LIST_CORE_WIN32W
 from module.thunk_list_qt import THUNK_LIST_QT_WIN32
+from module.thunk_list_toolchain import THUNK_LIST_TOOLCHAIN_UCRTU
+from module.thunk_list_toolchain import THUNK_LIST_TOOLCHAIN_VCRT, THUNK_LIST_TOOLCHAIN_VCRTU, THUNK_LIST_TOOLCHAIN_VCRTW
+from module.thunk_list_toolchain import THUNK_LIST_TOOLCHAIN_WIN32, THUNK_LIST_TOOLCHAIN_WIN32U, THUNK_LIST_TOOLCHAIN_WIN32W
 
 ARCH_DEFAULT_VERSION_MAP = {
   '32': '4.0',
@@ -114,43 +117,41 @@ def resolve_mingw_version(args):
 
   return resolve_mingw_version.saved_version
 
-def resolve_win32_modules(args, modules, thunk_list):
+def resolve_single_module(args, module, thunk_list, directory):
   v_mingw = resolve_mingw_version(args)
   crt_dir = args.source / 'mingw-w64-crt'
-  for (ver_str, mod_list) in thunk_list.items():
-    v = Version(ver_str)
-    if v <= args.nt_ver:
-      continue
-    for (mod_name, func_list) in mod_list.items():
-      if mod_name not in modules:
-        modules[mod_name] = []
-      for func_name in func_list:
-        if type(func_name) == tuple:
-          func_name, cond = func_name
-          if not cond(v_mingw):
-            continue
-        shutil.copy(f'win32/{ver_str}/{mod_name}/{func_name}.cc', crt_dir / f'thunk/{func_name}.cc')
-        modules[mod_name].append(func_name)
+  for func_name in thunk_list:
+    if type(func_name) == tuple:
+      func_name, cond = func_name
+      if not cond(v_mingw):
+        continue
+    shutil.copy(f'{directory}/{func_name}.cc', crt_dir / f'thunk/{func_name}.cc')
+    module.append(func_name)
 
-def resolve_msvcrt_module(args, module, thunk_list):
-  v_mingw = resolve_mingw_version(args)
-  crt_dir = args.source / 'mingw-w64-crt'
+def resolve_multi_modules(args, modules, thunk_list, directory):
+  for (mod_name, func_list) in thunk_list.items():
+    if mod_name not in modules:
+      modules[mod_name] = []
+    resolve_single_module(args, modules[mod_name], func_list, f'{directory}/{mod_name}')
+
+def resolve_vcrt_module(args, module, thunk_list):
   for (ver_str, func_list) in thunk_list.items():
     v = Version(ver_str)
     if v <= args.nt_ver:
       continue
-    for func_name in func_list:
-      if type(func_name) == tuple:
-        func_name, cond = func_name
-        if not cond(v_mingw):
-          continue
-      shutil.copy(f'msvcrt_/{ver_str}/{func_name}.cc', crt_dir / f'thunk/{func_name}.cc')
-      module.append(func_name)
+    resolve_single_module(args, module, func_list, f'vcrt/{ver_str}')
 
-def generate_msvcrt_def(args):
+def resolve_win32_modules(args, modules, thunk_list):
+  for (ver_str, mod_list) in thunk_list.items():
+    v = Version(ver_str)
+    if v <= args.nt_ver:
+      continue
+    resolve_multi_modules(args, modules, mod_list, f'win32/{ver_str}')
+
+def generate_crt_def(args, basename):
   crt_dir = args.source / 'mingw-w64-crt'
-  msvcrt_def_in = crt_dir / 'lib-common/msvcrt.def.in'
-  msvcrt_def = crt_dir / ARCH_LIB_DIR_MAP[args.arch] / 'msvcrt.def'
+  crt_def_in = crt_dir / f'lib-common/{basename}.def.in'
+  crt_def = crt_dir / ARCH_LIB_DIR_MAP[args.arch] / f'{basename}.def'
   def_include = crt_dir / 'def-include'
   subprocess.run([
     'cpp',
@@ -160,11 +161,11 @@ def generate_msvcrt_def(args):
       ARCH_DLL_DEF_CPP_DEFINES_MAP[args.arch].items(),
     ),
     '-I', def_include,
-    msvcrt_def_in,
+    crt_def_in,
     '-P',
-    '-o', msvcrt_def,
+    '-o', crt_def,
   ], check = True)
-  return msvcrt_def
+  return crt_def
 
 def locate_mod_def_file(possible_paths):
   for path in possible_paths:
@@ -193,7 +194,7 @@ def patch_mod_def_file(args, def_path, func_list, winapi = False, crt_alias = Fa
   with open(def_path, 'w') as f:
     f.writelines(def_content)
 
-def patch_automake_template(args, win32_modules, msvcrt_module):
+def patch_automake_template(args, normal_modules, vcrt_module):
   # load automake template
   AM_ADDITION_START = '# <<< mingw-thunk addition\n'
   AM_ADDITION_END = '# >>> mingw-thunk addition\n'
@@ -221,6 +222,11 @@ def patch_automake_template(args, win32_modules, msvcrt_module):
   for flag in cflags:
     if flag.startswith('-std='):
       cxxflags.append('-std=gnu++17')
+    elif flag.startswith('-D__MSVCRT_VERSION__='):
+      if not args.msvcrt:
+        cxxflags.append('-D_UCRT')
+      else:
+        cxxflags.append(flag)
     elif '_C_ONLY_' in flag:
       cxxflags.append(flag.replace('_C_ONLY_', '_CXX_ONLY_'))
     else:
@@ -232,15 +238,9 @@ def patch_automake_template(args, win32_modules, msvcrt_module):
   lib_dir = ARCH_LIB_DIR_MAP[args.arch]
   arch_def_dir = args.source / 'mingw-w64-crt' / lib_dir
   common_def_dir = args.source / 'mingw-w64-crt' / 'lib-common'
-  for mod_name, func_list in win32_modules.items():
+  for mod_name, func_list in normal_modules.items():
     # sanitize 'api-ms-win-...'
     sanitized_mod_name = mod_name.replace('-', '_')
-
-    # special handling 'libmsvcrt-os.a':
-    # the def file is 'msvcrt.def' (our on-disk name),
-    # and the automake template specifies 'libmsvcrt_extra.a'.
-    if mod_name == 'msvcrt':
-      sanitized_mod_name = 'msvcrt_extra'
 
     # find module def file
     mod_def_file_paths = [
@@ -250,7 +250,10 @@ def patch_automake_template(args, win32_modules, msvcrt_module):
       common_def_dir / (mod_name + '.def'),
     ]
     mod_def_file = locate_mod_def_file(mod_def_file_paths)
-    patch_mod_def_file(args, mod_def_file, func_list, winapi = True)
+    if mod_name.startswith('api-ms-win-crt-'):
+      patch_mod_def_file(args, mod_def_file, func_list, crt_alias = True)
+    else:
+      patch_mod_def_file(args, mod_def_file, func_list, winapi = True)
 
     # add thunk files to makefile rules
     am_src = list(map(lambda func: f'thunk/{func}.cc', func_list))
@@ -278,24 +281,25 @@ def patch_automake_template(args, win32_modules, msvcrt_module):
   # some definitions are shared among multiple versions by `crt-aliases.def.in`,
   # here we have to generate msvcrt.def and patch it instead.
   if args.msvcrt:
-    msvcrt_def_file = generate_msvcrt_def(args)
+    crt_basename = 'msvcrt'
+    crt_def_file = generate_crt_def(args, crt_basename)
+    am_lib_name = f'{lib_dir}_libmsvcrt_extra_a'
 
-    # remove msvcrt.def from `make clean`
-    clean_msvcrt_def_found = False
-    pattern = ARCH_LIB_DIR_MAP[args.arch] + '/msvcrt.def'
+    # remove def from `make clean`
+    clean_crt_def_found = False
+    pattern = f'{lib_dir}/{crt_basename}.def'
     for i, line in enumerate(am_content):
       if pattern in line:
         am_content[i] = line.replace(pattern, '')
-        clean_msvcrt_def_found = True
+        clean_crt_def_found = True
         break
-    if not clean_msvcrt_def_found:
+    if not clean_crt_def_found:
       raise RuntimeError('Failed to locate clean rule for msvcrt.def')
-    patch_mod_def_file(args, msvcrt_def_file, msvcrt_module, crt_alias = True)
+    patch_mod_def_file(args, crt_def_file, vcrt_module, crt_alias = True)
 
-    # protect msvcrt from cygwin w32api
+    # protect from cygwin w32api
     am_addition.append(f'if !W32API\n')
-    am_src = list(map(lambda func: f'thunk/{func}.cc', msvcrt_module))
-    am_lib_name = f'{lib_dir}_libmsvcrt_extra_a'
+    am_src = list(map(lambda func: f'thunk/{func}.cc', vcrt_module))
     am_addition.append(f'{am_lib_name}_SOURCES += ' + ' '.join(am_src) + '\n')
     am_addition.append(f'endif\n')
 
@@ -304,26 +308,51 @@ def patch_automake_template(args, win32_modules, msvcrt_module):
 
 def main():
   args = parse_args()
+  win9x = args.nt_ver < Version('4.0')
   copy_headers(args)
 
-  win32_modules = {}
-  msvcrt = []
-  resolve_win32_modules(args, win32_modules, THUNK_LIST_CORE_WIN32)
-  if args.level in ('toolchain', 'qt'):
-    resolve_win32_modules(args, win32_modules, THUNK_LIST_TOOLCHAIN_WIN32)
-  if args.level == 'qt':
-    resolve_win32_modules(args, win32_modules, THUNK_LIST_QT_WIN32)
-  if args.msvcrt:
-    resolve_msvcrt_module(args, msvcrt, THUNK_LIST_CORE_MSVCRT)
-    if args.level == 'toolchain':
-      resolve_msvcrt_module(args, msvcrt, THUNK_LIST_TOOLCHAIN_MSVCRT)
+  vcrt_module = []
+  normal_modules = {}
+
+  if args.level == 'core':
+    if args.msvcrt:
+      resolve_vcrt_module(args, vcrt_module, THUNK_LIST_CORE_VCRT)
+      if win9x:
+        resolve_single_module(args, vcrt_module, THUNK_LIST_CORE_VCRTW, 'vcrtw')
+
+    resolve_win32_modules(args, normal_modules, THUNK_LIST_CORE_WIN32)
+    if win9x:
+      resolve_multi_modules(args, normal_modules, THUNK_LIST_CORE_WIN32W, 'win32w')
+
+  elif args.level == 'toolchain':
+    if args.msvcrt:
+      resolve_vcrt_module(args, vcrt_module, THUNK_LIST_TOOLCHAIN_VCRT)
+      resolve_single_module(args, vcrt_module, THUNK_LIST_TOOLCHAIN_VCRTU, 'vcrtu')
+      if win9x:
+        resolve_single_module(args, vcrt_module, THUNK_LIST_TOOLCHAIN_VCRTW, 'vcrtw')
+    else:
+      # no special handling for UCRT
+      resolve_multi_modules(args, normal_modules, THUNK_LIST_TOOLCHAIN_UCRTU, 'ucrtu')
+
+    resolve_win32_modules(args, normal_modules, THUNK_LIST_TOOLCHAIN_WIN32)
+    resolve_multi_modules(args, normal_modules, THUNK_LIST_TOOLCHAIN_WIN32U, 'win32u')
+    if win9x:
+      resolve_multi_modules(args, normal_modules, THUNK_LIST_TOOLCHAIN_WIN32W, 'win32w')
+
+  elif args.level == 'qt':
+    resolve_win32_modules(args, normal_modules, THUNK_LIST_QT_WIN32)
+
+  else:
+    raise RuntimeError('Invalid level')
+
   if args.assert_thunk_free:
-    if any(v for _, v in win32_modules.items()) or msvcrt:
+    if any(v for _, v in normal_modules.items()) or vcrt_module:
       print('Oops there are thunks:')
-      print(win32_modules)
-      print(msvcrt)
+      print(normal_modules)
+      print(vcrt_module)
       raise RuntimeError('ABI stability broken')
-  patch_automake_template(args, win32_modules, msvcrt)
+
+  patch_automake_template(args, normal_modules, vcrt_module)
 
 if __name__ == '__main__':
   main()

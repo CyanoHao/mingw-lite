@@ -24,7 +24,7 @@ namespace mingw_thunk
       return get_GetFullPathNameW()(
           lpFileName, nBufferLength, lpBuffer, lpFilePart);
 
-    auto aname = internal::narrow(lpFileName);
+    auto aname = internal::w2a(lpFileName);
     size_t abuflen = nBufferLength > MAX_PATH ? nBufferLength : MAX_PATH;
     stl::string abuf(abuflen, 0);
     char *afilepart = nullptr;
@@ -40,14 +40,14 @@ namespace mingw_thunk
     size_t aprefixlen = afilepart - abuf.data();
     abuf.resize(alen); // shrink
 
-    auto wres = internal::widen(abuf.data(), alen);
+    auto wres = internal::a2w(abuf.data(), alen);
 
     size_t len = wres.length() + 1;
     if (len > nBufferLength)
       return len;
 
     if (lpFilePart) {
-      auto wprefix = internal::widen(abuf.data(), aprefixlen);
+      auto wprefix = internal::a2w(abuf.data(), aprefixlen);
       *lpFilePart = lpBuffer + wprefix.length();
     }
 

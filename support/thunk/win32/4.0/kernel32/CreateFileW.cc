@@ -32,7 +32,7 @@ namespace mingw_thunk
     DWORD access = dwDesiredAccess & ~FILE_READ_ATTRIBUTES;
     DWORD mode = dwShareMode & ~FILE_SHARE_DELETE;
 
-    auto aname = internal::narrow(lpFileName);
+    auto aname = internal::w2a(lpFileName);
     return CreateFileA(aname.c_str(),
                        access,
                        mode,

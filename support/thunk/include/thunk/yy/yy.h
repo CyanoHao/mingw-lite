@@ -1,6 +1,6 @@
 #pragma once
 
-#include <thunk/try_get.h>
+#include <thunk/_ntdll.h>
 
 #define _In_NLS_string_(s)
 

@@ -2,7 +2,7 @@
 #include <thunk/_common.h>
 #include <thunk/ddk/wdm.h>
 #include <thunk/os.h>
-#include <thunk/try_get.h>
+#include <thunk/_ntdll.h>
 #include <thunk/yy/yy.h>
 
 #include <ntstatus.h>

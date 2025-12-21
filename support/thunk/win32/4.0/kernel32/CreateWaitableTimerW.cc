@@ -28,7 +28,7 @@ namespace mingw_thunk
 
     stl::string a_name;
     if (lpTimerName)
-      a_name = internal::narrow(lpTimerName);
+      a_name = internal::w2a(lpTimerName);
     return CreateWaitableTimerA(lpTimerAttributes,
                                 bManualReset,
                                 lpTimerName ? a_name.c_str() : nullptr);

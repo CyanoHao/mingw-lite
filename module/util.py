@@ -50,8 +50,8 @@ def cflags_B(
   lto: bool = False,
 ) -> List[str]:
   cpp = ['-DNDEBUG']
-  common = ['-pipe']
-  ld = ['-s']
+  common = ['-g1', '-pipe']
+  ld = []
   if lto:
     # lto does not work with -Os
     common.extend(['-O2', '-flto'])

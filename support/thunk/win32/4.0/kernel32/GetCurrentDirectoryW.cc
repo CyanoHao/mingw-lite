@@ -23,7 +23,7 @@ namespace mingw_thunk
     DWORD a_size = GetCurrentDirectoryA(MAX_PATH, a_filename);
     if (a_size == 0)
       return 0;
-    stl::wstring w_filename = internal::widen(a_filename);
+    stl::wstring w_filename = internal::a2w(a_filename);
     if (nBufferLength >= w_filename.size() + 1) {
       wmemcpy(lpBuffer, w_filename.c_str(), w_filename.size());
       lpBuffer[w_filename.size()] = L'\0';
