@@ -81,6 +81,7 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(GetTempPathA)
   __DECLARE_MS_IMPORT(GetTempPathW)
   __DECLARE_MS_IMPORT(LCMapStringW)
+  __DECLARE_MS_IMPORT(LoadLibraryW)
   __DECLARE_MS_IMPORT(LockFileEx)
   __DECLARE_MS_IMPORT(MoveFileExA)
   __DECLARE_MS_IMPORT(MultiByteToWideChar)
@@ -136,10 +137,17 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(_beginthreadex)
 
   // crt: stdio
+#ifdef _UCRT
+  __DECLARE_MS_IMPORT(__stdio_common_vfprintf)
+#endif
   __DECLARE_MS_IMPORT(_open)
   __DECLARE_MS_IMPORT(_wfopen)
   __DECLARE_MS_IMPORT(_wopen)
+  __DECLARE_MS_IMPORT(fflush)
   __DECLARE_MS_IMPORT(fopen)
+  __DECLARE_MS_IMPORT(fputc)
+  __DECLARE_MS_IMPORT(fputs)
+  __DECLARE_MS_IMPORT(puts)
 
   // crt: time
 #ifndef _WIN64

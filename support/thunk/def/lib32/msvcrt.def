@@ -24,3 +24,8 @@ EXPORTS
   __ms__wstat32i64 == _wstati64
   __ms__wutime32 == _wutime
   __ms__utime32 == _utime
+
+  __ms_fflush == fflush
+  __ms_fputc == fputc
+  __ms_fputs == fputs
+  __ms_puts == puts

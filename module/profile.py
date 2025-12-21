@@ -5,6 +5,7 @@ from typing import Callable, Dict, Optional
 class BranchVersions:
   gcc: str
   rev: str
+  utf8_thunk: bool
 
   mcfgthread: str
   mingw: str
@@ -29,6 +30,7 @@ class BranchVersions:
 
     gcc: str,
     rev: str,
+    utf8_thunk: bool,
 
     mcfgthread: str,
     mingw: str,
@@ -48,6 +50,7 @@ class BranchVersions:
   ):
     self.gcc = gcc
     self.rev = rev
+    self.utf8_thunk = utf8_thunk
 
     self.mcfgthread = mcfgthread
     self.mingw = mingw
@@ -157,6 +160,7 @@ BRANCHES: Dict[str, BranchVersions] = {
   '16': BranchVersions(
     gcc = '16-20260208',
     rev = '0',
+    utf8_thunk = True,
 
     mcfgthread = '2.2-ga.2',
     mingw = '13.0.0',
@@ -177,6 +181,7 @@ BRANCHES: Dict[str, BranchVersions] = {
   '15': BranchVersions(
     gcc = '15.2.0',
     rev = '7.1',
+    utf8_thunk = False,
 
     # ABI critical: 2025-08-08
     mcfgthread = '2.1-ga.1',
@@ -199,6 +204,7 @@ BRANCHES: Dict[str, BranchVersions] = {
   '14': BranchVersions(
     gcc = '14.3.0',
     rev = '6.1',
+    utf8_thunk = False,
 
     # ABI critical: 2024-08-01
     mcfgthread = '1.8-ga.4',
@@ -221,6 +227,7 @@ BRANCHES: Dict[str, BranchVersions] = {
   '13': BranchVersions(
     gcc = '13.4.0',
     rev = '6.1',
+    utf8_thunk = False,
 
     # trace back: 2023-12-22
     binutils = '2.41',
