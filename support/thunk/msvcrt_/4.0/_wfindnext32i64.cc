@@ -18,7 +18,7 @@ namespace mingw_thunk
   {
     if (internal::is_nt()) {
       const auto pfn =
-          internal::module_msvcrt.get_function<fn__wfindnext32i64_t>(
+          internal::module_msvcrt().get_function<fn__wfindnext32i64_t>(
               "_wfindnexti64");
       return pfn(handle, fileinfo);
     }

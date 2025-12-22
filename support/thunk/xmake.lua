@@ -5,8 +5,9 @@ set_languages('c11', 'cxx17')
 includes('dep/catch2')
 
 target('u8crt')
-  add_cxflags('-nostdinc')
-  add_cxxflags('-fno-threadsafe-statics')
+  add_cxxflags(
+    '-fno-threadsafe-statics',
+    '-nostdinc++')
   add_defines(
     'NOSTL_NOCRT',
     'NS_NOCRT=u8crt::libc',
@@ -14,15 +15,21 @@ target('u8crt')
   add_files('u8crt/**.cc|**.test.cc')
   add_includedirs(
     'include',
-    'include/u8crt',
-    'include/win32')
+    'include/u8crt')
   set_exceptions('no-cxx')
   set_kind('static')
 
 target('win32u')
-  set_kind('static')
-
-target('kernel32')
+  add_cxxflags(
+    '-fno-threadsafe-statics',
+    '-nostdinc++')
+  add_defines(
+    'NOSTL_NOCRT',
+    'NS_NOCRT=mingw_thunk::libc',
+    'NS_NOSTL=mingw_thunk::stl')
+  add_files('win32u/**.cc|**.test.cc')
+  add_includedirs('include')
+  set_exceptions('no-cxx')
   set_kind('static')
 
 target('thunk')

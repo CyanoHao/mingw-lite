@@ -12,7 +12,7 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get__wmkdir()(dirname);
 
-    stl::string a_name = internal::narrow(dirname);
+    stl::string a_name = internal::w2a(dirname);
     return _mkdir(a_name.c_str());
   }
 } // namespace mingw_thunk

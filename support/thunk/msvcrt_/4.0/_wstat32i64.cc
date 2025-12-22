@@ -16,11 +16,11 @@ namespace mingw_thunk
   {
     if (internal::is_nt()) {
       static auto *pfn =
-          internal::module_msvcrt.get_function<fn__wstat32i64_t>("_wstati64");
+          internal::module_msvcrt().get_function<fn__wstat32i64_t>("_wstati64");
       return pfn(path, buffer);
     }
 
-    stl::string a_path = internal::narrow(path);
+    stl::string a_path = internal::w2a(path);
     return _stat32i64(a_path.c_str(), buffer);
   }
 } // namespace mingw_thunk

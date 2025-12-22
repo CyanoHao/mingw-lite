@@ -35,7 +35,7 @@ namespace mingw_thunk
       if (is_nt())
         return get__wopen()(filename, oflag);
 
-      stl::string a_name = narrow(filename);
+      stl::string a_name = w2a(filename);
       return _open(a_name.c_str(), oflag);
     }
 
@@ -44,7 +44,7 @@ namespace mingw_thunk
       if (is_nt())
         return get__wopen()(filename, oflag, pmode);
 
-      stl::string a_name = narrow(filename);
+      stl::string a_name = w2a(filename);
       return _open(a_name.c_str(), oflag, pmode);
     }
   } // namespace internal

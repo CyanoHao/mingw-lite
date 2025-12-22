@@ -26,8 +26,8 @@ namespace mingw_thunk
                                pbCancel,
                                dwCopyFlags);
 
-    auto aexist = internal::narrow(lpExistingFileName);
-    auto anew = internal::narrow(lpNewFileName);
+    auto aexist = internal::w2a(lpExistingFileName);
+    auto anew = internal::w2a(lpNewFileName);
     return CopyFileExA(aexist.c_str(),
                        anew.c_str(),
                        lpProgressRoutine,

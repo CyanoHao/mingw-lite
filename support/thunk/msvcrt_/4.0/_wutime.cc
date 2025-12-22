@@ -20,7 +20,7 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get__wutime()(filename, times);
 
-    stl::string a_path = internal::narrow(filename);
+    stl::string a_path = internal::w2a(filename);
     return _utime32(a_path.c_str(), (__utimbuf32 *)times);
   }
 } // namespace mingw_thunk

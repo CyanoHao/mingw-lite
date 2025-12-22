@@ -1,4 +1,4 @@
-#include <thunk/_common.h>
+#include <thunk/_crt.h>
 #include <thunk/os.h>
 #include <thunk/wntcrt/errno.h>
 #include <thunk/wntcrt/time.h>
@@ -15,9 +15,7 @@ namespace mingw_thunk
                      struct _wfinddata32_t *fileinfo)
   {
     if (internal::is_nt()) {
-      static auto *pfn =
-          internal::module_msvcrt.get_function<fn__wfindfirst32_t>(
-              "_wfindfirst");
+      static auto *pfn = crt_get__wfindfirst32();
       return pfn(filespec, fileinfo);
     }
 

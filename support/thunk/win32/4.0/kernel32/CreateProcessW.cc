@@ -36,10 +36,10 @@ namespace mingw_thunk
 
     stl::string a_app_name;
     if (lpApplicationName)
-      a_app_name = internal::narrow(lpApplicationName);
+      a_app_name = internal::w2a(lpApplicationName);
     stl::string a_cmd_line;
     if (lpCommandLine)
-      a_cmd_line = internal::narrow(lpCommandLine);
+      a_cmd_line = internal::w2a(lpCommandLine);
     stl::string a_env;
     if (lpEnvironment) {
       wchar_t *env = (wchar_t *)lpEnvironment;
@@ -55,18 +55,18 @@ namespace mingw_thunk
         }
         len++;
       }
-      a_env = internal::narrow(env, len);
+      a_env = internal::w2a(env, len);
     }
     stl::string a_cwd;
     if (lpCurrentDirectory)
-      a_cwd = internal::narrow(lpCurrentDirectory);
+      a_cwd = internal::w2a(lpCurrentDirectory);
 
     stl::string a_desktop;
     if (lpStartupInfo->lpDesktop)
-      a_desktop = internal::narrow(lpStartupInfo->lpDesktop);
+      a_desktop = internal::w2a(lpStartupInfo->lpDesktop);
     stl::string a_title;
     if (lpStartupInfo->lpTitle)
-      a_title = internal::narrow(lpStartupInfo->lpTitle);
+      a_title = internal::w2a(lpStartupInfo->lpTitle);
     STARTUPINFOA si{
         .cb = sizeof(STARTUPINFOA),
         .lpReserved = nullptr,

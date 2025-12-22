@@ -1,4 +1,4 @@
-#include <thunk/_common.h>
+#include <thunk/_crt.h>
 #include <thunk/os.h>
 #include <thunk/wntcrt/errno.h>
 #include <thunk/wntcrt/time.h>
@@ -14,11 +14,8 @@ namespace mingw_thunk
                      intptr_t handle,
                      struct _wfinddata32_t *fileinfo)
   {
-    if (internal::is_nt()) {
-      static auto *pfn =
-          internal::module_msvcrt.get_function<fn__wfindnext32_t>("_wfindnext");
-      return pfn(handle, fileinfo);
-    }
+    if (internal::is_nt())
+      return crt_get__wfindnext32()(handle, fileinfo);
 
     HANDLE h = reinterpret_cast<HANDLE>(handle);
 

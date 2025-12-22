@@ -12,7 +12,7 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get_RemoveDirectoryW()(lpPathName);
 
-    auto aname = internal::narrow(lpPathName);
+    auto aname = internal::w2a(lpPathName);
     return RemoveDirectoryA(aname.c_str());
   }
 } // namespace mingw_thunk

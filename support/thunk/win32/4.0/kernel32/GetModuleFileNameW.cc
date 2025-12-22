@@ -25,7 +25,7 @@ namespace mingw_thunk
     DWORD a_size = GetModuleFileNameA(hModule, a_filename, MAX_PATH);
     if (a_size == 0)
       return 0;
-    stl::wstring w_filename = internal::widen(a_filename);
+    stl::wstring w_filename = internal::a2w(a_filename);
     if (nSize >= w_filename.size() + 1) {
       wmemcpy(lpFilename, w_filename.c_str(), w_filename.size());
       lpFilename[w_filename.size()] = L'\0';

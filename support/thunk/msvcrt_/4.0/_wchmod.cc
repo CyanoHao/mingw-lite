@@ -1,4 +1,4 @@
-#include <thunk/_common.h>
+#include <thunk/_crt.h>
 #include <thunk/os.h>
 #include <thunk/string.h>
 
@@ -12,7 +12,7 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get__wchmod()(filename, pmode);
 
-    stl::string a_name = internal::narrow(filename);
+    stl::string a_name = internal::w2a(filename);
     return _chmod(a_name.c_str(), pmode);
   }
 } // namespace mingw_thunk

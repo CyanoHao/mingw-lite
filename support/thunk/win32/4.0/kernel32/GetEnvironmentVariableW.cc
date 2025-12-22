@@ -20,7 +20,7 @@ namespace mingw_thunk
 
     stl::string a_name;
     if (lpName)
-      a_name = internal::narrow(lpName);
+      a_name = internal::w2a(lpName);
 
     constexpr size_t max_env_size = 32767;
     char a_buffer[max_env_size + 1] = {0};
@@ -34,7 +34,7 @@ namespace mingw_thunk
       return 0;
     }
 
-    stl::wstring w_buffer = internal::widen(a_buffer, ret);
+    stl::wstring w_buffer = internal::a2w(a_buffer, ret);
     if (w_buffer.size() + 1 > nSize) {
       return w_buffer.size() + 1;
     }

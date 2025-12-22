@@ -14,11 +14,11 @@ namespace mingw_thunk
   {
     if (internal::is_nt()) {
       static auto *pfn =
-          internal::module_msvcrt.get_function<fn__wutime32_t>("_wutime");
+          internal::module_msvcrt().get_function<fn__wutime32_t>("_wutime");
       return pfn(filename, times);
     }
 
-    stl::string a_path = internal::narrow(filename);
+    stl::string a_path = internal::w2a(filename);
     return _utime32(a_path.c_str(), times);
   }
 } // namespace mingw_thunk

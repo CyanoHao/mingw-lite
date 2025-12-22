@@ -1,7 +1,7 @@
 #pragma once
 
-#include <thunk/_common.h>
-#include <thunk/ddk/ntifs.h>
+#include "_dll.h"
+#include "ddk/ntifs.h"
 
 #include <ntdef.h>
 #include <ntsecapi.h>
@@ -14,14 +14,12 @@ namespace mingw_thunk
   inline auto *try_get_##name() noexcept                                       \
   {                                                                            \
     static auto *pfn =                                                         \
-        internal::module_##module.get_function<decltype(::name)>(#name);       \
+        internal::module_##module().get_function<decltype(::name)>(#name);     \
     return pfn;                                                                \
   }
 
   namespace
   {
-    __DECLARE_NON_THUNK_TRY_GET_FUNCTION(advapi32, SystemFunction036)
-
     __DECLARE_NON_THUNK_TRY_GET_FUNCTION(ntdll, NtQueryDirectoryFile)
     __DECLARE_NON_THUNK_TRY_GET_FUNCTION(ntdll, NtQueryInformationFile)
     __DECLARE_NON_THUNK_TRY_GET_FUNCTION(ntdll, NtQueryObject)

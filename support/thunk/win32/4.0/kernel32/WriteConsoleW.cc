@@ -25,7 +25,7 @@ namespace mingw_thunk
                                  lpReserved);
 
     auto abuf =
-        internal::narrow((const wchar_t *)lpBuffer, nNumberOfCharsToWrite);
+        internal::w2a((const wchar_t *)lpBuffer, nNumberOfCharsToWrite);
     DWORD awritten;
     int ok = WriteConsoleA(
         hConsoleOutput, abuf.c_str(), abuf.length(), &awritten, lpReserved);
@@ -34,7 +34,7 @@ namespace mingw_thunk
         // fast path
         *lpNumberOfCharsWritten = nNumberOfCharsToWrite;
       else {
-        auto wwritten = internal::widen(abuf.c_str(), awritten);
+        auto wwritten = internal::a2w(abuf.c_str(), awritten);
         *lpNumberOfCharsWritten = wwritten.length();
       }
     }

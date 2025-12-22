@@ -22,7 +22,7 @@ namespace mingw_thunk
 
     stl::string a_name;
     if (lpName)
-      a_name = internal::narrow(lpName);
+      a_name = internal::w2a(lpName);
     return CreateEventA(lpEventAttributes,
                         bManualReset,
                         bInitialState,

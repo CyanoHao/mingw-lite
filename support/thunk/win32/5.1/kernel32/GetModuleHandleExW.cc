@@ -1,5 +1,5 @@
 #include <thunk/_common.h>
-#include <thunk/try_get.h>
+#include <thunk/_ntdll.h>
 
 #include <windows.h>
 

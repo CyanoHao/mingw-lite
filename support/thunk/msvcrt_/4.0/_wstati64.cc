@@ -17,7 +17,7 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get__wstati64()(path, buffer);
 
-    stl::string a_path = internal::narrow(path);
+    stl::string a_path = internal::w2a(path);
     return _stat32i64(a_path.c_str(), buffer);
   }
 } // namespace mingw_thunk

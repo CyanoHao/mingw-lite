@@ -19,10 +19,10 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get_MoveFileExW()(lpExistingFileName, lpNewFileName, dwFlags);
 
-    auto a_exist = internal::narrow(lpExistingFileName);
+    auto a_exist = internal::w2a(lpExistingFileName);
     stl::string a_new;
     if (lpNewFileName)
-      a_new = internal::narrow(lpNewFileName);
+      a_new = internal::w2a(lpNewFileName);
 
     return MoveFileExA(
         a_exist.c_str(), lpNewFileName ? a_new.c_str() : nullptr, dwFlags);

@@ -12,7 +12,7 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get_SetCurrentDirectoryW()(lpPathName);
 
-    stl::string a_path_name = internal::narrow(lpPathName);
+    stl::string a_path_name = internal::w2a(lpPathName);
     return SetCurrentDirectoryA(a_path_name.c_str());
   }
 } // namespace mingw_thunk

@@ -19,7 +19,7 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get_GetFileAttributesExW()(lpFileName, fInfoLevelId, lpFileInformation);
 
-    auto aname = internal::narrow(lpFileName);
+    auto aname = internal::w2a(lpFileName);
     return GetFileAttributesExA(aname.c_str(), fInfoLevelId, lpFileInformation);
   }
 } // namespace mingw_thunk

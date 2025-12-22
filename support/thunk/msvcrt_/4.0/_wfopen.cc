@@ -15,8 +15,8 @@ namespace mingw_thunk
     if (internal::is_nt())
       return get__wfopen()(filename, mode);
 
-    auto aname = internal::narrow(filename);
-    auto amode = internal::narrow(mode);
+    auto aname = internal::w2a(filename);
+    auto amode = internal::w2a(mode);
     return fopen(aname.c_str(), amode.c_str());
   }
 } // namespace mingw_thunk
