@@ -1,5 +1,7 @@
 #pragma once
 
+#include "_no_thunk.h"
+
 #include <stddef.h>
 #include <stringapiset.h>
 
@@ -12,16 +14,15 @@ namespace mingw_thunk::internal
 {
   inline stl::wstring a2w(const char *str, size_t length)
   {
-    static auto const pfn = module_kernel32().get_function<
-        decltype(MultiByteToWideChar)>(
-        "MultiByteToWideChar");
-
+    // MultiByteToWideChar can be thunk'ed to treat CP_ACP as CP_UTF8
+    // GetACP is also thunk'ed to report CP_UTF8
     if (length == 0)
       return {};
     int requiredLength =
-        MultiByteToWideChar(CP_ACP, 0, str, length, nullptr, 0);
+        win32_MultiByteToWideChar()(CP_ACP, 0, str, length, nullptr, 0);
     stl::wstring result(requiredLength, 0);
-    MultiByteToWideChar(CP_ACP, 0, str, length, result.data(), requiredLength);
+    win32_MultiByteToWideChar()(
+        CP_ACP, 0, str, length, result.data(), requiredLength);
     return result;
   }
 
@@ -50,19 +51,21 @@ namespace mingw_thunk::internal
 
   inline stl::string w2a(const wchar_t *str, size_t length)
   {
+    // WideCharToMultiByte can be thunk'ed to treat CP_ACP as CP_UTF8
+    // GetACP is also thunk'ed to report CP_UTF8
     if (length == 0)
       return {};
-    int requiredLength = WideCharToMultiByte(
+    int requiredLength = win32_WideCharToMultiByte()(
         CP_ACP, 0, str, length, nullptr, 0, nullptr, nullptr);
     stl::string result(requiredLength, 0);
-    WideCharToMultiByte(CP_ACP,
-                        0,
-                        str,
-                        length,
-                        result.data(),
-                        requiredLength,
-                        nullptr,
-                        nullptr);
+    win32_WideCharToMultiByte()(CP_ACP,
+                                0,
+                                str,
+                                length,
+                                result.data(),
+                                requiredLength,
+                                nullptr,
+                                nullptr);
     return result;
   }
 

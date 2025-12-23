@@ -50,7 +50,6 @@ class LayerPathsAAB(NamedTuple):
   crt: Path
   gcc: Path
   headers: Path
-  utf8: Path
 
   expat: Path
   gmp: Path
@@ -93,7 +92,6 @@ class ProjectPaths:
   # build phase
 
   sync_src_dir: Path
-  utf8_src_dir: Path
   build_dir: Path
   layer_dir: Path
   pkg_dir: Path
@@ -145,7 +143,6 @@ class ProjectPaths:
     # build phase
 
     self.sync_src_dir = self.root_dir / 'support/sync'
-    self.utf8_src_dir = self.root_dir / 'support/utf8'
     self.build_dir = Path(f'/tmp/build/{abi_name}')
     self.layer_dir = Path(f'/tmp/layer/{abi_name}')
     self.pkg_dir = Path(f'/tmp/pkg/{abi_name}')
@@ -256,7 +253,6 @@ class ProjectPaths:
       crt = layer_AAB_prefix / 'crt',
       gcc = layer_AAB_prefix / 'gcc',
       headers = layer_AAB_prefix / 'headers',
-      utf8 = layer_AAB_prefix / 'utf8',
 
       expat = layer_AAB_prefix / 'expat',
       gmp = layer_AAB_prefix / 'gmp',
