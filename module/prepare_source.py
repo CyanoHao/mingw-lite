@@ -259,8 +259,8 @@ def _mingw_host(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     return
 
   if check_and_sync(paths.src_dir.mingw_host, paths.src_dir.mingw):
-    # CRT: Set binary stdio
-    patch(paths.src_dir.mingw_host, paths.patch_dir / 'crt' / 'set-binary-stdio.patch')
+    # CRT: Hack UTF-8 startup
+    patch(paths.src_dir.mingw_host, paths.patch_dir / 'crt-host' / 'hack-utf8-startup.patch')
 
     # CRT: Add mingw thunks
     thunk_flags = []

@@ -224,6 +224,7 @@ THUNK_LIST_TOOLCHAIN_WIN32U = {
     'CreateProcessA',
     'GetACP',
     'GetOEMCP',
+    'WriteFile',
   ],
 }
 

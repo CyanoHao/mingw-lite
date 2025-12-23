@@ -1,0 +1,115 @@
+diff --git a/mingw-w64-crt/crt/crtexe.c b/mingw-w64-crt/crt/crtexe.c
+index f23c5f0ed..1c9cb7d0e 100644
+--- a/mingw-w64-crt/crt/crtexe.c
++++ b/mingw-w64-crt/crt/crtexe.c
+@@ -17,6 +17,13 @@
+ #include <float.h>
+ #include <corecrt_startup.h>
+ 
++#include <fcntl.h>
++#include <io.h>
++#include <stdio.h>
++
++#define WIN32_LEAN_AND_MEAN
++#include <windows.h>
++
+ #if defined(__SEH__) && (!defined(__clang__) || __clang_major__ >= 7)
+ #define SEH_INLINE_ASM
+ #endif
+@@ -56,6 +63,8 @@ extern LPTOP_LEVEL_EXCEPTION_FILTER __mingw_oldexcpt_handler;
+ extern void _pei386_runtime_relocator (void);
+ long CALLBACK _gnu_exception_handler (EXCEPTION_POINTERS * exception_data);
+ static int duplicate_ppstrings (int ac, _TCHAR ***av);
++static int __u8getmainargs (int *argc, char ***argv, char ***envp,
++                            int doWildCard, _startupinfo *startInfo);
+ 
+ extern int _MINGW_INSTALL_DEBUG_MATHERR;
+ 
+@@ -216,7 +225,7 @@ __tmainCRTStartup (void)
+ #ifdef _UNICODE
+ 	ret = __wgetmainargs (&argc, &argv, &envp, _dowildcard, &startinfo);
+ #else
+-	ret = __getmainargs (&argc, &argv, &envp, _dowildcard, &startinfo);
++	ret = __u8getmainargs (&argc, &argv, &envp, _dowildcard, &startinfo);
+ #endif
+ 	if (ret < 0)
+ 	  _amsg_exit (8); /* _RT_SPACEARG */
+@@ -325,3 +334,78 @@ int __cdecl atexit (_PVFV func)
+ }
+ 
+ char __mingw_module_is_dll = 0;
++
++static int __u8getmainargs(int *argc, char ***argv, char ***envp,
++                           int doWildCard, _startupinfo *startInfo) {
++  wchar_t **wargv;
++  wchar_t **wenvp;
++
++  int ret = __wgetmainargs(argc, &wargv, &wenvp, doWildCard, startInfo);
++  if (ret != 0)
++    return ret;
++
++  size_t argv_payload_len = 0;
++  for (int i = 0; i < *argc; i++)
++    argv_payload_len +=
++      WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, NULL, 0, NULL, NULL);
++
++  size_t argv_len = sizeof(char *) * (*argc + 1);
++  *argv = (char **)LocalAlloc(LMEM_FIXED, argv_len + argv_payload_len);
++  char *argv_payload = (char *)(*argv + *argc + 1);
++
++  for (int i = 0; i < *argc; i++) {
++    (*argv)[i] = argv_payload;
++    int len = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1,
++                                  argv_payload, argv_payload_len, NULL, NULL);
++    argv_payload += len;
++    argv_payload_len -= len;
++  }
++  (*argv)[*argc] = NULL;
++
++  size_t envc = 0;
++  size_t envp_payload_len = 0;
++  while (wenvp[envc]) {
++    envp_payload_len +=
++      WideCharToMultiByte(CP_UTF8, 0, wenvp[envc], -1, NULL, 0, NULL, NULL);
++    envc++;
++  }
++
++  size_t envp_len = sizeof(char *) * (envc + 1);
++  *envp = (char **)LocalAlloc(LMEM_FIXED, envp_len + envp_payload_len);
++  char *envp_payload = (char *)(*envp + envc + 1);
++
++  for (int i = 0; i < envc; i++) {
++    (*envp)[i] = envp_payload;
++    int len = WideCharToMultiByte(CP_UTF8, 0, wenvp[i], -1,
++                                  envp_payload, envp_payload_len, NULL, NULL);
++    envp_payload += len;
++    envp_payload_len -= len;
++  }
++  (*envp)[envc] = NULL;
++
++  return 0;
++}
++
++/* Set stdio to binary mode to workaround CRT's bugged "double translation".
++   1. UCRT randomly eats linefeeds when piping on Windows Vista.
++      Compiling any non-trivial program compiled with '-g3 -pipe'
++      is likely to fail.
++   2. MSVCRT, and UCRT prior to 10.0.14393, cannot write multi-byte
++      characters one-char-by-one-char after set_locale(LC_ALL, "").
++        int main()
++        {
++          setlocale(LC_ALL, "");
++          for (auto ch : "你好")
++            fputc(ch, stdout);
++        }
++      This is exactly how MinGW-w64's printf and toolchain's NLS work.
++ */
++
++static void __cdecl set_binary_stdio(void) {
++  _setmode(_fileno(stdin), _O_BINARY);
++  _setmode(_fileno(stdout), _O_BINARY);
++  _setmode(_fileno(stderr), _O_BINARY);
++}
++
++__auto_type __mingw_lite_set_binary_stdio
++    __attribute__((section(".CRT$XCML"), used)) = &set_binary_stdio;

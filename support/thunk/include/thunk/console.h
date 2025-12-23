@@ -8,10 +8,10 @@
 
 namespace mingw_thunk::internal
 {
-  inline bool is_console(HANDLE h) noexcept
+  inline bool is_console(HANDLE fh) noexcept
   {
     DWORD mode;
-    return GetConsoleMode(h, &mode);
+    return GetConsoleMode(fh, &mode);
   }
 
   inline bool is_console(int fd) noexcept
