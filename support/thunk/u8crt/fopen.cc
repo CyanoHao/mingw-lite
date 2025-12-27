@@ -35,6 +35,7 @@ namespace mingw_thunk
         // ,ccs=UTF-8
         goto stop;
       }
+      ++mode;
     }
   stop:
     w_mode.push_back('b');

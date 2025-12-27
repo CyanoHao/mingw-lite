@@ -10,15 +10,14 @@ namespace mingw_thunk
   __DEFINE_CRT_THUNK(int, fputc, int c, FILE *stream)
   {
     static stl::string buf;
-    unsigned char ch = c;
+
     int fd = _fileno(stream);
     HANDLE fh = (HANDLE)_get_osfhandle(fd);
 
-    if (!internal::is_console(fh)) {
-      int res = _write(fd, &ch, 1);
-      return res == 1 ? ch : EOF;
-    }
+    if (!internal::is_console(fh))
+      return get_fputc()(c, stream);
 
+    unsigned char ch = c;
     int len = internal::u8_dec_len(ch);
     if (len > 0) {
       // leading byte

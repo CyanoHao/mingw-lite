@@ -53,26 +53,26 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
     build_dir = paths.src_dir.binutils / 'build-ABB'
     ensure(build_dir)
 
-    configure(build_dir, [
-      '--prefix=',
-      f'--host={ver.target}',
-      f'--target={ver.target}',
-      f'--build={config.build}',
-      # workaround: bfd plugin 'dep' should be built as shared object
-      '--enable-shared',
-      '--enable-static',
-      # features
-      '--disable-install-libbfd',
-      '--disable-multilib',
-      '--enable-nls',
-      *cflags_B(
-        cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        optimize_for_size = ver.optimize_for_size,
-        lto = not ver.optimize_for_size,
-      ),
-      f'AR={ver.target}-gcc-ar',
-      f'RANLIB={ver.target}-gcc-ranlib',
-    ])
+    # configure(build_dir, [
+    #   '--prefix=',
+    #   f'--host={ver.target}',
+    #   f'--target={ver.target}',
+    #   f'--build={config.build}',
+    #   # workaround: bfd plugin 'dep' should be built as shared object
+    #   '--enable-shared',
+    #   '--enable-static',
+    #   # features
+    #   '--disable-install-libbfd',
+    #   '--disable-multilib',
+    #   '--enable-nls',
+    #   *cflags_B(
+    #     cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
+    #     optimize_for_size = ver.optimize_for_size,
+    #     lto = not ver.optimize_for_size,
+    #   ),
+    #   f'AR={ver.target}-gcc-ar',
+    #   f'RANLIB={ver.target}-gcc-ranlib',
+    # ])
     make_default(build_dir, config.jobs)
     make_custom(build_dir, [
       f'DESTDIR={paths.layer_ABB.binutils}',
@@ -312,46 +312,46 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
     if ver.fpmath:
       config_flags.append(f'--with-fpmath={ver.fpmath}')
 
-    configure(build_dir, [
-      '--prefix=',
-      '--libexecdir=/lib',
-      f'--with-gcc-major-version-only',
-      f'--target={ver.target}',
-      f'--host={ver.target}',
-      f'--build={config.build}',
-      '--enable-shared' if config.enable_shared else '--disable-shared',
-      '--enable-static',
-      # features
-      '--disable-bootstrap',
-      '--enable-checking=release',
-      '--enable-languages=c,c++',
-      '--enable-libgomp',
-      '--disable-libmpx',
-      '--disable-libstdcxx-pch',
-      '--disable-multilib',
-      '--enable-nls',
-      f'--enable-threads={ver.thread}',
-      '--disable-win32-registry',
-      '--disable-win32-utf8-manifest',
-      # packages
-      f'--with-arch={ver.march}',
-      '--without-libcc1',
-      '--with-libiconv',
-      '--with-tune=generic',
-      *config_flags,
-      *cflags_B(
-        cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        optimize_for_size = ver.optimize_for_size,
-        lto = not ver.optimize_for_size,
-      ),
-      *cflags_B('_FOR_TARGET',
-        # CPPFLAGS_FOR_TARGET is not passed
-        common_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        optimize_for_size = ver.optimize_for_size,
-      ),
-      f'AR={ver.target}-gcc-ar',
-      f'RANLIB={ver.target}-gcc-ranlib',
-    ])
+    # configure(build_dir, [
+    #   '--prefix=',
+    #   '--libexecdir=/lib',
+    #   f'--with-gcc-major-version-only',
+    #   f'--target={ver.target}',
+    #   f'--host={ver.target}',
+    #   f'--build={config.build}',
+    #   '--enable-shared' if config.enable_shared else '--disable-shared',
+    #   '--enable-static',
+    #   # features
+    #   '--disable-bootstrap',
+    #   '--enable-checking=release',
+    #   '--enable-languages=c,c++',
+    #   '--enable-libgomp',
+    #   '--disable-libmpx',
+    #   '--disable-libstdcxx-pch',
+    #   '--disable-multilib',
+    #   '--enable-nls',
+    #   f'--enable-threads={ver.thread}',
+    #   '--disable-win32-registry',
+    #   '--disable-win32-utf8-manifest',
+    #   # packages
+    #   f'--with-arch={ver.march}',
+    #   '--without-libcc1',
+    #   '--with-libiconv',
+    #   '--with-tune=generic',
+    #   *config_flags,
+    #   *cflags_B(
+    #     cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
+    #     optimize_for_size = ver.optimize_for_size,
+    #     lto = not ver.optimize_for_size,
+    #   ),
+    #   *cflags_B('_FOR_TARGET',
+    #     # CPPFLAGS_FOR_TARGET is not passed
+    #     common_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
+    #     optimize_for_size = ver.optimize_for_size,
+    #   ),
+    #   f'AR={ver.target}-gcc-ar',
+    #   f'RANLIB={ver.target}-gcc-ranlib',
+    # ])
     make_custom(build_dir, ['all-host'], config.jobs)
 
     with overlayfs_ro(f'/usr/local/{ver.target}', [
@@ -598,22 +598,22 @@ def _pkgconf(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace
 def build_ABB_toolchain(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   _binutils(ver, paths, config)
 
-  _headers(ver, paths, config)
+  # _headers(ver, paths, config)
 
-  _crt(ver, paths, config)
+  # _crt(ver, paths, config)
 
-  if config.qt:
-    _crt_qt(ver, paths, config)
+  # if config.qt:
+  #   _crt_qt(ver, paths, config)
 
-  _winpthreads(ver, paths, config)
+  # _winpthreads(ver, paths, config)
 
-  if ver.thread == 'mcf':
-    _mcfgthread(ver, paths, config)
+  # if ver.thread == 'mcf':
+  #   _mcfgthread(ver, paths, config)
 
   _gcc(ver, paths, config)
 
-  _gdb(ver, paths, config)
+  # _gdb(ver, paths, config)
 
-  _gmake(ver, paths, config)
+  # _gmake(ver, paths, config)
 
-  _pkgconf(ver, paths, config)
+  # _pkgconf(ver, paths, config)

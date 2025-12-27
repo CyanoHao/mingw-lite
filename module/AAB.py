@@ -288,23 +288,23 @@ def _mcfgthread(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namesp
     shutil.copy(header_file, include_dir / header_file.name)
 
 def build_AAB_compiler(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
-  _binutils(ver, paths, config)
+  # _binutils(ver, paths, config)
 
-  headers = _headers(ver, paths, config)
-  headers.__next__()
+  # headers = _headers(ver, paths, config)
+  # headers.__next__()
 
-  gcc = _gcc(ver, paths, config)
-  gcc.__next__()
+  # gcc = _gcc(ver, paths, config)
+  # gcc.__next__()
 
   _crt(ver, paths, config)
 
-  _winpthreads(ver, paths, config)
-  headers.__next__()
+  # _winpthreads(ver, paths, config)
+  # headers.__next__()
 
-  if ver.thread == 'mcf':
-    _mcfgthread(ver, paths, config)
+  # if ver.thread == 'mcf':
+  #   _mcfgthread(ver, paths, config)
 
-  gcc.__next__()
+  # gcc.__next__()
 
 def _gmp(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   with overlayfs_ro('/usr/local', [

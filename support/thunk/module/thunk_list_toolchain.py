@@ -2,6 +2,7 @@
 THUNK_LIST_TOOLCHAIN_CRTU = [
   'fopen',
   'fputc',
+  'putc',
 ]
 
 # feature thunk
