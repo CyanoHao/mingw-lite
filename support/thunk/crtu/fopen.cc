@@ -15,12 +15,8 @@ namespace mingw_thunk
       case 'w':
       case 'a':
       case '+':
-        w_mode.push_back(*mode);
-        break;
       case 't':
       case 'b':
-        // ignore (add 'b' later)
-        break;
       case 'x':
       case 'c':
       case 'n':

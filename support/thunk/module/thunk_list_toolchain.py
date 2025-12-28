@@ -1,7 +1,9 @@
 # UTF-8 thunk
 THUNK_LIST_TOOLCHAIN_CRTU = [
+  '_open',
   'fopen',
   'fputc',
+  'open',
   'putc',
 ]
 
@@ -164,7 +166,6 @@ THUNK_LIST_TOOLCHAIN_WIN32 = {
       'CreateWaitableTimerExW',
       'DeleteProcThreadAttributeList',
       'GetFileInformationByHandleEx',
-      'GetFinalPathNameByHandleA',
       'GetFinalPathNameByHandleW',
       'GetTickCount64',
       'InitializeProcThreadAttributeList',
@@ -218,12 +219,23 @@ THUNK_LIST_TOOLCHAIN_WIN32 = {
   },
 }
 
+# pre-thunk for non-UTF-8 build (-A → -W)
+THUNK_LIST_CORE_WIN32A = {
+  '6.0': {
+    'kernel32': [
+      'GetFinalPathNameByHandleA',
+    ],
+  },
+}
+
 # UTF-8 thunk (-A → -W)
 THUNK_LIST_TOOLCHAIN_WIN32U = {
   'kernel32': [
     'CreateFileA',
     'CreateProcessA',
     'GetACP',
+    'GetFinalPathNameByHandleA',
+    'GetFullPathNameA',
     'GetOEMCP',
     'WriteFile',
   ],

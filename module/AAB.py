@@ -213,6 +213,12 @@ def _crt(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
         [libatomic_fake_object],
       )
 
+  # TODO: handle UCRT forwarder dlls.
+  if ver.default_crt == 'ucrt':
+    libucrtbase_a = paths.layer_AAB.crt / 'usr/local' / ver.target / 'lib/libucrtbase.a'
+    libmsvcrt_a = paths.layer_AAB.crt / 'usr/local' / ver.target / 'lib/libmsvcrt.a'
+    shutil.copy(libucrtbase_a, libmsvcrt_a)
+
 def _winpthreads(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   with overlayfs_ro('/usr/local', [
     paths.layer_AAB.binutils / 'usr/local',
