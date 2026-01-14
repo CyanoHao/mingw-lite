@@ -1,5 +1,15 @@
 # UTF-8 thunk
 THUNK_LIST_TOOLCHAIN_UCRTU = {
+  'api-ms-win-crt-filesystem-l1-1-0': [
+    '_chmod',
+    '_findfirst64',
+    '_findnext64',
+    '_fullpath',
+    '_stat64',
+    '_unlink',
+    'remove',
+    'rename',
+  ],
   'api-ms-win-crt-stdio-l1-1-0': [
     '__stdio_common_vfprintf',
     '_close',
@@ -241,7 +251,7 @@ THUNK_LIST_TOOLCHAIN_WIN32 = {
 }
 
 # pre-thunk for non-UTF-8 build (-A → -W)
-THUNK_LIST_CORE_WIN32A = {
+THUNK_LIST_TOOLCHAIN_WIN32A = {
   '6.0': {
     'kernel32': [
       'GetFinalPathNameByHandleA',
@@ -258,6 +268,8 @@ THUNK_LIST_TOOLCHAIN_WIN32U = {
     'GetFinalPathNameByHandleA',
     'GetFullPathNameA',
     'GetOEMCP',
+    'MultiByteToWideChar',
+    'WideCharToMultiByte',
     'WriteFile',
   ],
 }
