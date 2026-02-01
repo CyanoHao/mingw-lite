@@ -130,19 +130,6 @@ def package_mingw(paths: ProjectPaths):
 
   package_layers(paths.pkg_dir, layers, paths.mingw_pkg)
 
-def package_mingw_qt(paths: ProjectPaths):
-  layers = [
-    paths.layer_ABB.binutils,
-    paths.layer_ABB.crt_qt,
-    paths.layer_ABB.gcc,
-    paths.layer_ABB.gdb,
-    paths.layer_ABB.headers,
-    paths.layer_ABB.make,
-    paths.layer_ABB.pkgconf,
-  ]
-
-  package_layers(paths.pkg_dir, layers, paths.mingw_qt_pkg)
-
 def main():
   config = parse_args()
 
@@ -177,8 +164,6 @@ def main():
 
   build_ABB_toolchain(ver, paths, config)
   package_mingw(paths)
-  if config.qt:
-    package_mingw_qt(paths)
   build_ABB_xmake(ver, paths, config)
   package_xmake(paths)
 

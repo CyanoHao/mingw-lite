@@ -8,7 +8,7 @@ import subprocess
 from module.debug import shell_here
 from module.path import ProjectPaths
 from module.profile import BranchProfile
-from module.util import XMAKE_ARCH_MAP, add_objects_to_static_lib, ensure, overlayfs_ro
+from module.util import XMAKE_ARCH_MAP, add_objects_to_static_lib, ensure, overlayfs_ro, thunk_overlay_is_trivial
 from module.util import cflags_A, cflags_B, configure, make_custom, make_default, make_destdir_install
 from module.util import meson_build, meson_config, meson_flags_B, meson_install
 from module.util import xmake_build, xmake_config, xmake_install
@@ -33,7 +33,7 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
   make_destdir_install(build_dir, paths.layer_AAB.binutils)
 
 def _headers(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
-  build_dir = paths.src_dir.mingw_host / 'mingw-w64-headers' / 'build-AAB'
+  build_dir = paths.src_dir.mingw / 'mingw-w64-headers' / 'build-AAB'
   ensure(build_dir)
   configure(build_dir, [
     f'--prefix=/usr/local/{ver.target}',
@@ -163,7 +163,7 @@ def _crt(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
     paths.layer_AAB.headers / 'usr/local',
     paths.layer_AAB.gcc / 'usr/local',
   ]):
-    build_dir = paths.src_dir.mingw_host / 'mingw-w64-crt' / 'build-AAB'
+    build_dir = paths.src_dir.mingw / 'mingw-w64-crt' / 'build-AAB'
     ensure(build_dir)
 
     multilib_flags = [
@@ -243,6 +243,43 @@ def _crt(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
         [libatomic_fake_object],
       )
 
+def _thunk(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
+  with overlayfs_ro('/usr/local', [
+    paths.layer_AAB.binutils / 'usr/local',
+    paths.layer_AAB.headers / 'usr/local',
+    paths.layer_AAB.gcc / 'usr/local',
+    paths.layer_AAB.crt / 'usr/local',
+  ]):
+    src_dir = paths.in_tree_src_dir.thunk
+    v_mingw = Version(ver.mingw)
+
+    xmake_config(src_dir, [
+      '--buildir=build-AAB',
+      '--plat=mingw',
+      f'--arch={XMAKE_ARCH_MAP[ver.arch]}',
+      f'--mingw-prefix=/usr/local/{ver.target}',
+      f'--mingw-version={v_mingw.major}',
+      f'--thunk-level={ver.min_os}',
+      '--profile=toolchain',
+    ])
+    xmake_build(src_dir, config.jobs)
+    xmake_install(src_dir, paths.layer_AAB.thunk / 'usr/local' / ver.target)
+
+    # remove unnecessary libs
+    thunk_lib_dir = paths.layer_AAB.thunk / 'usr/local' / ver.target / 'lib'
+    overlay_libs = thunk_lib_dir.glob('liboverlay-*.a')
+    for overlay_lib in overlay_libs:
+      if thunk_overlay_is_trivial(overlay_lib, f'{ver.target}-nm'):
+        squashed_lib = overlay_lib.name.replace('liboverlay-', 'lib')
+        (thunk_lib_dir / squashed_lib).unlink()
+      overlay_lib.unlink()
+
+    # special handling libmsvcrt.a
+    if ver.default_crt == 'msvcrt' and (thunk_lib_dir / 'libmsvcrt-os.a').exists():
+      shutil.copy(thunk_lib_dir / 'libmsvcrt-os.a', thunk_lib_dir / 'libmsvcrt.a')
+    if ver.default_crt == 'ucrt' and (thunk_lib_dir / 'libucrt.a').exists():
+      shutil.copy(thunk_lib_dir / 'libucrt.a', thunk_lib_dir / 'libmsvcrt.a')
+
 def _winpthreads(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   with overlayfs_ro('/usr/local', [
     paths.layer_AAB.binutils / 'usr/local',
@@ -250,7 +287,7 @@ def _winpthreads(ver: BranchProfile, paths: ProjectPaths, config: argparse.Names
     paths.layer_AAB.gcc / 'usr/local',
     paths.layer_AAB.crt / 'usr/local',
   ]):
-    build_dir = paths.src_dir.mingw_host / 'mingw-w64-libraries' / 'winpthreads' / 'build-AAB'
+    build_dir = paths.src_dir.mingw / 'mingw-w64-libraries' / 'winpthreads' / 'build-AAB'
     ensure(build_dir)
     configure(build_dir, [
       f'--prefix=/usr/local/{ver.target}',
@@ -327,6 +364,8 @@ def build_AAB_compiler(ver: BranchProfile, paths: ProjectPaths, config: argparse
   gcc.__next__()
 
   _crt(ver, paths, config)
+
+  _thunk(ver, paths, config)
 
   _winpthreads(ver, paths, config)
   headers.__next__()

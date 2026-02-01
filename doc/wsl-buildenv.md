@@ -22,7 +22,7 @@ See [Microsoft Learn](https://learn.microsoft.com/en-us/windows/wsl/install).
    ```bash
    apt update
    apt install --no-install-recommends -y \
-     autoconf automake build-essential cmake flex gettext libtool meson texinfo xmake \
+     autoconf automake build-essential cmake flex gettext libtool llvm meson texinfo xmake \
      7zip ca-certificates curl file gawk libarchive-tools python3 python3-packaging zstd
    ```
 3. Set environment variables:

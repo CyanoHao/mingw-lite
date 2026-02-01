@@ -1,12 +1,19 @@
 #pragma once
 
-#include <thunk/try_get.h>
+#include <stddef.h>
+#include <windows.h>
+#include <winternl.h>
 
 #define _In_NLS_string_(s)
 
 #define __WarningMessage__(...)
 
 #define MAXIMUM_FILENAME_LENGTH 256
+
+namespace mingw_thunk
+{
+  using byte = unsigned char;
+}
 
 namespace mingw_thunk::internal
 {
@@ -60,13 +67,6 @@ namespace mingw_thunk::internal
       return ERROR_TIMEOUT;
     }
 
-#if !defined(__USING_NTDLL_LIB)
-    const auto RtlNtStatusToDosError = try_get_RtlNtStatusToDosError();
-    if (!RtlNtStatusToDosError) {
-      // 如果没有RtlNtStatusToDosError就直接设置Status代码吧，反正至少比没有错误代码强
-      return Status;
-    }
-#endif
     return RtlNtStatusToDosError(Status);
   }
 

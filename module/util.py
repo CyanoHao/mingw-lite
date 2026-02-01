@@ -50,8 +50,8 @@ def cflags_B(
   lto: bool = False,
 ) -> List[str]:
   cpp = ['-DNDEBUG']
-  common = ['-pipe']
-  ld = ['-s']
+  common = ['-g1', '-pipe']
+  ld = []
   if lto:
     # lto does not work with -Os
     common.extend(['-O2', '-flto'])
@@ -201,6 +201,27 @@ def remove_info_main_menu(prefix: Path):
   info_main_menu = prefix / 'share/info/dir'
   if info_main_menu.exists():
     info_main_menu.unlink()
+
+def thunk_overlay_is_trivial(archive: Path, nm: str):
+  process = subprocess.run([
+    nm,
+    '--defined-only',
+    '--format=posix',
+    '--print-file-name',
+    archive,
+  ], check = True, capture_output = True)
+  lines = process.stdout.decode().splitlines()
+
+  for line in lines:
+    fields = line.split()
+    if len(fields) != 4:
+      raise RuntimeError(f'Malformed output from nm: {line}')
+    symbol = fields[1]
+    kind = fields[2]
+    if symbol.startswith('__imp_') and kind != 'I':
+      return False
+
+  return True
 
 def xmake_build(cwd: Path, jobs: int):
   subprocess.run(

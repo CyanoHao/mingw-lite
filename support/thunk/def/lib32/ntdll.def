@@ -1,0 +1,9 @@
+LIBRARY NTDLL.dll
+EXPORTS
+  NtQueryDirectoryFile@44 == NtQueryDirectoryFile
+  NtQueryInformationFile@20 == NtQueryInformationFile
+  NtSetInformationFile@20 == NtSetInformationFile
+  RtlDosPathNameToNtPathName_U@16 == RtlDosPathNameToNtPathName_U
+  RtlFreeUnicodeString@4 == RtlFreeUnicodeString
+  RtlNtStatusToDosError@4 == RtlNtStatusToDosError
+  RtlPcToFileHeader@8 == RtlPcToFileHeader
