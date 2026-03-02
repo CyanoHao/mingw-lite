@@ -1,5 +1,5 @@
 diff --git a/bfd/bfdio.c b/bfd/bfdio.c
-index 22c39a7b0cc..d47e4ca827b 100644
+index 22c39a7b0cc..fd9f1c2d8c7 100644
 --- a/bfd/bfdio.c
 +++ b/bfd/bfdio.c
 @@ -120,13 +120,8 @@ _bfd_real_fopen (const char *filename, const char *modes)
@@ -17,19 +17,23 @@ index 22c39a7b0cc..d47e4ca827b 100644
  #else
     const unsigned int cp = CP_UTF8;
  #endif
-@@ -136,13 +131,14 @@ _bfd_real_fopen (const char *filename, const char *modes)
-       2) Convert the string: Calling with cbMultiByte set to -1 includes the terminating null.  */
-    size_t         partPathWSize = MultiByteToWideChar (cp, 0, filename, -1, NULL, 0);
-    wchar_t *      partPath = calloc (partPathWSize, sizeof(wchar_t));
-+   const size_t   partPathLen = partPathWSize - 1;
-    size_t         ix;
- 
+@@ -141,8 +136,8 @@ _bfd_real_fopen (const char *filename, const char *modes)
     MultiByteToWideChar (cp, 0, filename, -1, partPath, partPathWSize);
  
     /* Convert any UNIX style path separators into the DOS i.e. backslash separator.  */
-    for (ix = 0; ix < partPathLen; ix++)
+-   for (ix = 0; ix < partPathLen; ix++)
 -     if (IS_UNIX_DIR_SEPARATOR(filename[ix]))
-+     if (IS_UNIX_DIR_SEPARATOR(partPath[ix]))
++   for (ix = 0; partPath[ix] != L'\0'; ix++)
++     if (partPath[ix] <= L'\x7f' && IS_UNIX_DIR_SEPARATOR ((char)partPath[ix]))
         partPath[ix] = '\\';
  
     /* Getting the full path from the provided partial path.
+@@ -167,7 +162,7 @@ _bfd_real_fopen (const char *filename, const char *modes)
+    /* It is non-standard for modes to exceed 16 characters.  */
+    wchar_t    modesW[16];
+ 
+-   MultiByteToWideChar (cp, 0, modes, -1, modesW, sizeof(modesW));
++   MultiByteToWideChar (cp, 0, modes, -1, modesW, sizeof(modesW) / sizeof(wchar_t));
+ 
+    FILE *     file = _wfopen (fullPath, modesW);
+    free (fullPath);
