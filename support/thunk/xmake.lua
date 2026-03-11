@@ -145,6 +145,10 @@ function profile_core()
   return get_config('profile') == 'core'
 end
 
+function profile_core_utf8()
+  return get_config('profile') == 'core-utf8'
+end
+
 function profile_toolchain()
   return get_config('profile') == 'toolchain'
 end
@@ -171,6 +175,7 @@ option('profile')
   set_showmenu(true)
   set_values(
     'core',
+    'core-utf8',
     'qt',
     'toolchain',
     'toolchain-utf8')

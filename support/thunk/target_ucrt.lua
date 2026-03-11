@@ -6,7 +6,7 @@ target('overlay-ucrt')
   add_defines('_UCRT')
   enable_thunk_options()
 
-  if profile_toolchain_utf8() then
+  if profile_core_utf8() or profile_toolchain_utf8() then
     add_files(
       'ucrt/environment/__p__environ.cc',
       'ucrt/environment/_putenv.cc',

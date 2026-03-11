@@ -45,6 +45,7 @@ class ProfileInfo:
   win32_winnt: int
   min_os: Version
   thunk_free: bool
+  utf8_user_crt: bool
 
 @dataclass
 class BranchProfile(BranchVersions, ProfileInfo):
@@ -242,20 +243,29 @@ _ARCH_VARIANT_2_OPTIMIZE_FOR_SIZE_MAP: dict[str, bool] = {
   '32_386': True,
 }
 
-def _create_profile(arch: str, crt: str, thread: str, min_os: str, stable: bool = True) -> ProfileInfo:
+def _create_profile(
+  arch: str,
+  crt: str,
+  thread: str,
+  min_os: str,
+  stable: bool = True,
+  u8crt: bool = False,
+  opt_s: Optional[bool] = None,
+) -> ProfileInfo:
   mingw_arch = arch.split('_')[0]
   exception = 'dwarf' if mingw_arch == '32' else 'seh'
   triplet = _MINGW_ARCH_2_TRIPLET_MAP[mingw_arch]
   march = _ARCH_VARIANT_2_MARCH_MAP[arch]
   fpmath = _ARCH_VARIANT_2_FPMATH_MAP[arch]
-  optimize_for_size = _ARCH_VARIANT_2_OPTIMIZE_FOR_SIZE_MAP[arch]
+  if opt_s is None:
+    opt_s = _ARCH_VARIANT_2_OPTIMIZE_FOR_SIZE_MAP[arch]
 
   return ProfileInfo(
     arch = mingw_arch,
     fpmath = fpmath,
     march = march,
     target = triplet,
-    optimize_for_size = optimize_for_size,
+    optimize_for_size = opt_s,
 
     default_crt = crt,
     exception = exception,
@@ -264,6 +274,7 @@ def _create_profile(arch: str, crt: str, thread: str, min_os: str, stable: bool 
     win32_winnt = 0x0A00,
     min_os = Version(min_os),
     thunk_free = stable,
+    utf8_user_crt = u8crt,
   )
 
 PROFILES: Dict[str, ProfileInfo] = {
@@ -294,14 +305,20 @@ PROFILES: Dict[str, ProfileInfo] = {
   # profile variants for earlier Windows versions #
   #################################################
 
-  '32-msvcrt_win2000': None, # branch-dependent
+  # branch-dependent
+  # '32-msvcrt_win2000': None,
 
-  '32_686-msvcrt_winnt40': _create_profile('32_686', 'msvcrt', 'posix', '4.0',         False),
-  '32_686-msvcrt_win98':   _create_profile('32_686', 'msvcrt', 'posix', '3.9999+4.10', False),
+  '32_686-msvcrt_winnt40': _create_profile('32_686', 'msvcrt', 'posix', '4.0',         stable = False),
+  '32_686-msvcrt_win98':   _create_profile('32_686', 'msvcrt', 'posix', '3.9999+4.10', stable = False),
+  '32_486-msvcrt_win98':   _create_profile('32_486', 'msvcrt', 'posix', '3.9999+4.10', stable = False),
+  '32_386-msvcrt_win95':   _create_profile('32_386', 'msvcrt', 'posix', '3.9999+4.00', stable = False),
 
-  '32_486-msvcrt_win98': _create_profile('32_486', 'msvcrt', 'posix', '3.9999+4.10', False),
+  #####################
+  # beyond MinGW Lite #
+  #####################
 
-  '32_386-msvcrt_win95': _create_profile('32_386', 'msvcrt', 'posix', '3.9999+4.00', False),
+  '64-u8crt': _create_profile('64', 'ucrt', 'posix', '5.2', stable = False, u8crt = True, opt_s = False),
+  '32-u8crt': _create_profile('32', 'ucrt', 'posix', '5.1', stable = False, u8crt = True, opt_s = False),
 }
 
 def _profile_32_msvcrt_win2000(branch: str):
