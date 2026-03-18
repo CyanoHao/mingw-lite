@@ -176,6 +176,8 @@ namespace mingw_thunk
   // crt: stdio
 #ifdef _UCRT
   __DECLARE_MS_IMPORT(__stdio_common_vfprintf)
+  __DECLARE_MS_IMPORT(__stdio_common_vfscanf)
+  __DECLARE_MS_IMPORT(__stdio_common_vsscanf)
 #endif
   __DECLARE_MS_IMPORT(_open)
   __DECLARE_MS_IMPORT(_wfopen)

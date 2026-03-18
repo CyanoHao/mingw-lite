@@ -6,7 +6,7 @@ target('overlay-ucrt')
   add_defines('_UCRT')
   enable_thunk_options()
 
-  if profile_toolchain_utf8() then
+  if profile_core_utf8() or profile_toolchain_utf8() then
     add_files(
       'ucrt/environment/__p__environ.cc',
       'ucrt/environment/_putenv.cc',
@@ -44,19 +44,15 @@ target('overlay-ucrt')
       'ucrt/runtime/__p___argv.cc',
       'ucrt/runtime/_configure_narrow_argv.cc',
       'ucrt/runtime/_initialize_narrow_environment.cc',
-      'ucrt/stdio/@console_buffer.cc',
+      -- 'ucrt/stdio/__stdio_common_vfscanf.cc',
       'ucrt/stdio/__stdio_common_vfprintf.cc',
       'ucrt/stdio/_getcwd.cc',
       'ucrt/stdio/_open.cc',
-      'ucrt/stdio/fflush.cc',
       'ucrt/stdio/fopen.cc',
-      'ucrt/stdio/fputc.cc',
-      'ucrt/stdio/fputs.cc',
       'ucrt/stdio/getcwd.cc',
-      'ucrt/stdio/open.cc',
-      'ucrt/stdio/putc.cc',
-      'ucrt/stdio/puts.cc',
-      'ucrt/time/_ctime64.cc')
+      'ucrt/stdio/open.cc'
+      -- 'ucrt/stdio/putc.cc'
+    )
   end
 
 target('alias-long-ucrt')
@@ -101,19 +97,14 @@ target('thunk-ucrt-u')
     'ucrt/filesystem/stat64.cc',
     'ucrt/filesystem/stat64i32.cc',
     'ucrt/filesystem/unlink.cc',
-    'ucrt/stdio/@console_buffer.cc',
     'ucrt/stdio/__stdio_common_vfprintf.cc',
     'ucrt/stdio/_getcwd.cc',
     'ucrt/stdio/_open.cc',
-    'ucrt/stdio/fflush.cc',
     'ucrt/stdio/fopen.cc',
-    'ucrt/stdio/fputc.cc',
-    'ucrt/stdio/fputs.cc',
     'ucrt/stdio/getcwd.cc',
-    'ucrt/stdio/open.cc',
-    'ucrt/stdio/putc.cc',
-    'ucrt/stdio/puts.cc',
-    'ucrt/time/_ctime64.cc')
+    'ucrt/stdio/open.cc'
+    -- 'ucrt/stdio/putc.cc'
+  )
   enable_thunk_options()
   merge_win32_alias()
   skip_install()
@@ -131,9 +122,9 @@ target('test-ucrt-u')
 
 target('console-ucrt-u')
   add_defines('_UCRT')
-  add_deps('thunk-ucrt-u')
+  add_deps('thunk-ucrt-u', 'ext-u8crt-static')
   add_files('test/console-u.c')
-  add_linkorders('thunk-ucrt-u', 'ucrt')
+  add_linkorders('thunk-ucrt-u', 'ext-u8crt-static', 'ucrt')
   add_links('ucrt')
   enable_test_options()
   skip_install()

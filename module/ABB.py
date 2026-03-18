@@ -6,7 +6,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
-from typing import Optional
+from typing import List, Optional
 
 from module.alt_crt import postprocess_crt_import_libraries
 from module.debug import shell_here
@@ -190,13 +190,18 @@ def _crt(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   ]):
     thunk_src_dir = paths.in_tree_src_dir.thunk
 
+    if ver.utf8_user_crt:
+      thunk_profile = 'core-utf8'
+    else:
+      thunk_profile = 'core'
+
     xmake_config(thunk_src_dir, [
       '--buildir=build-ABB',
       '--plat=mingw',
       f'--arch={XMAKE_ARCH_MAP[ver.arch]}',
       f'--mingw-version={v.major}',
       f'--thunk-level={ver.min_os}',
-      '--profile=core',
+      f'--profile={thunk_profile}',
     ])
     xmake_build(thunk_src_dir, config.jobs)
     xmake_install(thunk_src_dir, paths.layer_ABB.thunk)
@@ -339,6 +344,10 @@ def _mcfgthread(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namesp
     shutil.copy(paths.src_dir.mcfgthread / 'licenses' / file, license_dir / file)
 
 def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
+  host_libs: List[Path] = []
+  if not ver.utf8_user_crt:
+    host_libs.append(paths.layer_AAB.iconv / 'usr/local')
+
   with overlayfs_ro('/usr/local', [
     # override CRT
     paths.layer_AAB.utf8 / 'usr/local',
@@ -351,14 +360,15 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
     paths.layer_AAB.gmp / 'usr/local',
     paths.layer_AAB.mpfr / 'usr/local',
     paths.layer_AAB.mpc / 'usr/local',
-    paths.layer_AAB.iconv / 'usr/local',
     paths.layer_AAB.intl / 'usr/local',
+
+    *host_libs,
   ]):
     v = Version(ver.gcc)
     build_dir = paths.src_dir.gcc / 'build-ABB'
     ensure(build_dir)
 
-    config_flags = []
+    config_flags: List[str] = []
 
     if ver.exception == 'dwarf':
       config_flags.append('--disable-sjlj-exceptions')
@@ -368,6 +378,9 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
 
     if ver.utf8_thunk:
       config_flags.append('--disable-win32-utf8-manifest')
+
+    if not ver.utf8_user_crt:
+      config_flags.append('--with-libiconv')
 
     configure(build_dir, [
       '--prefix=',
@@ -392,7 +405,6 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       # packages
       f'--with-arch={ver.march}',
       '--without-libcc1',
-      '--with-libiconv',
       '--with-tune=generic',
       *config_flags,
       *cflags_B(

@@ -43,6 +43,7 @@ end
 
 function msvcrt_thunk_toolchain_5_0()
   return {
+    {'_ctime64'},
     {'_fstat32i64', v = until_mingw(12)},
     {'_fstat64', v = until_mingw(13)},
     {'_futime64'},
@@ -77,7 +78,6 @@ end
 
 function msvcrt_thunk_toolchain_a_5_0()
   return {
-    {'_ctime64'},
     {'_findfirst64'},
     {'_findnext64'},
     {'_stat32i64', v = until_mingw(12)},
@@ -217,8 +217,7 @@ target('overlay-msvcrt-os')
       'msvcrt/u/stdio/getcwd.cc',
       'msvcrt/u/stdio/open.cc',
       'msvcrt/u/stdio/putc.cc',
-      'msvcrt/u/stdio/puts.cc',
-      'msvcrt/u/time/_ctime64.cc')
+      'msvcrt/u/stdio/puts.cc')
   end
 
   if profile_toolchain() then
@@ -307,6 +306,7 @@ target('test-msvcrt')
 
   if is_arch('i386', 'i686') then
     add_files(
+      'msvcrt/5.0/_ctime64.cc',
       'msvcrt/5.0/_futime64.test.cc',
       'msvcrt/5.0/_gmtime64.test.cc',
       'msvcrt/5.0/_localtime64.test.cc',
@@ -320,7 +320,6 @@ target('thunk-msvcrt-a')
   add_defines('__MSVCRT_VERSION__=0x0600')
   add_deps('alias-long-msvcrt')
   add_files(
-    'msvcrt/a/5.0/_ctime64.cc',
     'msvcrt/a/5.0/_findfirst64.cc',
     'msvcrt/a/5.0/_findnext64.cc',
     'msvcrt/a/5.0/_stat64.cc',
@@ -385,8 +384,7 @@ target('thunk-msvcrt-u')
     'msvcrt/u/stdio/getcwd.cc',
     'msvcrt/u/stdio/open.cc',
     'msvcrt/u/stdio/putc.cc',
-    'msvcrt/u/stdio/puts.cc',
-    'msvcrt/u/time/_ctime64.cc')
+    'msvcrt/u/stdio/puts.cc')
   enable_thunk_options()
   merge_win32_alias()
   skip_install()

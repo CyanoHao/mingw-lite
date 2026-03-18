@@ -145,6 +145,10 @@ function profile_core()
   return get_config('profile') == 'core'
 end
 
+function profile_core_utf8()
+  return get_config('profile') == 'core-utf8'
+end
+
 function profile_toolchain()
   return get_config('profile') == 'toolchain'
 end
@@ -171,6 +175,7 @@ option('profile')
   set_showmenu(true)
   set_values(
     'core',
+    'core-utf8',
     'qt',
     'toolchain',
     'toolchain-utf8')
@@ -213,3 +218,5 @@ includes('target_psapi.lua')
 includes('target_shell32.lua')
 includes('target_ucrt.lua')
 includes('target_ws2_32.lua')
+
+includes('ext_u8crt.lua')
