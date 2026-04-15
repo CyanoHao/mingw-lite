@@ -254,6 +254,8 @@ def _crt_host(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
     )
 
     # special handling libmsvcrt.a
+    if ver.default_crt == 'crtdll':
+      shutil.copy(crt_lib_dir / 'libcrtdll.a', crt_lib_dir / 'libmsvcrt.a')
     if ver.default_crt == 'msvcrt':
       shutil.copy(crt_lib_dir / 'libmsvcrt-os.a', crt_lib_dir / 'libmsvcrt.a')
     if ver.default_crt == 'ucrt':
@@ -321,6 +323,8 @@ def _crt_target(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namesp
     )
 
     # special handling libmsvcrt.a
+    if ver.default_crt == 'crtdll':
+      shutil.copy(crt_lib_dir / 'libcrtdll.a', crt_lib_dir / 'libmsvcrt.a')
     if ver.default_crt == 'msvcrt':
       shutil.copy(crt_lib_dir / 'libmsvcrt-os.a', crt_lib_dir / 'libmsvcrt.a')
     if ver.default_crt == 'ucrt':
@@ -535,11 +539,11 @@ def _winpthreads(ver: BranchProfile, paths: ProjectPaths, config: argparse.Names
   extract_shared_libs(base_prefix, shared_prefix)
 
 def build_AAB_compiler(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
-  _binutils(ver, paths, config)
-  _headers_1(ver, paths, config)
-  _gcc_1(ver, paths, config)
-  _crt_base(ver, paths, config)
-  _gcc_lib_bootstrap(ver, paths, config)
+  # _binutils(ver, paths, config)
+  # _headers_1(ver, paths, config)
+  # _gcc_1(ver, paths, config)
+  # _crt_base(ver, paths, config)
+  # _gcc_lib_bootstrap(ver, paths, config)
   _crt_host(ver, paths, config)
   _crt_target(ver, paths, config)
   _utf8(ver, paths, config)

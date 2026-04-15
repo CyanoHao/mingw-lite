@@ -56,7 +56,6 @@ end
 function msvcrt_utf8_startup_deps()
   -- symbols that are referenced by startup object
   -- they should be explicitly added to test target to be chosen
-  -- also they depend on some internal declarations not available in old versions
   return {
     'msvcrt/u/environment/__initenv.cc',
     'msvcrt/u/environment/__p__environ.cc',
@@ -404,6 +403,7 @@ target('argv-msvcrt')
   add_deps('thunk-msvcrt-u')
   add_files('test/argv.c')
   add_files(table.unpack(msvcrt_utf8_startup_deps()))
+  add_linkorders('thunk-msvcrt-u', 'msvcrt-os')
   add_links('msvcrt-os')
   add_tests('default', {
     runargs = {"你好", "世界"},

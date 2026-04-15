@@ -1,0 +1,4 @@
+LIBRARY msvcrt20.dll
+EXPORTS
+  ; runtime
+  __ms___GetMainArgs == __GetMainArgs

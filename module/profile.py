@@ -306,6 +306,7 @@ PROFILES: Dict[str, ProfileInfo] = {
   '32-win32':  _create_profile('32', 'ucrt',   'win32', '6.0'),
   '32-ucrt':   _create_profile('32', 'ucrt',   'posix', '5.1'),
   '32-msvcrt': _create_profile('32', 'msvcrt', 'posix', '5.1'),
+  '32-crtdll': _create_profile('32', 'crtdll', 'posix', '5.1'),
 
   ############################################
   # profile variants for micro architectures #

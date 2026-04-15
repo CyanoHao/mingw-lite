@@ -138,6 +138,7 @@ target('argv-ucrt')
   add_deps('thunk-ucrt-u')
   add_files('test/argv.c')
   add_files(table.unpack(ucrt_utf8_startup_deps()))
+  add_linkorders('thunk-ucrt-u', 'ucrt')
   add_links('ucrt')
   add_tests('default', {
     runargs = {"你好", "世界"},

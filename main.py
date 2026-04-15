@@ -170,18 +170,18 @@ def main():
   os.environ['XMAKE_ROOT'] = 'y'
 
   if not config.no_cross:
-    build_AAA_library(ver, paths, config)
-    build_AAA_tool(ver, paths, config)
+    # build_AAA_library(ver, paths, config)
+    # build_AAA_tool(ver, paths, config)
     build_AAB_compiler(ver, paths, config)
-    build_AAB_library(ver, paths, config)
-    package_cross(paths)
+    # build_AAB_library(ver, paths, config)
+    # package_cross(paths)
 
-  build_ABB_test_driver(ver, paths, config)
-  package_test_driver(paths)
-  build_ABB_toolchain(ver, paths, config)
-  package_mingw(paths)
-  build_ABB_xmake(ver, paths, config)
-  package_xmake(paths)
+  # build_ABB_test_driver(ver, paths, config)
+  # package_test_driver(paths)
+  # build_ABB_toolchain(ver, paths, config)
+  # package_mingw(paths)
+  # build_ABB_xmake(ver, paths, config)
+  # package_xmake(paths)
 
 if __name__ == '__main__':
   main()

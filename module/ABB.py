@@ -231,6 +231,8 @@ def _crt(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
     )
 
     # special handling libmsvcrt.a
+    if ver.default_crt == 'crtdll':
+      shutil.copy(crt_lib_dir / 'libcrtdll.a', crt_lib_dir / 'libmsvcrt.a')
     if ver.default_crt == 'msvcrt':
       shutil.copy(crt_lib_dir / 'libmsvcrt-os.a', crt_lib_dir / 'libmsvcrt.a')
     if ver.default_crt == 'ucrt':

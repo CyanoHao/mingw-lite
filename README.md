@@ -73,6 +73,7 @@ A profile is composed of bitness and predefined ABI variant. The combination of 
 | win32 (ucrt, win32) | 64-win32 | 32-win32 |
 | ucrt (ucrt, posix) | 64-ucrt | 32-ucrt |
 | msvcrt (msvcrt, posix) | 64-msvcrt | 32-msvcrt |
+| msvcrt20 (msvcrt20, posix) | | 32-msvcrt20 |
 
 ## Micro Architecture
 
@@ -93,7 +94,7 @@ Python (GDB scripting engine) often limits the toolchain’s minimum supported O
 | *-mcf | NT 6.1 (7) |
 | *-win32 | NT 6.0 (Vista) |
 | {64,64_v2}-{ucrt,msvcrt} | NT 5.2 (Server 2003) |
-| 32-{ucrt,msvcrt} | NT 5.1 (XP) |
+| 32-{ucrt,msvcrt,msvcrt20} | NT 5.1 (XP) |
 
 Some profiles have variants for even earlier Windows versions (and possibly older CPUs), as follows.
 

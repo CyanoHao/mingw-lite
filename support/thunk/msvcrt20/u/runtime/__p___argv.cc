@@ -7,15 +7,13 @@
 
 namespace mingw_thunk
 {
-  __DEFINE_THUNK(msvcrt, 0, char ***, __cdecl, __p___argv)
+  __DEFINE_THUNK(crtdll, 0, char ***, __cdecl, __p___argv)
   {
-    return &internal::u8_argv;
+    return &i::u8_argv;
   }
 
-  namespace internal
+  namespace i
   {
     char **u8_argv = nullptr;
-  } // namespace internal
-
-  __DECLARE_FORCE_OVERRIDE_MINGW_EMU(__p___argv)
+  } // namespace i
 } // namespace mingw_thunk
