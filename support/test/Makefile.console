@@ -1,0 +1,20 @@
+CC  = gcc
+CXX = g++
+
+override CFLAGS   += -std=c23 -O2 -mcrtdll=utf8-ucrt
+override CXXFLAGS += -std=c++23 -O2 -mcrtdll=utf8-ucrt -stdlib=libutf8-stdc++
+override LDFLAGS  += -mcrtdll=utf8-ucrt -stdlib=libutf8-stdc++
+
+TEST_SRCS = $(wildcard console/*.c)
+TEST_EXES = $(patsubst console/%.c,$(DIR)/console-%.exe,$(TEST_SRCS))
+
+all: $(TEST_EXES)
+
+$(TEST_EXES): $(DIR)/console-%.exe: console/%.c
+	$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
+
+test: $(TEST_EXES)
+	$(foreach exe,$(TEST_EXES),echo "====== [$(patsubst console-%.exe,%,$(notdir $(exe)))] ======" & $(subst /,\,$(exe)) &)
+
+clean:
+	-del $(TEST_EXES)
