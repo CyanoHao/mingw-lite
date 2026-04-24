@@ -1,42 +1,17 @@
 #pragma once
 
-#include <stddef.h>
+#include "char_traits.h"
 
-#include "__config.h"
-
-#include "__iterator/reverse_iterator.h"
-#include "__string/char_traits.h"
-#include "__type_traits/type_identity.h"
-
-namespace NS_NOSTL
+namespace intl
 {
   template <class CharT, class Traits = char_traits<CharT>>
-  class basic_string_view;
-
-  using string_view = basic_string_view<char>;
-  using wstring_view = basic_string_view<wchar_t>;
-#ifdef __cpp_char8_t
-  using u8string_view = basic_string_view<char8_t>;
-#endif
-  using u16string_view = basic_string_view<char16_t>;
-  using u32string_view = basic_string_view<char32_t>;
-
-  template <class CharT, class Traits>
   class basic_string_view
   {
   public:
-    using traits_type = Traits;
     using value_type = CharT;
-    using pointer = CharT *;
     using const_pointer = const CharT *;
-    using reference = CharT &;
-    using const_reference = const CharT &;
     using const_iterator = const CharT *;
-    using iterator = const_iterator;
-    using const_reverse_iterator = NS_NOSTL::reverse_iterator<const_iterator>;
-    using reverse_iterator = const_reverse_iterator;
     using size_type = size_t;
-    using difference_type = ptrdiff_t;
 
   public:
     static constexpr size_type npos = size_type(-1);
@@ -66,7 +41,7 @@ namespace NS_NOSTL
     constexpr basic_string_view &
     operator=(const basic_string_view &view) noexcept = default;
 
-    constexpr const_reference operator[](size_type pos) const
+    constexpr const CharT &operator[](size_type pos) const
     {
       return data_[pos];
     }
@@ -88,14 +63,14 @@ namespace NS_NOSTL
 
     constexpr bool empty() const noexcept
     {
-      return size() == 0;
+      return size_ == 0;
     }
 
     constexpr basic_string_view substr(size_type pos = 0,
                                        size_type count = npos) const
     {
-      size_type rlen = count < (size() - pos) ? count : (size() - pos);
-      return basic_string_view(data() + pos, rlen);
+      size_type rlen = count < (size_ - pos) ? count : (size_ - pos);
+      return basic_string_view(data_ + pos, rlen);
     }
 
     constexpr int compare(basic_string_view v) const noexcept
@@ -140,15 +115,28 @@ namespace NS_NOSTL
       }
       return npos;
     }
+
+    constexpr size_type rfind(CharT ch, size_type pos = npos) const noexcept
+    {
+      if (empty())
+        return npos;
+      if (pos == npos || pos >= size())
+        pos = size() - 1;
+      for (size_type i = 0; i <= pos; ++i) {
+        size_type idx = pos - i;
+        if (Traits::eq(data()[idx], ch))
+          return idx;
+      }
+      return npos;
+    }
   };
 
   template <class CharT, class Traits>
-  constexpr bool
-  operator==(basic_string_view<CharT, Traits> lhs,
-             type_identity_t<basic_string_view<CharT, Traits>> rhs) noexcept
+  constexpr bool operator==(basic_string_view<CharT, Traits> lhs,
+                            basic_string_view<CharT, Traits> rhs) noexcept
   {
     return lhs.size() == rhs.size() && lhs.compare(rhs) == 0;
-  };
+  }
 
   template <class CharT, class Traits>
   constexpr bool operator!=(basic_string_view<CharT, Traits> lhs,
@@ -165,23 +153,19 @@ namespace NS_NOSTL
   }
 
   template <class CharT, class Traits>
-  constexpr bool operator<=(basic_string_view<CharT, Traits> lhs,
-                            basic_string_view<CharT, Traits> rhs) noexcept
+  constexpr bool operator==(basic_string_view<CharT, Traits> lhs,
+                            const CharT *rhs) noexcept
   {
-    return !(rhs < lhs);
+    return lhs == basic_string_view<CharT, Traits>(rhs);
   }
 
   template <class CharT, class Traits>
-  constexpr bool operator>(basic_string_view<CharT, Traits> lhs,
-                           basic_string_view<CharT, Traits> rhs) noexcept
+  constexpr bool operator!=(basic_string_view<CharT, Traits> lhs,
+                            const CharT *rhs) noexcept
   {
-    return rhs < lhs;
+    return !(lhs == rhs);
   }
 
-  template <class CharT, class Traits>
-  constexpr bool operator>=(basic_string_view<CharT, Traits> lhs,
-                            basic_string_view<CharT, Traits> rhs) noexcept
-  {
-    return !(lhs < rhs);
-  }
-} // namespace NS_NOSTL
+  using string_view = basic_string_view<char>;
+  using wstring_view = basic_string_view<wchar_t>;
+} // namespace intl
