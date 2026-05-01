@@ -1,8 +1,8 @@
 diff --git a/libstdc++-v3/src/c++20/tzdb.cc b/libstdc++-v3/src/c++20/tzdb.cc
-index d79b61ad673..7c223ac0faa 100644
+index b0fbfc46a6d..a97bd20f156 100644
 --- a/libstdc++-v3/src/c++20/tzdb.cc
 +++ b/libstdc++-v3/src/c++20/tzdb.cc
-@@ -1775,6 +1775,19 @@ namespace std::chrono
+@@ -1786,6 +1786,19 @@ namespace std::chrono
      string_view
      detect_windows_zone() noexcept
      {
@@ -10,7 +10,7 @@ index d79b61ad673..7c223ac0faa 100644
 +      static const HMODULE kernel32 = LoadLibraryW(L"kernel32.dll");
 +      using GetDynamicTimeZoneInformation_t =
 +        DWORD (WINAPI *) (PDYNAMIC_TIME_ZONE_INFORMATION);
-+      auto *GetDynamicTimeZoneInformation =
++      static auto *const GetDynamicTimeZoneInformation =
 +        reinterpret_cast<GetDynamicTimeZoneInformation_t>(
 +          GetProcAddress(kernel32, "GetDynamicTimeZoneInformation"));
 +      // MSVC's implementation dynamically loads `icu.dll`. It won't
