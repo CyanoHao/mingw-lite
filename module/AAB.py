@@ -102,7 +102,8 @@ def _gcc_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       *config_flags,
       *cflags_A(),
       *cflags_B('_FOR_TARGET',
-        cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
+        # CPPFLAGS_FOR_TARGET is not passed
+        common_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
         optimize_for_speed = ver.opt_speed,
       ),
     ])
