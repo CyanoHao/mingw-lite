@@ -1,0 +1,28 @@
+diff --git a/gcc/lto-wrapper.cc b/gcc/lto-wrapper.cc
+index c300655b1d8..983582294eb 100644
+--- a/gcc/lto-wrapper.cc
++++ b/gcc/lto-wrapper.cc
+@@ -1392,7 +1392,11 @@ print_lto_docs_link ()
+ static bool
+ make_exists (void)
+ {
++#ifdef __MINGW32__
++  const char *make = "mingw32-make.exe";
++#else
+   const char *make = "make";
++#endif
+   char **make_argv = buildargv (getenv ("MAKE"));
+   if (make_argv)
+     make = make_argv[0];
+@@ -2192,7 +2196,11 @@ cont:
+ 		obstack_ptr_grow (&argv_obstack, make_argv[argc]);
+ 	    }
+ 	  else
++#ifdef __MINGW32__
++	    obstack_ptr_grow (&argv_obstack, "mingw32-make.exe");
++#else
+ 	    obstack_ptr_grow (&argv_obstack, "make");
++#endif
+ 
+ 	  obstack_ptr_grow (&argv_obstack, "-f");
+ 	  obstack_ptr_grow (&argv_obstack, makefile);

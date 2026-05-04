@@ -112,6 +112,11 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     else:
       patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'use-linux-style-tooldir_13.patch')
 
+    # Use mingw32-make for LTO
+    # parallel LTO may call incompatible, POSIX `make.exe`
+    # https://github.com/redpanda-cpp/mingw-lite/issues/12
+    patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'use-mingw32-make-for-lto.patch')
+
     # Fix make variable
     # - gcc 12 use `override CFLAGS +=` to handle PGO build, which breaks workaround for ucrt `access`
     if v.major >= 14:
