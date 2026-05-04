@@ -64,6 +64,11 @@ def prepare_test_binary(ver: BranchProfile, paths: ProjectPaths):
   extract(paths.test_dir, paths.mingw_pkg)
   extract(paths.test_dir, paths.xmake_pkg)
 
+  # parallel LTO may call incompatible, POSIX `make.exe`
+  # here we randomly create one incompatible `make.exe`
+  # https://github.com/redpanda-cpp/mingw-lite/issues/12
+  os.symlink('gcc.exe', paths.test_mingw_dir / 'bin/make.exe')
+
 def available_port():
   with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind(('localhost', 0))

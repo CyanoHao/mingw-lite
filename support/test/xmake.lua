@@ -3,6 +3,10 @@ set_policy("build.c++.modules.gcc.cxx11abi", true)
 
 includes("enable_if.lua")
 
+option("lto")
+  set_default(true)
+  set_showmenu(true)
+
 option("utf8")
   set_default(true)
   set_showmenu(true)
@@ -90,4 +94,5 @@ target("c++23/import-std")
 
 includes("cpp/xmake.lua")
 includes("intl/xmake.lua")
+includes("lto/xmake.lua")
 includes("openmp/xmake.lua")

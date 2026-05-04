@@ -24,6 +24,7 @@ int wmain(int argc, wchar_t *argv[]) {
 #else
       is_utf8_acp() ? L"--utf8=y" : L"--utf8=n",
 #endif
+      lt_win98() ? L"--lto=n" : L"--lto=y",
       lt_win98() ? L"--ldflags=-fno-lto" : NULL,
       NULL,
   };
