@@ -1,34 +1,54 @@
 CC  = gcc
 CXX = g++
 
-override CFLAGS   += -std=c23 -O2 -mcrtdll=utf8-ucrt
-override CXXFLAGS += -std=c++23 -O2 -mcrtdll=utf8-ucrt -stdlib=libutf8-stdc++
-override LDFLAGS  += -mcrtdll=utf8-ucrt -stdlib=libutf8-stdc++
+NOWIDE_CXXFLAGS = -std=c++17 -O2
+NOWIDE_LIBS     = -lnowide
 
-C_TEST_SRCS  = $(filter-out console/util.c,$(wildcard console/*.c))
-C_TEST_EXES  = $(patsubst console/%.c,$(DIR)/%.exe,$(C_TEST_SRCS))
-C_TEST_NAMES = $(patsubst console/%.c,%,$(C_TEST_SRCS))
+U8CRT_CFLAGS   += -std=c23 -O2 -mcrtdll=utf8-ucrt
+U8CRT_CXXFLAGS += -std=c++23 -O2 -mcrtdll=utf8-ucrt -stdlib=libutf8-stdc++
+U8CRT_LDFLAGS  += -mcrtdll=utf8-ucrt -stdlib=libutf8-stdc++
 
-CXX_TEST_SRCS  = $(wildcard console/*.cc)
-CXX_TEST_EXES  = $(patsubst console/%.cc,$(DIR)/%.exe,$(CXX_TEST_SRCS))
-CXX_TEST_NAMES = $(patsubst console/%.cc,%,$(CXX_TEST_SRCS))
+NOWIDE_SRCS  = $(wildcard console/nowide/*.cc)
+NOWIDE_EXES  = $(patsubst console/nowide/%.cc,$(DIR)/%.exe,$(NOWIDE_SRCS))
+NOWIDE_NAMES = $(patsubst console/nowide/%.cc,%,$(NOWIDE_SRCS))
 
-all: $(C_TEST_EXES) $(CXX_TEST_EXES)
+U8CRT_C_SRCS   = $(filter-out console/u8crt/util.c,$(wildcard console/u8crt/*.c))
+U8CRT_C_EXES   = $(patsubst console/u8crt/%.c,$(DIR)/%.exe,$(U8CRT_C_SRCS))
+U8CRT_C_NAMES  = $(patsubst console/u8crt/%.c,%,$(U8CRT_C_SRCS))
 
-$(DIR)/util.o: console/util.c
-	$(CC) $(CFLAGS) -c $< -o $@
+U8CRT_CXX_SRCS = $(wildcard console/u8crt/*.cc)
+U8CRT_CXX_EXES = $(patsubst console/u8crt/%.cc,$(DIR)/%.exe,$(U8CRT_CXX_SRCS))
+U8CRT_CXX_NAMES = $(patsubst console/u8crt/%.cc,%,$(U8CRT_CXX_SRCS))
 
-$(DIR)/%.exe: console/%.c $(DIR)/util.o
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+ALL_EXES = $(NOWIDE_EXES)
+ALL_NAMES = $(NOWIDE_NAMES)
+ifeq ($(U8CRT),y)
+ALL_EXES += $(U8CRT_C_EXES) $(U8CRT_CXX_EXES)
+ALL_NAMES += $(U8CRT_C_NAMES) $(U8CRT_CXX_NAMES)
+endif
 
-$(DIR)/%.exe: console/%.cc $(DIR)/util.o
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
+all: $(NOWIDE_EXES)
+ifeq ($(U8CRT),y)
+all: $(U8CRT_C_EXES) $(U8CRT_CXX_EXES)
+endif
+
+$(NOWIDE_EXES): $(DIR)/%.exe: console/nowide/%.cc
+	$(CXX) $(NOWIDE_CXXFLAGS) $< $(NOWIDE_LIBS) -o $@
+
+$(DIR)/util.o: console/u8crt/util.c
+	$(CC) $(U8CRT_CFLAGS) -c $< -o $@
+
+$(U8CRT_C_EXES): $(DIR)/%.exe: console/u8crt/%.c $(DIR)/util.o
+	$(CC) $(U8CRT_CFLAGS) $(U8CRT_LDFLAGS) $^ -o $@
+
+$(U8CRT_CXX_EXES): $(DIR)/%.exe: console/u8crt/%.cc $(DIR)/util.o
+	$(CXX) $(U8CRT_CXXFLAGS) $(U8CRT_LDFLAGS) $^ -o $@
 
 test-%: $(DIR)/%.exe
 	@echo ====== [$*] ======
 	@$(subst /,\,$(DIR)/$*.exe)
 
-test: $(foreach name,$(C_TEST_NAMES) $(CXX_TEST_NAMES),test-$(name))
+test: $(foreach name,$(ALL_NAMES),test-$(name))
 
 clean:
-	-del $(C_TEST_EXES) $(CXX_TEST_EXES)
+	-del $(ALL_EXES)

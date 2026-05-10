@@ -18,6 +18,79 @@ from module.util import cmake_build, cmake_config, cmake_flags_B, cmake_install
 from module.util import meson_build, meson_config, meson_flags_B, meson_install
 from module.util import xmake_build, xmake_config, xmake_install
 
+def _nowide(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
+  base_prefix = paths.layer_ABB.nowide
+  shared_prefix = paths.layer_ABB.nowide_shared
+
+  with overlayfs_ro('/usr/local', [
+    paths.layer_AAB.crt_target / 'usr/local',
+    *common_cross_layers(paths),
+  ]):
+    build_dir = 'build-ABB'
+    cmake_config(
+      paths.src_dir.nowide,
+      extra_args = [
+        f'-DCMAKE_TOOLCHAIN_FILE={paths.cmake_cross_file}',
+        '-DCMAKE_INSTALL_PREFIX=',
+        '-DBUILD_SHARED_LIBS=OFF',
+        *cmake_flags_B(
+          optimize_for_speed = ver.opt_speed,
+        ),
+      ],
+      build_dir = build_dir,
+    )
+    cmake_build(
+      paths.src_dir.nowide,
+      jobs = config.jobs,
+      build_dir = build_dir,
+    )
+    cmake_install(
+      paths.src_dir.nowide,
+      destdir = paths.layer_ABB.nowide,
+      build_dir = build_dir,
+    )
+
+  with overlayfs_ro('/usr/local', [
+    paths.layer_AAB.crt_target / 'usr/local',
+    paths.layer_AAB.crt_shared / 'usr/local',
+    paths.layer_AAB.gcc_lib_shared / 'usr/local',
+    paths.layer_AAB.mcfgthread_shared / 'usr/local',
+    paths.layer_AAB.winpthreads_shared / 'usr/local',
+    *common_cross_layers(paths),
+  ]):
+    build_dir = 'build-ABB-shared'
+    cmake_config(
+      paths.src_dir.nowide,
+      extra_args = [
+        f'-DCMAKE_TOOLCHAIN_FILE={paths.cmake_cross_file}',
+        '-DCMAKE_INSTALL_PREFIX=',
+        '-DBUILD_SHARED_LIBS=ON',
+        *cmake_flags_B(
+          optimize_for_speed = ver.opt_speed,
+        ),
+      ],
+      build_dir = build_dir,
+    )
+    cmake_build(
+      paths.src_dir.nowide,
+      jobs = config.jobs,
+      build_dir = build_dir,
+    )
+    cmake_install(
+      paths.src_dir.nowide,
+      destdir = paths.layer_ABB.nowide,
+      build_dir = build_dir,
+    )
+
+  extract_shared_libs(base_prefix, shared_prefix)
+
+  license_dir = paths.layer_ABB.nowide / 'share/licenses/nowide'
+  ensure(license_dir)
+  shutil.copy(paths.src_dir.nowide / 'LICENSE', license_dir / 'LICENSE')
+
+def build_ABB_library(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
+  _nowide(ver, paths, config)
+
 def build_ABB_test_driver(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   ensure(paths.layer_ABB.test_driver)
 
@@ -36,6 +109,8 @@ def build_ABB_test_driver(ver: BranchProfile, paths: ProjectPaths, config: argpa
   ]
   if ver.utf8_thunk:
     flags.append('-DENABLE_UTF8')
+  if ver.utf8_user_crt:
+    flags.append('-DENABLE_UTF8_CRT')
 
   with overlayfs_ro('/usr/local', [
     # override CRT
@@ -64,13 +139,12 @@ def build_ABB_test_driver(ver: BranchProfile, paths: ProjectPaths, config: argpa
       '-o', pkg_dir / 'test-compiler.exe',
     ], check = True)
 
-    if ver.utf8_user_crt:
-      subprocess.run([
-        gcc_exe,
-        *flags,
-        src_dir / 'test-console.c', common_c,
-        '-o', pkg_dir / 'test-console.exe',
-      ], check = True)
+    subprocess.run([
+      gcc_exe,
+      *flags,
+      src_dir / 'test-console.c', common_c,
+      '-o', pkg_dir / 'test-console.exe',
+    ], check = True)
 
     subprocess.run([
       gcc_exe,
@@ -85,6 +159,7 @@ def build_ABB_test_driver(ver: BranchProfile, paths: ProjectPaths, config: argpa
       src_dir / 'test-shared.c', common_c,
       '-o', pkg_dir / 'test-shared.exe',
     ], check = True)
+
 
 def _binutils(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   with overlayfs_ro('/usr/local', [
@@ -375,80 +450,6 @@ def _mcfgthread(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namesp
   shutil.copy(paths.src_dir.mcfgthread / 'LICENSE.TXT', license_dir / 'LICENSE.TXT')
   for file in ['gcc-exception-3.1.txt', 'gpl-3.0.txt', 'lgpl-3.0.txt']:
     shutil.copy(paths.src_dir.mcfgthread / 'licenses' / file, license_dir / file)
-
-def _nowide(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
-  base_prefix = paths.layer_ABB.nowide
-  shared_prefix = paths.layer_ABB.nowide_shared
-
-  if not ver.utf8_user_crt:
-    ensure(base_prefix)
-    return
-
-  with overlayfs_ro('/usr/local', [
-    paths.layer_AAB.crt_target / 'usr/local',
-    *common_cross_layers(paths),
-  ]):
-    build_dir = 'build-ABB'
-    cmake_config(
-      paths.src_dir.nowide,
-      extra_args = [
-        f'-DCMAKE_TOOLCHAIN_FILE={paths.cmake_cross_file}',
-        '-DCMAKE_INSTALL_PREFIX=',
-        '-DBUILD_SHARED_LIBS=OFF',
-        *cmake_flags_B(
-          optimize_for_speed = ver.opt_speed,
-        ),
-      ],
-      build_dir = build_dir,
-    )
-    cmake_build(
-      paths.src_dir.nowide,
-      jobs = config.jobs,
-      build_dir = build_dir,
-    )
-    cmake_install(
-      paths.src_dir.nowide,
-      destdir = paths.layer_ABB.nowide,
-      build_dir = build_dir,
-    )
-
-  with overlayfs_ro('/usr/local', [
-    paths.layer_AAB.crt_target / 'usr/local',
-    paths.layer_AAB.crt_shared / 'usr/local',
-    paths.layer_AAB.gcc_lib_shared / 'usr/local',
-    paths.layer_AAB.mcfgthread_shared / 'usr/local',
-    paths.layer_AAB.winpthreads_shared / 'usr/local',
-    *common_cross_layers(paths),
-  ]):
-    build_dir = 'build-ABB-shared'
-    cmake_config(
-      paths.src_dir.nowide,
-      extra_args = [
-        f'-DCMAKE_TOOLCHAIN_FILE={paths.cmake_cross_file}',
-        '-DCMAKE_INSTALL_PREFIX=',
-        '-DBUILD_SHARED_LIBS=ON',
-        *cmake_flags_B(
-          optimize_for_speed = ver.opt_speed,
-        ),
-      ],
-      build_dir = build_dir,
-    )
-    cmake_build(
-      paths.src_dir.nowide,
-      jobs = config.jobs,
-      build_dir = build_dir,
-    )
-    cmake_install(
-      paths.src_dir.nowide,
-      destdir = paths.layer_ABB.nowide,
-      build_dir = build_dir,
-    )
-
-  extract_shared_libs(base_prefix, shared_prefix)
-
-  license_dir = paths.layer_ABB.nowide / 'share/licenses/nowide'
-  ensure(license_dir)
-  shutil.copy(paths.src_dir.nowide / 'LICENSE', license_dir / 'LICENSE')
 
 def _gcc_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   v = Version(ver.gcc)
@@ -777,20 +778,6 @@ def _pkgconf(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace
   ensure(license_dir)
   shutil.copy(paths.src_dir.pkgconf / 'COPYING', license_dir / 'COPYING')
 
-def build_ABB_toolchain(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
-  _binutils(ver, paths, config)
-  _headers(ver, paths, config)
-  _crt0(ver, paths, config)
-  _crt(ver, paths, config)
-  _winpthreads(ver, paths, config)
-  _mcfgthread(ver, paths, config)
-  _nowide(ver, paths, config)
-  _gcc_1(ver, paths, config)
-  _gcc_2(ver, paths, config)
-  _gdb(ver, paths, config)
-  _gmake(ver, paths, config)
-  _pkgconf(ver, paths, config)
-
 def _xmake(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   with overlayfs_ro('/usr/local', [
     paths.layer_AAA.xmake / 'usr/local',
@@ -815,5 +802,16 @@ def _xmake(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   ensure(license_dir)
   shutil.copy(paths.src_dir.xmake / 'LICENSE.md', license_dir / 'LICENSE.md')
 
-def build_ABB_xmake(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
+def build_ABB_toolchain(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
+  _binutils(ver, paths, config)
+  _headers(ver, paths, config)
+  _crt0(ver, paths, config)
+  _crt(ver, paths, config)
+  _winpthreads(ver, paths, config)
+  _mcfgthread(ver, paths, config)
+  _gcc_1(ver, paths, config)
+  _gcc_2(ver, paths, config)
+  _gdb(ver, paths, config)
+  _gmake(ver, paths, config)
+  _pkgconf(ver, paths, config)
   _xmake(ver, paths, config)

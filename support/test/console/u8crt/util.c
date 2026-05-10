@@ -21,12 +21,3 @@ void emu_input(const wchar_t *s) {
   DWORD written;
   WriteConsoleInputW(hStdin, records, len * 2, &written);
 }
-
-void write_output(const wchar_t *s) {
-  HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-  size_t len = wcslen(s);
-  DWORD written;
-  WriteConsoleW(hStdout, L"[note] ", 7, &written, NULL);
-  WriteConsoleW(hStdout, s, len, &written, NULL);
-  WriteConsoleW(hStdout, L"\n", 1, &written, NULL);
-}

@@ -3,26 +3,25 @@
 import argparse
 import logging
 import os
-from packaging.version import Version
 from pathlib import Path
 import shutil
 import subprocess
 from subprocess import PIPE, Popen
 from tempfile import NamedTemporaryFile
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from module.args import parse_args
 from module.path import ProjectPaths
 from module.prepare_source import prepare_source
-from module.profile import resolve_profile
-from module.util import ensure, overlayfs_ro
+from module.profile import BranchProfile, resolve_profile
+from module.util import ensure, tmpfs
 
 # A = x86_64-linux-gnu or x86_64-linux-musl
 # B = {i686,x86_64}-w64-mingw32
 # XYZ: build = X, host = Y, target = Z
 from module.AAA import build_AAA_library, build_AAA_tool
 from module.AAB import build_AAB_compiler, build_AAB_library
-from module.ABB import build_ABB_test_driver, build_ABB_toolchain, build_ABB_xmake
+from module.ABB import build_ABB_library, build_ABB_test_driver, build_ABB_toolchain
 
 def clean(config: argparse.Namespace, paths: ProjectPaths):
   if paths.build_dir.exists():
@@ -39,11 +38,11 @@ def prepare_dirs(paths: ProjectPaths):
   paths.build_dir.mkdir(parents = True, exist_ok = True)
   paths.dist_dir.mkdir(parents = True, exist_ok = True)
 
-def _sort_tarball(root: Path, src: Path):
+def _sort_tarball(prefix: str, layer: Path):
   files: Dict[Path, List[str]] = {}
-  for file in src.glob('**/*'):
+  for file in layer.glob('**/*'):
     if not file.is_dir():
-      dn = file.relative_to(root).parent
+      dn = file.relative_to(layer).parent
       fn = file.name
       if dn not in files:
         files[dn] = []
@@ -51,9 +50,9 @@ def _sort_tarball(root: Path, src: Path):
 
   result = []
   for dn in sorted(files.keys()):
-    result.append(f'{dn}/')
+    result.append(f'{prefix}/{dn}/' if prefix else f'{dn}/')
     for fn in sorted(files[dn]):
-      result.append(f'{dn}/{fn}')
+      result.append(f'{prefix}/{dn}/{fn}' if prefix else f'{dn}/{fn}')
   return result
 
 def _package(root: Path, files: List[str], dst: Path):
@@ -82,66 +81,53 @@ def _package(root: Path, files: List[str], dst: Path):
 
   os.unlink(listname)
 
+def package_layers(root: Path, layers: List[Tuple[str, Path]], dst: Path):
+  with tmpfs(root):
+    files: List[str] = []
+    file_map: Dict[str, str] = {}
+    for prefix, layer in layers:
+      sorted_part = _sort_tarball(prefix, layer)
+      files.extend(sorted_part)
+      for fn in sorted_part:
+        if fn.endswith('/'):
+          continue
+        if fn in file_map:
+          raise Exception(f'file collision: {fn} in {layer.name} and {file_map[fn]}')
+        file_map[fn] = layer.name
+      shutil.copytree(layer, root / prefix if prefix else root, dirs_exist_ok = True)
+    _package(root, files, dst)
+
 def package_cross(paths: ProjectPaths):
-  files = [
-    *_sort_tarball(paths.layer_dir.parent, paths.layer_AAA.prefix),
-    *_sort_tarball(paths.layer_dir.parent, paths.layer_AAB.prefix),
-  ]
-
-  _package(paths.layer_dir.parent, files, paths.cross_pkg)
-
-def package_test_driver(paths: ProjectPaths):
-  files = [
-    *_sort_tarball(paths.layer_ABB.test_driver, paths.layer_ABB.test_driver),
-  ]
-
-  _package(paths.layer_ABB.test_driver, files, paths.test_driver_pkg)
-
-def package_layers(pkg_dir: Path, layers: List[Path], dst: Path):
-  files = []
-  file_to_package_map: Dict[str, str] = {}
-  for layer in layers:
-    sorted_part = _sort_tarball(layer, layer)
-    files.extend(map(
-      lambda fn: f'{pkg_dir.name}/{fn}',
-      sorted_part
-    ))
-
-    # check file collisions
-    for fn in sorted_part:
-      if fn.endswith('/'):
-        continue
-      if fn in file_to_package_map:
-        raise Exception(f'file collision: {fn} in {layer.name} and {file_to_package_map[fn]}')
-      file_to_package_map[fn] = layer.name
-
-  ensure(pkg_dir)
-  with overlayfs_ro(pkg_dir, layers):
-    _package(pkg_dir.parent, files, dst)
-
-def package_mingw(paths: ProjectPaths):
   layers = [
-    paths.layer_ABB.binutils,
-    paths.layer_ABB.crt,
-    paths.layer_ABB.gcc,
-    paths.layer_ABB.gcc_lib,
-    paths.layer_ABB.gdb,
-    paths.layer_ABB.headers,
-    paths.layer_ABB.make,
-    paths.layer_ABB.mcfgthread,
-    paths.layer_ABB.nowide,
-    paths.layer_ABB.pkgconf,
-    paths.layer_ABB.winpthreads,
+    (paths.abi_name, paths.layer_dir),
   ]
+  package_layers(paths.pkg_dir, layers, paths.cross_pkg)
 
+def package_test_driver(ver: BranchProfile, paths: ProjectPaths):
+  layers = [('', paths.layer_ABB.test_driver)]
+  if not ver.utf8_user_crt:
+    layers.append((paths.abi_name, paths.layer_ABB.nowide))
+  package_layers(paths.pkg_dir, layers, paths.test_driver_pkg)
+
+def package_mingw(ver: BranchProfile, paths: ProjectPaths):
+  layers = [
+    (paths.abi_name, paths.layer_ABB.binutils),
+    (paths.abi_name, paths.layer_ABB.crt),
+    (paths.abi_name, paths.layer_ABB.gcc),
+    (paths.abi_name, paths.layer_ABB.gcc_lib),
+    (paths.abi_name, paths.layer_ABB.gdb),
+    (paths.abi_name, paths.layer_ABB.headers),
+    (paths.abi_name, paths.layer_ABB.make),
+    (paths.abi_name, paths.layer_ABB.mcfgthread),
+    (paths.abi_name, paths.layer_ABB.pkgconf),
+    (paths.abi_name, paths.layer_ABB.winpthreads),
+  ]
+  if ver.utf8_user_crt:
+    layers.append((paths.abi_name, paths.layer_ABB.nowide))
   package_layers(paths.pkg_dir, layers, paths.mingw_pkg)
 
 def package_xmake(paths: ProjectPaths):
-  layers = [
-    paths.layer_ABB.xmake,
-  ]
-
-  package_layers(paths.pkg_dir, layers, paths.xmake_pkg)
+  package_layers(paths.pkg_dir, [(paths.abi_name, paths.layer_ABB.xmake)], paths.xmake_pkg)
 
 def main():
   config = parse_args(require_build_compiler = True)
@@ -177,11 +163,11 @@ def main():
     build_AAB_library(ver, paths, config)
     package_cross(paths)
 
+  build_ABB_library(ver, paths, config)
   build_ABB_test_driver(ver, paths, config)
-  package_test_driver(paths)
+  package_test_driver(ver, paths)
   build_ABB_toolchain(ver, paths, config)
-  package_mingw(paths)
-  build_ABB_xmake(ver, paths, config)
+  package_mingw(ver, paths)
   package_xmake(paths)
 
 if __name__ == '__main__':

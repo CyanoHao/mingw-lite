@@ -313,6 +313,15 @@ def touch(path: Path):
   ensure(path.parent)
   path.touch(exist_ok = True)
 
+@contextmanager
+def tmpfs(dir: Path):
+  ensure(dir)
+  subprocess.run(['mount', '-t', 'tmpfs', 'none', dir], check = True)
+  try:
+    yield
+  finally:
+    subprocess.run(['umount', dir], check = True)
+
 def xmake_build(cwd: Path, jobs: int):
   subprocess.run(
     ['xmake', 'build', '-j', str(jobs)],

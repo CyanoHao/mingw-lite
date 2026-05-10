@@ -15,6 +15,9 @@ int wmain(int argc, wchar_t *argv[]) {
 
   const wchar_t *make_argv[] = {
       L"mingw32-make", L"-f", L"Makefile.console", (L"DIR=" RELEASE_BUILD_DIR),
+#ifdef ENABLE_UTF8_CRT
+      L"U8CRT=y",
+#endif
       L"-j",           NULL,
   };
   HANDLE make_process = spawn(make_argv);
@@ -26,6 +29,9 @@ int wmain(int argc, wchar_t *argv[]) {
       L"-f",
       L"Makefile.console",
       (L"DIR=" RELEASE_BUILD_DIR),
+#ifdef ENABLE_UTF8_CRT
+      L"U8CRT=y",
+#endif
       L"-j1",
       L"test",
       NULL,

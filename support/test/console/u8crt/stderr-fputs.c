@@ -6,7 +6,6 @@ int main(void) {
   {
     const char *s = "天地玄黄";
 
-    write_output(L"fputs stderr short");
     fputs(s, stderr);
     fputs("\n", stderr);
   }
@@ -20,7 +19,6 @@ int main(void) {
         "吊民伐罪，周發殷汤；坐朝问道，垂拱平章；爱育黎首，臣伏戎羌；"
         "遐迩一体，率宾归王；鸣凤在竹，白驹食场；化被草木，赖及万方。";
 
-    write_output(L"fputs stderr long");
     fputs(s, stderr);
     fputs("\n", stderr);
   }

@@ -190,7 +190,7 @@ class ProjectPaths:
     self.utf8_src_dir = self.root_dir / 'support/utf8'
     self.build_dir = Path(f'/tmp/build/{abi_name}')
     self.layer_dir = Path(f'/tmp/layer/{abi_name}')
-    self.pkg_dir = Path(f'/tmp/pkg/{abi_name}')
+    self.pkg_dir = Path('/tmp/pkg')
 
     src_name = SourcePaths(
       binutils = Path(f'binutils-{ver.binutils}'),
