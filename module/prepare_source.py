@@ -346,6 +346,9 @@ def _mingw(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     if v.major < 15:
       patch(paths.src_dir.mingw, paths.patch_dir / 'crt' / 'fix-ssp-guard-type.patch')
 
+    # CRT: Fix TLS initialization for LoadLibrary on pre-Vista
+    patch(paths.src_dir.mingw, paths.patch_dir / 'crt' / 'fix-tls-init.patch')
+
     # CRT and winpthreads: migrate i386 sync builtin
     if ver.march == 'i386':
       if v.major >= 13:

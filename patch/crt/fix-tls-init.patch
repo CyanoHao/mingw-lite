@@ -1,0 +1,29 @@
+--- a/mingw-w64-crt/crt/crtdll.c	2026-05-18 18:36:05.685402648 +0800
++++ b/mingw-w64-crt/crt/crtdll.c	2026-05-18 18:36:05.697076889 +0800
+@@ -52,6 +52,8 @@
+ 
+ extern WINBOOL WINAPI DllMain (HANDLE hDllHandle, DWORD dwReason, LPVOID lpreserved);
+ 
++extern void __cdecl __mingw_thunk_fix_load_library_tls_data (DWORD, LPVOID, int);
++
+ extern WINBOOL WINAPI DllEntryPoint (HANDLE, DWORD, LPVOID);
+ 
+ static int pre_c_init (void);
+@@ -167,6 +169,8 @@
+ 	retcode = FALSE;
+ 	goto i__leave;
+     }
++  __mingw_thunk_fix_load_library_tls_data (dwReason, lpreserved, 1);
++
+   _pei386_runtime_relocator ();
+   if (dwReason == DLL_PROCESS_ATTACH || dwReason == DLL_THREAD_ATTACH)
+     {
+@@ -197,6 +201,8 @@
+ 	  retcode = FALSE;
+     }
+ i__leave:
++  __mingw_thunk_fix_load_library_tls_data (dwReason, lpreserved, 0);
++
+   __native_dllmain_reason = UINT_MAX;
+   return retcode ;
+ }

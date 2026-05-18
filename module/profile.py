@@ -309,8 +309,8 @@ def _create_profile(
 PROFILES: Dict[str, Optional[ProfileInfo]] = {
   '64-mcf':    _create_profile('64', 'ucrt',   'mcf',   '6.1'),
   '64-win32':  _create_profile('64', 'ucrt',   'win32', '6.0'),
-  '64-ucrt':   _create_profile('64', 'ucrt',   'posix', '5.2'),
-  '64-msvcrt': _create_profile('64', 'msvcrt', 'posix', '5.2'),
+  '64-ucrt':   None, # branch-dependent
+  '64-msvcrt': None, # branch-dependent
 
   'arm64-mcf':   _create_profile('arm64', 'ucrt', 'mcf',   '10.0.16299', opt_speed = True),
   'arm64-win32': _create_profile('arm64', 'ucrt', 'win32', '10.0.16299', opt_speed = True),
@@ -318,8 +318,8 @@ PROFILES: Dict[str, Optional[ProfileInfo]] = {
 
   '32-mcf':    _create_profile('32', 'ucrt',   'mcf',   '6.1'),
   '32-win32':  _create_profile('32', 'ucrt',   'win32', '6.0'),
-  '32-ucrt':   _create_profile('32', 'ucrt',   'posix', '5.1'),
-  '32-msvcrt': _create_profile('32', 'msvcrt', 'posix', '5.1'),
+  '32-ucrt':   None, # branch-dependent
+  '32-msvcrt': None, # branch-dependent
 
   ############################################
   # profile variants for micro architectures #
@@ -334,7 +334,10 @@ PROFILES: Dict[str, Optional[ProfileInfo]] = {
   # profile variants for earlier Windows versions #
   #################################################
 
-  '32-msvcrt_win2000': None, # branch-dependent
+  '64-ucrt_ws2003':    _create_profile('64', 'ucrt',   'posix', '5.2', stable = False),
+  '64-msvcrt_ws2003':  _create_profile('64', 'msvcrt', 'posix', '5.2', stable = False),
+  '32-ucrt_winxp':     _create_profile('32', 'ucrt',   'posix', '5.1', stable = False),
+  '32-msvcrt_win2000': _create_profile('32', 'msvcrt', 'posix', '5.0', stable = False),
 
   '32_686-msvcrt_winnt40': _create_profile('32_686', 'msvcrt', 'posix', '4.0',         stable = False),
   '32_686-msvcrt_win98':   _create_profile('32_686', 'msvcrt', 'posix', '3.9999+4.10', stable = False),
@@ -349,20 +352,34 @@ PROFILES: Dict[str, Optional[ProfileInfo]] = {
   '32-u8crt': _create_profile('32', 'ucrt', 'posix', '5.1', opt_speed = True, stable = False, u8crt = True),
 }
 
-def _profile_32_msvcrt_win2000(branch: str):
-  v = Version(branch)
-  if v.major >= 16:
-    raise NotImplementedError()
-  return _create_profile('32', 'msvcrt', 'posix', '5.0', stable = False)
+def _native_tls_requires_vista(
+  arch: str,
+  crt: str,
+  thread: str,
+  emu_min_os: str,
 
-BRANCH_DEPENDENT_PROFILES: Dict[str, Callable[[str], ProfileInfo]] = {
-  '32-msvcrt_win2000': _profile_32_msvcrt_win2000,
+  opt_lto: bool = False,
+  opt_speed: bool = False,
+) -> Callable[[str, str], ProfileInfo]:
+  def _profile(branch: str, v_gcc: str) -> ProfileInfo:
+    v = Version(v_gcc)
+    if v.major >= 16:
+      return _create_profile(arch, crt, thread, '6.0', opt_lto = opt_lto, opt_speed = opt_speed)
+    return _create_profile(arch, crt, thread, emu_min_os, opt_lto = opt_lto, opt_speed = opt_speed)
+
+  return _profile
+
+BRANCH_DEPENDENT_PROFILES: Dict[str, Callable[[str, str], ProfileInfo]] = {
+  '64-ucrt':   _native_tls_requires_vista('64', 'ucrt',   'posix', '5.2'),
+  '64-msvcrt': _native_tls_requires_vista('64', 'msvcrt', 'posix', '5.2'),
+  '32-ucrt':   _native_tls_requires_vista('32', 'ucrt',   'posix', '5.1'),
+  '32-msvcrt': _native_tls_requires_vista('32', 'msvcrt', 'posix', '5.1'),
 }
 
 def resolve_profile(config: argparse.Namespace) -> BranchProfile:
   ver = BRANCHES[config.branch]
   if config.profile in BRANCH_DEPENDENT_PROFILES:
-    info = BRANCH_DEPENDENT_PROFILES[config.profile](config.branch)
+    info = BRANCH_DEPENDENT_PROFILES[config.profile](config.branch, ver.gcc)
   else:
     info = PROFILES[config.profile]
   return BranchProfile(

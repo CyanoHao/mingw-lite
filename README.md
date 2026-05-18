@@ -59,9 +59,9 @@ Available branches:
 
 | Branch | GCC version | MinGW | Binutils | GDB | Optimize | TLS |
 | ------ | ----------- | ----- | -------- | --- | -------- | --- |
-| next | 17-20260517 | 14.0.0 | 2.46.0 | 17.1 | Speed | Native |
-| current | 16-20260516 | 14.0.0 | 2.46.0 | 17.1 | Speed | Native |
-| 16 | 16.1.0 | 14.0.0 | 2.46.0 | 17.1 | Speed | Native |
+| next | 17-20260517 | 14.0.0 | 2.46.0 | 17.1 | Speed | Native if possible |
+| current | 16-20260516 | 14.0.0 | 2.46.0 | 17.1 | Speed | Native if possible |
+| 16 | 16.1.0 | 14.0.0 | 2.46.0 | 17.1 | Speed | Native if possible |
 | 15 ❄️ | 15.2.0 | 13.0.0 | 2.45.1 | 17.1 | Size | Emulated |
 | 14 ❄️ | 14.3.0 | 12.0.0 | 2.43.1 | 15.2 | Size | Emulated |
 | 13 ❄️ | 13.4.0 | 11.0.1 | 2.41 | 14.2 | Size | Emulated |
@@ -89,21 +89,25 @@ The default `_WIN32_WINNT` value for each branch is based on the earliest Window
 
 Python (GDB scripting engine) often limits the toolchain’s minimum supported OS. However, Python is sometimes a bit aggressive, so we use some [thunks](./doc/thunk.md) to bring back support for earlier Windows versions. The minimum supported OS is the one where the shared runtime libraries are thunk-free.
 
-| Profile | Minimum supported OS |
-| ------- | -------------------- |
-| *-mcf | NT 6.1 (7) |
-| *-win32 | NT 6.0 (Vista) |
-| {64,64_v2}-{ucrt,msvcrt} | NT 5.2 (Server 2003) |
-| 32-{ucrt,msvcrt} | NT 5.1 (XP) |
+| Profile | Branch 16+ | Branch 15, 14, 13 |
+| ------- | ---------- | ----------------- |
+| *-mcf | NT 6.1 (7) | NT 6.1 (7) |
+| *-win32 | NT 6.0 (Vista) | NT 6.0 (Vista) |
+| {64,64_v2}-{ucrt,msvcrt} | NT 6.0 (Vista) | NT 5.2 (Server 2003) |
+| 32-{ucrt,msvcrt} | NT 6.0 (Vista) | NT 5.1 (XP) |
 
 Some profiles have variants for even earlier Windows versions (and possibly older CPUs), as follows.
 
-| Profile variant | Branch 16 | Branch 15, 14, 13 |
-| --------------- | --------- | ----------------- |
-| 32-msvcrt_win2000 | | NT 5.0 (2000) |
-| 32_686-msvcrt_win98 | NT 4.0, 4.10 (98) | NT 4.0, 4.10 (98) |
-| 32_486-msvcrt_win98 | NT 4.0, 4.10 (98) | NT 4.0, 4.10 (98) |
-| 32_386-msvcrt_win95 | NT 4.0, 4.10 (98)<br>4.00 (95, limited) | NT 4.0, 4.10 (98)<br>4.00 (95, limited) |
+| Profile variant | Branch 16+ | TLS 16+ | Branch 15, 14, 13 |
+| --------------- | ---------- | ------- | ----------------- |
+| 64-ucrt_ws2003        | NT 5.2 (Server 2003) | Native | |
+| 64-msvcrt_ws2003      | NT 5.2 (Server 2003) | Native | |
+| 32-ucrt_winxp         | NT 5.1 (XP) | Native | |
+| 32-msvcrt_win2000     | NT 5.0 (2000) | Native | NT 5.0 (2000) |
+| 32_686-msvcrt_winnt40 | NT 4.0 | Native | |
+| 32_686-msvcrt_win98   | NT 4.0, 4.10 (98) | Emulated | NT 4.0, 4.10 (98) |
+| 32_486-msvcrt_win98   | NT 4.0, 4.10 (98) | Emulated | NT 4.0, 4.10 (98) |
+| 32_386-msvcrt_win95   | NT 4.0, 4.10 (98)<br>4.00 (95, limited) | Emulated | NT 4.0, 4.10 (98)<br>4.00 (95, limited) |
 
 Limitations on Windows 95:
 

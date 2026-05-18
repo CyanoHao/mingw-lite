@@ -16,6 +16,10 @@ target('alias-short-kernel32')
 target('overlay-kernel32')
   enable_thunk_options()
 
+  if profile_toolchain_or_utf8() or profile_core() then
+    add_files('kernel32/6.0/FixLoadLibraryTlsData.cc')
+  end
+
   if profile_toolchain_or_utf8() then
     if ntddi_version() < ntddi_win98() then
       add_files(

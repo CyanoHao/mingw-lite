@@ -83,7 +83,7 @@ def _gcc_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       config_flags.append('--with-dwarf2')
     if ver.fpmath:
       config_flags.append(f'--with-fpmath={ver.fpmath}')
-    if v.major >= 16:
+    if v.major >= 16 and ver.min_os.major >= 4:
       config_flags.append('--enable-tls')
 
     configure(build_dir, [
