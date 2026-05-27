@@ -272,6 +272,7 @@ _MINGW_ARCH_2_TRIPLET_MAP: Dict[str, str] = {
 }
 
 _ARCH_VARIANT_2_MARCH_MAP: Dict[str, str] = {
+  '64_v3': 'x86-64-v3',
   '64_v2': 'x86-64-v2',
   '64': 'x86-64',
   'arm64': 'armv8-a',
@@ -282,6 +283,7 @@ _ARCH_VARIANT_2_MARCH_MAP: Dict[str, str] = {
 }
 
 _ARCH_VARIANT_2_FPMATH_MAP: Dict[str, Optional[str]] = {
+  '64_v3': 'avx',
   '64_v2': None,
   '64': None,
   'arm64': None,
@@ -326,17 +328,16 @@ def _create_profile(
   )
 
 PROFILES: Dict[str, Optional[ProfileInfo]] = {
-  '64-mcf':    _create_profile('64', 'ucrt',   'mcf',   '6.1'),
-  '64-win32':  _create_profile('64', 'ucrt',   'win32', '6.0'),
+  '64-mcf':    _create_profile('64', 'ucrt', 'mcf', '6.1'),
+  '64-win32':  None, # branch-dependent
   '64-ucrt':   None, # branch-dependent
   '64-msvcrt': None, # branch-dependent
 
-  'arm64-mcf':   _create_profile('arm64', 'ucrt', 'mcf',   '10.0.16299', opt_speed = True),
-  'arm64-win32': _create_profile('arm64', 'ucrt', 'win32', '10.0.16299', opt_speed = True),
-  'arm64-ucrt':  _create_profile('arm64', 'ucrt', 'posix', '10.0.16299', opt_speed = True),
+  'arm64-mcf':  _create_profile('arm64', 'ucrt', 'mcf',   '10.0.16299', opt_speed = True),
+  'arm64-ucrt': _create_profile('arm64', 'ucrt', 'posix', '10.0.16299', opt_speed = True),
 
-  '32-mcf':    _create_profile('32', 'ucrt',   'mcf',   '6.1'),
-  '32-win32':  _create_profile('32', 'ucrt',   'win32', '6.0'),
+  '32-mcf':    _create_profile('32', 'ucrt', 'mcf', '6.1'),
+  '32-win32':  None, # branch-dependent
   '32-ucrt':   None, # branch-dependent
   '32-msvcrt': None, # branch-dependent
 
@@ -344,10 +345,13 @@ PROFILES: Dict[str, Optional[ProfileInfo]] = {
   # profile variants for micro architectures #
   ############################################
 
-  '64_v2-mcf':    _create_profile('64_v2', 'ucrt',   'mcf',   '6.1', opt_lto = True, opt_speed = True),
-  '64_v2-win32':  _create_profile('64_v2', 'ucrt',   'win32', '6.0', opt_lto = True, opt_speed = True),
-  '64_v2-ucrt':   _create_profile('64_v2', 'ucrt',   'posix', '5.2', opt_lto = True, opt_speed = True),
-  '64_v2-msvcrt': _create_profile('64_v2', 'msvcrt', 'posix', '5.2', opt_lto = True, opt_speed = True),
+  '64_v3-mcf':    _create_profile('64_v3', 'ucrt', 'mcf',   '6.1', opt_lto = True, opt_speed = True),
+  '64_v3-ucrt':   _create_profile('64_v3', 'ucrt', 'posix', '6.1', opt_lto = True, opt_speed = True),
+
+  '64_v2-mcf':    _create_profile('64_v2', 'ucrt', 'mcf',   '6.1', opt_lto = True, opt_speed = True),
+  '64_v2-win32':  _create_profile('64_v2', 'ucrt', 'win32', '6.0', opt_lto = True, opt_speed = True),
+  '64_v2-ucrt':   None, # branch-dependent
+  '64_v2-msvcrt': None, # branch-dependent
 
   #################################################
   # profile variants for earlier Windows versions #
@@ -360,7 +364,7 @@ PROFILES: Dict[str, Optional[ProfileInfo]] = {
 
   '32_686-msvcrt_win98': _create_profile('32_686', 'msvcrt', 'posix', '3.9999+4.10'),
   '32_486-msvcrt_win98': _create_profile('32_486', 'msvcrt', 'posix', '3.9999+4.10'),
-  '32_386-msvcrt_win95': _create_profile('32_386', 'msvcrt', 'posix', '3.9999+4.00'),
+  '32_386-msvcrt_win95': None, # branch-dependent
 
   #####################
   # beyond MinGW Lite #
@@ -370,6 +374,23 @@ PROFILES: Dict[str, Optional[ProfileInfo]] = {
   '32-u8crt': _create_profile('32', 'ucrt', 'posix', '5.1', opt_speed = True, u8crt = True),
 }
 
+def _useless_profile_removal(
+  arch: str,
+  crt: str,
+  thread: str,
+  emu_min_os: str,
+
+  opt_lto: bool = False,
+  opt_speed: bool = False,
+) -> Callable[[BranchVersions], ProfileInfo]:
+  def _profile(ver: BranchVersions) -> ProfileInfo:
+    v_gcc = Version(ver.gcc)
+    if v_gcc.major >= 17:
+      raise NotImplementedError('The profile is removed since GCC 17')
+    return _create_profile(arch, crt, thread, emu_min_os, opt_lto = opt_lto, opt_speed = opt_speed)
+
+  return _profile
+
 def _native_tls_requires_vista(
   arch: str,
   crt: str,
@@ -378,26 +399,47 @@ def _native_tls_requires_vista(
 
   opt_lto: bool = False,
   opt_speed: bool = False,
-) -> Callable[[str, str], ProfileInfo]:
-  def _profile(branch: str, v_gcc: str) -> ProfileInfo:
-    v = Version(v_gcc)
-    if v.major >= 16:
+) -> Callable[[BranchVersions], ProfileInfo]:
+  def _profile(ver: BranchVersions) -> ProfileInfo:
+    if ver.native_tls:
       return _create_profile(arch, crt, thread, '6.0', opt_lto = opt_lto, opt_speed = opt_speed)
     return _create_profile(arch, crt, thread, emu_min_os, opt_lto = opt_lto, opt_speed = opt_speed)
 
   return _profile
 
-BRANCH_DEPENDENT_PROFILES: Dict[str, Callable[[str, str], ProfileInfo]] = {
-  '64-ucrt':   _native_tls_requires_vista('64', 'ucrt',   'posix', '5.2'),
-  '64-msvcrt': _native_tls_requires_vista('64', 'msvcrt', 'posix', '5.2'),
-  '32-ucrt':   _native_tls_requires_vista('32', 'ucrt',   'posix', '5.1'),
-  '32-msvcrt': _native_tls_requires_vista('32', 'msvcrt', 'posix', '5.1'),
+def _64_v2_msvcrt(ver: BranchVersions) -> ProfileInfo:
+  v_gcc = Version(ver.gcc)
+  if v_gcc.major >= 17:
+    raise NotImplementedError('The profile is removed since GCC 17')
+  elif ver.native_tls:
+    return _create_profile('64_v2', 'msvcrt', 'posix', '6.0', opt_lto = True, opt_speed = True)
+  else:
+    return _create_profile('64_v2', 'msvcrt', 'posix', '5.2', opt_lto = True, opt_speed = True)
+
+def _32_386_msvcrt_win95(ver: BranchVersions) -> ProfileInfo:
+  if ver.native_tls:
+    raise NotImplementedError('The profile is removed since GCC 16')
+  return _create_profile('32_386', 'msvcrt', 'posix', '3.9999+4.00')
+
+BRANCH_DEPENDENT_PROFILES: Dict[str, Callable[[BranchVersions], ProfileInfo]] = {
+  '64-ucrt':    _native_tls_requires_vista('64',    'ucrt',   'posix', '5.2'),
+  '64-msvcrt':  _native_tls_requires_vista('64',    'msvcrt', 'posix', '5.2'),
+  '32-ucrt':    _native_tls_requires_vista('32',    'ucrt',   'posix', '5.1'),
+  '32-msvcrt':  _native_tls_requires_vista('32',    'msvcrt', 'posix', '5.1'),
+  '64_v2-ucrt': _native_tls_requires_vista('64_v2', 'ucrt',   'posix', '5.2', opt_lto = True, opt_speed = True),
+
+  '64_win32':    _useless_profile_removal('64',    'ucrt', 'win32', '6.0'),
+  '32_win32':    _useless_profile_removal('32',    'ucrt', 'win32', '6.0'),
+  '64_v2-win32': _useless_profile_removal('64_v2', 'ucrt', 'win32', '6.0', opt_lto = True, opt_speed = True),
+
+  '64_v2-msvcrt':        _64_v2_msvcrt,
+  '32_386-msvcrt_win95': _32_386_msvcrt_win95,
 }
 
 def resolve_profile(config: argparse.Namespace) -> BranchProfile:
   ver = BRANCHES[config.branch]
   if config.profile in BRANCH_DEPENDENT_PROFILES:
-    info = BRANCH_DEPENDENT_PROFILES[config.profile](config.branch, ver.gcc)
+    info = BRANCH_DEPENDENT_PROFILES[config.profile](ver)
   else:
     info = PROFILES[config.profile]
   return BranchProfile(

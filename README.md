@@ -75,11 +75,19 @@ A profile is composed of bitness and predefined ABI variant. The combination of 
 | ucrt (ucrt, posix) | 64-ucrt | 32-ucrt |
 | msvcrt (msvcrt, posix) | 64-msvcrt | 32-msvcrt |
 
+## Deprecation Notes
+
+| Profile | Removal | Note |
+| ------- | ------- | ---- |
+| *-win32 | GCC 17 | Community shows little interest. |
+| 64_v2-msvcrt | GCC 17 | It’s useless to pursue performance with msvcrt. |
+| 32_386-msvcrt_win95 | GCC 16 | Native TLS is impossible on Windows 95. |
+
 ## Micro Architecture
 
 By default, MinGW Lite is very conservative in micro architecture -- the “64”-bit profiles target the baseline “x86-64” (sse2, 2003); the “32”-bit profiles target “pentium4” (sse2, 2000).
 
-For better performance, there are “64”-bit “x86-64-v2” (sse4.2, 2008) variants: 64_v2-mcf, 64_v2-win32, 64_v2-ucrt, 64_v2-msvcrt. In addition, they have LTO enabled for GCC and Binutils (and thus optimized for speed in old branches).
+For better performance, there are “64”-bit “x86-64-v3” (avx2, 2013) variants: 64_v3-mcf, 64_v3-ucrt; and “x86-64-v2” (sse4.2, 2008) variants: 64_v2-mcf, 64_v2-win32 (deprecated), 64_v2-ucrt, 64_v2-msvcrt (deprecated). In addition, they have LTO enabled for GCC and Binutils (and thus optimized for speed in old branches).
 
 To work with even older CPUs, there are “32”-bit “i686” (cmov, 1995), “i486” [atomic (bswap, cmpxchg, xadd), 1989] and the baseline “i386” (1985) variants for earlier Windows versions (see below).
 
@@ -89,12 +97,14 @@ The default `_WIN32_WINNT` value for each branch is based on the earliest Window
 
 Python (GDB scripting engine) often limits the toolchain’s minimum supported OS. However, Python is sometimes a bit aggressive, so we use some [thunks](./doc/thunk.md) to bring back support for earlier Windows versions. The minimum supported OS is the one where the shared runtime libraries are thunk-free.
 
-| Profile | Min OS 16+ | Min OS 15, 14, 13 |
-| ------- | ---------- | ----------------- |
-| *-mcf | NT 6.1 (7) | NT 6.1 (7) |
-| *-win32 | NT 6.0 (Vista) | NT 6.0 (Vista) |
-| {64,64_v2}-{ucrt,msvcrt} | NT 6.0 (Vista) | NT 5.2 (Server 2003) |
-| 32-{ucrt,msvcrt} | NT 6.0 (Vista) | NT 5.1 (XP) |
+| Profile | Min OS next | Min OS current, 16 | Min OS 15, 14, 13 |
+| ------- | ----------- | ------------------ | ----------------- |
+| *-mcf | NT 6.1 (7) | NT 6.1 (7) | NT 6.1 (7) |
+| 64_v3-* | NT 6.1 (7) | | |
+| {64,64_v2,32}-win32 | | NT 6.0 (Vista) | NT 6.0 (Vista) |
+| 64_v2-msvcrt | | NT 6.0 (Vista) | NT 5.2 (Server 2003) |
+| 64-{ucrt,msvcrt} | NT 6.0 (Vista) | NT 6.0 (Vista) | NT 5.2 (Server 2003) |
+| 32-{ucrt,msvcrt} | NT 6.0 (Vista) | NT 6.0 (Vista) | NT 5.1 (XP) |
 
 Some profiles have variants for even earlier Windows versions (and possibly older CPUs), as follows.
 

@@ -89,6 +89,10 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
       # U8CRT: validate UTF-8
       patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'u8crt-validate-utf8.patch')
 
+    # Fix AVX align
+    if v.major == 17:
+      patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'fix-avx-align.patch')
+
     # Use Linux style tooldir
     # MinGW Lite install binutils with `tooldir=$prefix`, the common practice in Linux.
     # However, GCC tries to locate the tools in $prefix/$triplet and then falls back to PATH.

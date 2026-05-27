@@ -18,6 +18,7 @@ common_profile = [
   '32-mcf', '32-win32', '32-ucrt', '32-msvcrt',
 
   # profile variants for micro architectures
+  '64_v3-mcf',                '64_v3-ucrt',
   '64_v2-mcf', '64_v2-win32', '64_v2-ucrt', '64_v2-msvcrt',
 ]
 all_old_profile = [
@@ -38,6 +39,16 @@ beyond_profile = [
 ]
 
 exclude_profile_branch = [
+  *( # useless profile removal
+    {'profile': p, 'branch': b}
+    for p in ['64-win32', '64_v2-win32', '64_v2-msvcrt', '32-win32']
+    for b in ['next']
+  ),
+  *( # x86-64-v3
+    {'profile': p, 'branch': b}
+    for p in ['64_v3-mcf', '64_v3-ucrt']
+    for b in ['current', '16', '15', '14', '13']
+  ),
   *( # native TLS removal
     {'profile': '32_386-msvcrt_win95', 'branch': b}
     for b in ['next', 'current', '16']
@@ -86,6 +97,12 @@ sat_group = [
     'name': '64_v2-stable',
     'profile': json.dumps(['64_v2-mcf', '64_v2-win32', '64_v2-ucrt', '64_v2-msvcrt']),
     'pattern': '{mingw64_v2-mcf-*,mingw64_v2-win32-*,mingw64_v2-ucrt-*,mingw64_v2-msvcrt-*}',
+    'dict': '512m',
+  },
+  {
+    'name': '64_v3-stable',
+    'profile': json.dumps(['64_v3-mcf', '64_v3-ucrt']),
+    'pattern': '{mingw64_v3-mcf-*,mingw64_v3-ucrt-*}',
     'dict': '512m',
   },
   {
