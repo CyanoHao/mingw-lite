@@ -1,0 +1,171 @@
+#!/usr/bin/python3
+
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+
+
+def read_sidecar(sidecar_dir, archive_path):
+  basename = Path(archive_path).name
+  sidecar_path = Path(sidecar_dir) / (basename + '.import-info.json')
+  if sidecar_path.is_file():
+    with open(sidecar_path) as f:
+      return json.load(f)
+  return None
+
+
+def merge_sidecars(sidecar_list, static_objects, output_machine=None, output_kill=None):
+  merged_imports = {}
+  machine = output_machine
+  kill_underscore = output_kill
+
+  for sidecar in sidecar_list:
+    if not sidecar:
+      continue
+    for dll_name, dll_data in sidecar.get('imports', {}).items():
+      if dll_name not in merged_imports:
+        merged_imports[dll_name] = {'exports': []}
+      merged_imports[dll_name]['exports'].extend(dll_data.get('exports', []))
+    if machine is None:
+      machine = sidecar.get('machine')
+    if kill_underscore is None:
+      kill_underscore = sidecar.get('kill_underscore')
+
+  return {
+    'imports': merged_imports,
+    'static_objects': static_objects,
+    'machine': machine,
+    'kill_underscore': kill_underscore,
+  }
+
+
+def parse_mri(mri_text, sidecar_dir):
+  output_file = None
+  addlib_sidecars = []
+  static_objects = []
+
+  for line in mri_text.splitlines():
+    line = line.strip()
+    if not line:
+      continue
+
+    parts = line.split(None, 1)
+    cmd = parts[0].lower()
+
+    if cmd == 'create' and len(parts) > 1:
+      output_file = parts[1].strip()
+    elif cmd == 'addlib' and len(parts) > 1:
+      lib_path = parts[1].strip()
+      sc = read_sidecar(sidecar_dir, lib_path)
+      if sc:
+        addlib_sidecars.append(sc)
+    elif cmd == 'addmod' and len(parts) > 1:
+      mod_path = parts[1].strip()
+      static_objects.append(Path(mod_path).name)
+
+  return output_file, addlib_sidecars, static_objects
+
+
+def handle_mri(sidecar_dir):
+  mri_text = sys.stdin.read()
+
+  if not sidecar_dir:
+    result = subprocess.run(
+      ['/usr/bin/llvm-ar', '-M'],
+      input=mri_text,
+      text=True,
+    )
+    sys.exit(result.returncode)
+    return
+
+  output_file, addlib_sidecars, static_objects = parse_mri(mri_text, sidecar_dir)
+
+  if output_file and (addlib_sidecars or static_objects):
+    merged = merge_sidecars(addlib_sidecars, static_objects)
+    if merged['imports'] or merged['static_objects']:
+      basename = Path(output_file).name
+      sidecar_path = Path(sidecar_dir) / (basename + '.import-info.json')
+      sidecar_path.parent.mkdir(parents=True, exist_ok=True)
+      with open(sidecar_path, 'w') as f:
+        json.dump(merged, f, indent=2, sort_keys=True)
+        f.write('\n')
+
+  result = subprocess.run(
+    ['/usr/bin/llvm-ar', '-M'],
+    input=mri_text,
+    text=True,
+  )
+  sys.exit(result.returncode)
+
+
+def _is_write_op(arg):
+  op = arg.lstrip('-').lower()
+  return 'r' in op or 'q' in op or 's' in op
+
+def _parse_write_op(args):
+  output_file = None
+  input_files = []
+  for i, arg in enumerate(args):
+    clean = arg.lstrip('-')
+    if any(c in clean for c in 'rqsm'):
+      if i + 2 <= len(args):
+        output_file = args[i + 1] if i + 1 < len(args) else None
+        input_files = args[i + 2:] if i + 2 < len(args) else []
+      return output_file, input_files
+  return None, []
+
+def handle_create(sidecar_dir, args):
+  output_file, input_files = _parse_write_op(args)
+
+  if sidecar_dir and output_file:
+    sidecar_list = []
+    static_objects = []
+    has_sidecar_input = False
+
+    for inp in input_files:
+      sc = read_sidecar(sidecar_dir, inp)
+      if sc:
+        sidecar_list.append(sc)
+        has_sidecar_input = True
+      else:
+        static_objects.append(Path(inp).name)
+
+    if has_sidecar_input or static_objects:
+      merged = merge_sidecars(sidecar_list, static_objects)
+      basename = Path(output_file).name
+      sidecar_path = Path(sidecar_dir) / (basename + '.import-info.json')
+      sidecar_path.parent.mkdir(parents=True, exist_ok=True)
+      with open(sidecar_path, 'w') as f:
+        json.dump(merged, f, indent=2, sort_keys=True)
+        f.write('\n')
+
+  result = subprocess.run(['/usr/bin/llvm-ar'] + args)
+  sys.exit(result.returncode)
+
+
+def main():
+  args = sys.argv[1:]
+  if not args:
+    result = subprocess.run(['/usr/bin/llvm-ar'])
+    sys.exit(result.returncode)
+    return
+
+  sidecar_dir = os.environ.get('DT_SIDECAR_DIR')
+
+  if args[0] == '-M':
+    handle_mri(sidecar_dir)
+    return
+
+  if _is_write_op(args[0]):
+    handle_create(sidecar_dir, args)
+    return
+
+  result = subprocess.run(['llvm-ar'] + args)
+  sys.exit(result.returncode)
+
+
+if __name__ == '__main__':
+  main()
