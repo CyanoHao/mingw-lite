@@ -147,7 +147,13 @@ function merge_win32_alias()
 end
 
 function profile_core()
-  return get_config('profile') == 'core'
+  return (
+    get_config('profile') == 'core' or
+    profile_qt())
+end
+
+function profile_qt()
+  return get_config('profile') == 'qt'
 end
 
 function profile_toolchain()
@@ -230,6 +236,8 @@ includes('utf8-musl.lua')
 includes('ovl_advapi32.lua')
 includes('ovl_bcrypt.lua')
 includes('ovl_crypt32.lua')
+includes('ovl_dwmapi.lua')
+includes('ovl_iphlpapi.lua')
 includes('ovl_kernel32.lua')
 includes('ovl_msvcrt.lua')
 includes('ovl_pathcch.lua')

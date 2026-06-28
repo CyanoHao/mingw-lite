@@ -12,6 +12,7 @@ EXPORTS
   __ms_CreateFileA@28 == CreateFileA
   __ms_CreateFileW@28 == CreateFileW
   __ms_CreateHardLinkW@12 == CreateHardLinkW
+  __ms_CreateNamedPipeW@32 == CreateNamedPipeW
   __ms_CreateProcessA@40 == CreateProcessA
   __ms_CreateProcessW@40 == CreateProcessW
   __ms_CreateSemaphoreA@16 == CreateSemaphoreA

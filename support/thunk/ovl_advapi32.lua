@@ -20,9 +20,16 @@ target('overlay-advapi32')
     end
   end
 
+  if profile_qt() then
+    if ntddi_version() < ntddi_winxp() then
+      add_files('advapi32/5.1/SystemFunction036.cc')
+    end
+  end
+
 target('thunk-advapi32')
   add_files(
     'advapi32/5.0/ConvertStringSecurityDescriptorToSecurityDescriptorW.cc',
+    'advapi32/5.1/SystemFunction036.cc',
     'advapi32/5.2/RegDeleteKeyExW.cc')
   enable_if_x86_32()
   enable_thunk_options()

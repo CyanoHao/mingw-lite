@@ -270,6 +270,33 @@ target('overlay-kernel32')
     end
   end
 
+  if profile_qt() then
+    if ntddi_version() < ntddi_winxp() then
+      add_files(
+        'kernel32/5.1/CheckRemoteDebuggerPresent.cc',
+        'kernel32/5.1/GetGeoInfoW.cc',
+        'kernel32/5.1/GetModuleHandleExW.cc',
+        'kernel32/5.1/GetNativeSystemInfo.cc',
+        'kernel32/5.1/GetProcessId.cc',
+        'kernel32/5.1/GetUserGeoID.cc',
+        'kernel32/5.1/GetVolumePathNamesForVolumeNameW.cc',
+        'kernel32/5.1/TzSpecificLocalTimeToSystemTime.cc',
+        'kernel32/5.1/WTSGetActiveConsoleSessionId.cc')
+    end
+    if ntddi_version() < ntddi_vista() then
+      add_files(
+        'kernel32/6.0/CancelIoEx.cc',
+        'kernel32/6.0/CompareStringEx.cc',
+        'kernel32/6.0/CreateNamedPipeW.cc',
+        'kernel32/6.0/GetFileInformationByHandleEx.cc',
+        'kernel32/6.0/GetTickCount64.cc',
+        'kernel32/6.0/GetUserPreferredUILanguages.cc')
+    end
+    if ntddi_version() < ntddi_win7() then
+      add_files('kernel32/6.1/RaiseFailFastException.cc')
+    end
+  end
+
   if has_config('native-tls') and ntddi_version() < ntddi_vista() then
     add_files('kernel32/6.0/__mingw_thunk_fix_loadlibrary_tls_data.cc')
   end
@@ -293,7 +320,9 @@ target('alias-long-kernel32')
 target('thunk-kernel32')
   add_files(
     'kernel32/6.0/CancelIoEx.cc',
+    'kernel32/6.0/CompareStringEx.cc',
     'kernel32/6.0/CompareStringOrdinal.cc',
+    'kernel32/6.0/CreateNamedPipeW.cc',
     'kernel32/6.0/CreateSymbolicLinkW.cc',
     'kernel32/6.0/CreateWaitableTimerExW.cc',
     'kernel32/6.0/DeleteProcThreadAttributeList.cc',
@@ -301,6 +330,7 @@ target('thunk-kernel32')
     'kernel32/6.0/GetFileInformationByHandleEx.cc',
     'kernel32/6.0/GetFinalPathNameByHandleW.cc',
     'kernel32/6.0/GetTickCount64.cc',
+    'kernel32/6.0/GetUserPreferredUILanguages.cc',
     'kernel32/6.0/InitializeProcThreadAttributeList.cc',
     'kernel32/6.0/LCMapStringEx.cc',
     'kernel32/6.0/LocaleNameToLCID.cc',
@@ -312,6 +342,7 @@ target('thunk-kernel32')
     'kernel32/6.1/GetMaximumProcessorCount.cc',
     'kernel32/6.1/GetMaximumProcessorGroupCount.cc',
     'kernel32/6.1/K32GetModuleFileNameExW.cc',
+    'kernel32/6.1/RaiseFailFastException.cc',
     'kernel32/6.1/SetWaitableTimerEx.cc',
     'kernel32/6.2/AddDllDirectory.cc',
     'kernel32/6.2/CopyFile2.cc',
@@ -355,17 +386,22 @@ target('thunk-kernel32')
       'kernel32/5.0/Process32NextW.cc',
       'kernel32/5.0/SetFilePointerEx.cc',
       'kernel32/5.1/AddVectoredExceptionHandler.cc',
+      'kernel32/5.1/CheckRemoteDebuggerPresent.cc',
       'kernel32/5.1/GetConsoleProcessList.cc',
       'kernel32/5.1/GetGeoInfoW.cc',
       'kernel32/5.1/GetModuleHandleExW.cc',
+      'kernel32/5.1/GetNativeSystemInfo.cc',
       'kernel32/5.1/GetNumaHighestNodeNumber.cc',
       'kernel32/5.1/GetNumaNodeProcessorMask.cc',
+      'kernel32/5.1/GetProcessId.cc',
       'kernel32/5.1/GetSystemTimes.cc',
       'kernel32/5.1/GetSystemWow64DirectoryW.cc',
       'kernel32/5.1/GetUserGeoID.cc',
       'kernel32/5.1/GetVolumePathNamesForVolumeNameW.cc',
       'kernel32/5.1/LCMapStringW.cc',
       'kernel32/5.1/RemoveVectoredExceptionHandler.cc',
+      'kernel32/5.1/TzSpecificLocalTimeToSystemTime.cc',
+      'kernel32/5.1/WTSGetActiveConsoleSessionId.cc',
       'kernel32/5.2/FlsAlloc.cc',
       'kernel32/5.2/FlsFree.cc',
       'kernel32/5.2/FlsGetValue.cc',

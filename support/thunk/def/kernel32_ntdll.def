@@ -2,6 +2,7 @@ LIBRARY ntdll.dll
 EXPORTS
   __ms_NtQueryDirectoryFile == NtQueryDirectoryFile
   __ms_NtQueryInformationFile == NtQueryInformationFile
+  __ms_NtQueryInformationProcess == NtQueryInformationProcess
   __ms_NtQueryInformationThread == NtQueryInformationThread
   __ms_NtQuerySystemInformation == NtQuerySystemInformation
   __ms_NtSetInformationFile == NtSetInformationFile

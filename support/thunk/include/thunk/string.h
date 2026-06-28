@@ -95,6 +95,17 @@ namespace mingw_thunk
       return len;
     }
 
+    inline int wcscmp(const wchar_t *lhs, const wchar_t *rhs) noexcept
+    {
+      while (*lhs == *rhs) {
+        if (!*lhs)
+          return 0;
+        lhs++;
+        rhs++;
+      }
+      return *lhs < *rhs ? -1 : 1;
+    }
+
     inline size_t wcsnlen(const wchar_t *str, size_t strsz)
     {
       size_t len = 0;
