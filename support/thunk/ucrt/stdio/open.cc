@@ -15,14 +15,11 @@ namespace mingw_thunk
                  int flags,
                  ...)
   {
-    if (flags & _O_CREAT) {
-      va_list args;
-      va_start(args, flags);
-      int res = _open(path, flags, va_arg(args, int));
-      va_end(args);
-      return res;
-    } else {
-      return _open(path, flags);
-    }
+    va_list args;
+    va_start(args, flags);
+    int mode = va_arg(args, int);
+    va_end(args);
+
+    return _open(path, flags, mode);
   }
 } // namespace mingw_thunk

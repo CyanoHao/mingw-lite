@@ -4,6 +4,7 @@ EXPORTS
   __ms___stdio_common_vfscanf == __stdio_common_vfscanf
   __ms__getcwd == _getcwd
   __ms__open == _open
+  __ms__popen == _popen
   __ms__read == _read
   __ms__write == _write
   __ms_fflush == fflush
@@ -18,6 +19,7 @@ EXPORTS
   __ms_getchar == getchar
   __ms_getcwd == _getcwd
   __ms_open == _open
+  __ms_popen == _popen
   __ms_putc == putc
   __ms_puts == puts
   __ms_read == _read

@@ -7,4 +7,4 @@ RUN pacman -Syu --noconfirm && \
 # avoid wine failures (possibly race condition)
 #   wine: created the configuration directory '/root/.wine'
 #   wine: chdir to /tmp/wine-wr755y/server-801-6f0401 : No such file or directory
-RUN wineboot --init
+RUN wineboot --init && wineserver -w
