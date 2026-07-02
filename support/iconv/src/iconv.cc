@@ -392,6 +392,10 @@ namespace libiconv
         }
       }
 
+      if (*outbytesleft < 1) {
+        errno = E2BIG;
+        return (size_t)-1;
+      }
       int result = encode_one(
           cd, dr.codepoint, (uint8_t **)outbuf, outbytesleft, &non_reversible);
       if (result < 0)
