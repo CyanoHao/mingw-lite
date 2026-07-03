@@ -264,6 +264,22 @@ def _iconv_win32(ver: BranchProfile, paths: ProjectPaths):
     dirs_exist_ok = True,
   )
 
+def _asan(ver: BranchProfile, paths: ProjectPaths):
+  # Vendored GCC 15.3.0 libsanitizer source (see support/asan/FILES_REWRITTEN.md).
+  # The copy is harmless on non-15 branches; the actual build is gated in ABB._asan.
+  shutil.copytree(
+    paths.in_tree_src_tree.asan,
+    paths.in_tree_src_dir.asan,
+    ignore = shutil.ignore_patterns(
+      '.cache',
+      '.vscode',
+      '.xmake',
+      'build',
+      '_install',
+    ),
+    dirs_exist_ok = True,
+  )
+
 def _intl(ver: BranchProfile, paths: ProjectPaths):
   shutil.copytree(
     paths.in_tree_src_tree.intl,
@@ -539,6 +555,7 @@ def _zstd(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   patch_done(paths.src_dir.zstd)
 
 def prepare_source(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
+  _asan(ver, paths)
   _binutils(ver, paths, download_only)
   _expat(ver, paths, download_only)
   _gcc(ver, paths, download_only)

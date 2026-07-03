@@ -1,0 +1,20 @@
+# This spec file is read by gcc when linking.  It is used to specify the
+# standard libraries we need in order to link with various sanitizer libs.
+# MinGW-lite: generated from this template by module/ABB._asan(); the
+# @link_libasan@ placeholder is substituted per profile thread model.
+#
+# The GCC driver always emits `-lasan` for -fsanitize=address (gcc/gcc.cc
+# LIBASAN_SPEC).  This spec's *link_libasan is additionally pulled in only under
+# -static-libasan / -static via `%:include(libsanitizer.spec)%(link_libasan)`,
+# supplying the transitive dependencies (thread runtime + Win32 import libs)
+# that a static libasan.a cannot carry on PE/COFF.
+
+*link_libasan: @link_libasan@
+
+*link_libhwasan: @link_libasan@
+
+*link_libtsan: @link_libasan@
+
+*link_libubsan: @link_libasan@
+
+*link_liblsan: @link_libasan@

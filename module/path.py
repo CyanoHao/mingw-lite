@@ -30,6 +30,7 @@ class SourcePaths(NamedTuple):
   zstd: Path
 
 class InTreeSourcePaths(NamedTuple):
+  asan: Path
   iconv: Path
   intl: Path
   sync: Path
@@ -277,6 +278,7 @@ class ProjectPaths:
     )
 
     self.in_tree_src_dir = InTreeSourcePaths(
+      asan = self.build_dir / 'asan',
       iconv = self.build_dir / 'iconv',
       intl = self.build_dir / 'intl',
       sync = self.build_dir / 'sync',
@@ -285,6 +287,7 @@ class ProjectPaths:
     )
 
     self.in_tree_src_tree = InTreeSourcePaths(
+      asan = self.root_dir / 'support/asan',
       iconv = self.root_dir / 'support/iconv',
       intl = self.root_dir / 'support/intl',
       sync = self.root_dir / 'support/sync',

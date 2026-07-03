@@ -819,6 +819,61 @@ def _pkgconf(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace
   ensure(license_dir)
   shutil.copy(paths.src_dir.pkgconf / 'COPYING', license_dir / 'COPYING')
 
+def _asan(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
+  # Build a static libasan.a from the vendored GCC 15.3.0 libsanitizer source
+  # (support/asan/src).  MVP: only GCC major 15 is supported, as the source is
+  # version-tied to the compiler's -fsanitize=address instrumentation ABI.
+  if Version(ver.gcc).major != 15:
+    logging.info('skip libasan build for gcc %s (asan source is vendored for gcc 15)', ver.gcc)
+    return
+
+  src_dir = paths.in_tree_src_dir.asan
+  with overlayfs_ro('/usr/local', [
+    paths.layer_AAA.xmake / 'usr/local',
+    paths.layer_AAB.crt_target / 'usr/local',
+    *common_cross_layers(paths),
+  ]):
+    xmake_config(src_dir, [
+      '--plat=mingw',
+      f'--arch={XMAKE_ARCH_MAP[ver.arch]}',
+      '--mingw=/usr/local',
+    ])
+    xmake_build(src_dir, config.jobs)
+
+    # Install to a scratch dir, then place the artifacts into the GCC libsubdir
+    # (<layer_ABB.gcc_lib>/lib/gcc/<triplet>/<major>/).  That is where the GCC
+    # driver looks for `-lasan` and `%:include(libsanitizer.spec)` (gcc/gcc.cc
+    # LIBASAN_SPEC).  GCC's own install-target does not produce a libasan here
+    # (libsanitizer is auto-skipped for mingw by configure.tgt), so there is no
+    # collision.
+    scratch = src_dir / '_install'
+    if scratch.exists():
+      shutil.rmtree(scratch)
+    xmake_install(src_dir, scratch)
+
+    v = Version(ver.gcc)
+    libsubdir = paths.layer_ABB.gcc_lib / 'lib' / 'gcc' / ver.target / str(v.major)
+    ensure(libsubdir)
+
+    archive = next(scratch.rglob('libasan.a'))
+    shutil.copy(archive, libsubdir / 'libasan.a')
+
+    # Public sanitizer headers -> <libsubdir>/include/sanitizer/.
+    hdr_src = scratch / 'include' / 'sanitizer'
+    if hdr_src.is_dir():
+      hdr_dst = libsubdir / 'include' / 'sanitizer'
+      ensure(hdr_dst)
+      for h in hdr_src.glob('*.h'):
+        shutil.copy(h, hdr_dst / h.name)
+
+    # libsanitizer.spec: *link_libasan carries the thread runtime + Win32 import
+    # libraries that a static libasan.a cannot embed on PE/COFF.  It is pulled in
+    # by the GCC driver only under -static-libasan / -static.
+    thread_lib = '-lmcfgthread' if ver.thread == 'mcf' else '-lwinpthread'
+    link_libasan = f'{thread_lib} -lpsapi -lsynchronization -ladvapi32 -lm'
+    spec_in = (paths.in_tree_src_tree.asan / 'libsanitizer.spec.in').read_text()
+    (libsubdir / 'libsanitizer.spec').write_text(spec_in.replace('@link_libasan@', link_libasan))
+
 def build_ABB_toolchain(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   _binutils(ver, paths, config)
   _headers(ver, paths, config)
@@ -830,6 +885,7 @@ def build_ABB_toolchain(ver: BranchProfile, paths: ProjectPaths, config: argpars
   _nowide(ver, paths, config)
   _gcc_1(ver, paths, config)
   _gcc_2(ver, paths, config)
+  _asan(ver, paths, config)
   _gdb(ver, paths, config)
   _gmake(ver, paths, config)
   _pkgconf(ver, paths, config)
