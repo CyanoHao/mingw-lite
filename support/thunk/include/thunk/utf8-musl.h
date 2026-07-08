@@ -6,7 +6,25 @@
 
 namespace mingw_thunk
 {
-  namespace musl
+  namespace musl // env
+  {
+    extern char **__environ;
+
+    char *getenv(const char *name);
+    char *getenv(const char *name, size_t name_len);
+
+    int setenv(const char *var, const char *value, int overwrite);
+    int setenv(const char *var,
+               size_t var_len,
+               const char *value,
+               size_t val_len,
+               int overwrite);
+
+    int unsetenv(const char *name);
+    int unsetenv(const char *name, size_t name_len);
+  } // namespace musl
+
+  namespace musl // stdio
   {
     struct FILE;
     struct iovec;
@@ -38,10 +56,18 @@ namespace mingw_thunk
     int ungetc(int c, FILE *f);
     int vfprintf(FILE *f, const char *fmt, va_list ap);
     int vfscanf(FILE *f, const char *fmt, va_list ap);
+  } // namespace musl
 
+  namespace musl // unistd
+  {
     ssize_t read(int fd, void *buf, size_t count);
     ssize_t readv(int fd, const struct iovec *iov, int iovcnt);
     ssize_t write(int fd, const void *buf, size_t count);
     ssize_t writev(int fd, const struct iovec *iov, int iovcnt);
   } // namespace musl
+
+  namespace musl // win32
+  {
+    extern char **utf8_argv;
+  }
 } // namespace mingw_thunk

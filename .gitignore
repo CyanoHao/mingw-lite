@@ -1,7 +1,7 @@
+./env
 __pycache__
 assets
 build
 dist
-env
 layer
 pkg
