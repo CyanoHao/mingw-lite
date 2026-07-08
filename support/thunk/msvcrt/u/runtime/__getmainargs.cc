@@ -1,15 +1,11 @@
-#include "__getmainargs.h"
-
 #include <thunk/_common.h>
 #include <thunk/_no_thunk.h>
 #include <thunk/os.h>
+#include <thunk/utf8-musl.h>
 
 #include <stdlib.h>
 
 #include <windows.h>
-
-#include "../environment/__p__environ.h"
-#include "__p___argv.h"
 
 extern "C"
 {
@@ -28,6 +24,14 @@ extern "C"
 
 namespace mingw_thunk
 {
+  namespace i
+  {
+    char **u8argv_from_wargv(int argc, wchar_t **wargv);
+
+    char **u8envp_from_wenvp(wchar_t **wenvp);
+    char **u8envp_from_win32_env_strings();
+  } // namespace i
+
   __DEFINE_THUNK(msvcrt,
                  0,
                  int,
@@ -43,76 +47,46 @@ namespace mingw_thunk
     int argc;
     wchar_t **wargv;
     wchar_t **wenvp;
-
     __wgetmainargs(&argc, &wargv, &wenvp, do_wild_card, start_info);
 
-    char **argv = (char **)malloc(sizeof(char *) * (argc + 1));
-    for (int i = 0; i < argc; i++) {
-      int len = WideCharToMultiByte(
-          CP_UTF8, 0, wargv[i], -1, nullptr, 0, nullptr, nullptr);
-      argv[i] = (char *)malloc(len);
-      WideCharToMultiByte(
-          CP_UTF8, 0, wargv[i], -1, argv[i], len, nullptr, nullptr);
-    }
-    argv[argc] = nullptr;
-
-    int envc;
-    char **envp;
+    char **u8argv = i::u8argv_from_wargv(argc, wargv);
+    char **u8envp;
 
 #if THUNK_LEVEL >= NTDDI_VISTA
 
-    {
-      auto ret = internal::u8_envp_from_wenvp(wenvp);
-      envc = ret.envc;
-      envp = ret.envp;
-    }
+    u8envp = i::u8envp_from_wenvp(wenvp);
 
 #elif THUNK_LEVEL >= NTDDI_WIN4
 
     if (i::os_version() >= g::win32_vista) {
-      auto ret = internal::u8_envp_from_wenvp(wenvp);
-      envc = ret.envc;
-      envp = ret.envp;
+      u8envp = i::u8envp_from_wenvp(wenvp);
     } else {
       // Fake wenvp (converted from envp)
-      auto ret = internal::u8_envp_from_win32_env_strings();
-      envc = ret.envc;
-      envp = ret.envp;
+      u8envp = i::u8envp_from_win32_env_strings();
     }
 
 #else
 
     if (i::os_version() >= g::win32_vista) {
-      auto ret = internal::u8_envp_from_wenvp(wenvp);
-      envc = ret.envc;
-      envp = ret.envp;
+      u8envp = i::u8envp_from_wenvp(wenvp);
     } else if (i::is_nt()) {
       // Fake wenvp (converted from envp)
-      auto ret = internal::u8_envp_from_win32_env_strings();
-      envc = ret.envc;
-      envp = ret.envp;
+      u8envp = i::u8envp_from_win32_env_strings();
     } else {
       // Fake wenvp is what we need:
       // 1. `GetEnvironmentStringsW` is a stub;
       // 2. environment variables are limited to the code page.
-      auto ret = internal::u8_envp_from_wenvp(wenvp);
-      envc = ret.envc;
-      envp = ret.envp;
+      u8envp = i::u8envp_from_wenvp(wenvp);
     }
 
 #endif
 
-    internal::u8_argv = argv;
-    internal::u8_envp = envp;
-
-    __atomic_test_and_set(&internal::u8_environ_lock, __ATOMIC_ACQUIRE);
-    internal::u8_environ = envp;
-    internal::u8_environ_size = envc;
-    __atomic_clear(&internal::u8_environ_lock, __ATOMIC_RELEASE);
+    musl::utf8_argv = u8argv;
+    musl::__environ = u8envp;
 
     *pargc = argc;
-    *pargv = argv;
-    *penvp = envp;
+    *pargv = u8argv;
+    *penvp = u8envp;
 
     return 0;
   }
@@ -122,55 +96,101 @@ namespace mingw_thunk
 
   namespace internal
   {
-    u8_envp_result u8_envp_from_wenvp(wchar_t **wenvp)
+    char **u8argv_from_wargv(int argc, wchar_t **wargv)
     {
-      int envc = 0;
-      while (wenvp[envc])
-        envc++;
-
-      char **envp = (char **)malloc(sizeof(char *) * (envc + 1));
-      for (int i = 0; i < envc; i++) {
-        int len = WideCharToMultiByte(
-            CP_UTF8, 0, wenvp[i], -1, nullptr, 0, nullptr, nullptr);
-        envp[i] = (char *)malloc(len);
-        WideCharToMultiByte(
-            CP_UTF8, 0, wenvp[i], -1, envp[i], len, nullptr, nullptr);
+      size_t total_size = sizeof(char *) * (argc + 1);
+      for (int i = 0; i < argc; i++) {
+        total_size += WideCharToMultiByte(
+            CP_UTF8, 0, wargv[i], -1, nullptr, 0, nullptr, nullptr);
       }
-      envp[envc] = nullptr;
 
-      return {envc, envp};
+      char *block = (char *)malloc(total_size);
+      char *end = block + total_size;
+      if (!block)
+        return nullptr;
+
+      char **u8argv = (char **)block;
+      char *u8str = (char *)(u8argv + argc + 1);
+
+      for (int i = 0; i < argc; i++) {
+        int len = WideCharToMultiByte(
+            CP_UTF8, 0, wargv[i], -1, u8str, end - u8str, nullptr, nullptr);
+        u8argv[i] = u8str;
+        u8str += len;
+      }
+      u8argv[argc] = nullptr;
+      return u8argv;
     }
 
-    u8_envp_result u8_envp_from_win32_env_strings()
+    char **u8envp_from_wenvp(wchar_t **wenvp)
+    {
+      int envc = 0;
+      size_t total_size = 0;
+      while (wenvp[envc]) {
+        total_size += WideCharToMultiByte(
+            CP_UTF8, 0, wenvp[envc], -1, nullptr, 0, nullptr, nullptr);
+        envc++;
+      }
+      total_size += sizeof(char *) * (envc + 1);
+
+      char *block = (char *)malloc(total_size);
+      char *end = block + total_size;
+      if (!block)
+        return nullptr;
+
+      char **u8envp = (char **)block;
+      char *u8str = (char *)(u8envp + envc + 1);
+
+      for (int i = 0; i < envc; i++) {
+        int size = WideCharToMultiByte(
+            CP_UTF8, 0, wenvp[i], -1, u8str, end - u8str, nullptr, nullptr);
+        u8envp[i] = u8str;
+        u8str += size;
+      }
+      u8envp[envc] = nullptr;
+      return u8envp;
+    }
+
+    char **u8_envp_from_win32_env_strings()
     {
       wchar_t *env_strings = GetEnvironmentStringsW();
       if (!env_strings)
-        return {0, nullptr};
+        return nullptr;
 
       int envc = 0;
+      size_t total_size = 0;
+
       wchar_t *p = env_strings;
       while (*p) {
+        size_t w_size = wcslen(p) + 1;
+        total_size += WideCharToMultiByte(
+            CP_UTF8, 0, p, w_size, nullptr, 0, nullptr, nullptr);
         envc++;
-        p += wcslen(p) + 1;
+        p += w_size;
       }
+      total_size += sizeof(char *) * (envc + 1);
 
-      char **envp = (char **)malloc(sizeof(char *) * (envc + 1));
+      char *block = (char *)malloc(total_size);
+      char *end = block + total_size;
+      if (!block)
+        return nullptr;
+
+      char **u8envp = (char **)block;
+      char *u8str = (char *)(u8envp + envc + 1);
+
       p = env_strings;
       for (int i = 0; i < envc; i++) {
-        size_t w_len = wcslen(p);
-        int u_len = WideCharToMultiByte(
-            CP_UTF8, 0, p, w_len, nullptr, 0, nullptr, nullptr);
-        envp[i] = (char *)malloc(u_len + 1);
-        WideCharToMultiByte(
-            CP_UTF8, 0, p, w_len, envp[i], u_len, nullptr, nullptr);
-        envp[i][u_len] = 0;
-        p += w_len + 1;
+        size_t wsize = wcslen(p) + 1;
+        int size = WideCharToMultiByte(
+            CP_UTF8, 0, p, wsize, u8str, end - u8str, nullptr, nullptr);
+        u8envp[i] = u8str;
+        u8str += size;
+        p += wsize;
       }
-      envp[envc] = nullptr;
+      u8envp[envc] = nullptr;
 
       FreeEnvironmentStringsW(env_strings);
-
-      return {envc, envp};
+      return u8envp;
     }
   } // namespace internal
 } // namespace mingw_thunk

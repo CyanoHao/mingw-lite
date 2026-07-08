@@ -1,10 +1,5 @@
-#include "__p__environ.h"
-
 #include <thunk/_common.h>
-#include <thunk/string.h>
-
-#include <stdlib.h>
-#include <string.h>
+#include <thunk/utf8-musl.h>
 
 namespace mingw_thunk
 {
@@ -15,15 +10,6 @@ namespace mingw_thunk
                  getenv,
                  const char *name)
   {
-    using internal::u8_environ;
-    using internal::u8_environ_size;
-
-    size_t name_len = strlen(name);
-    for (int i = 0; i < u8_environ_size; i++) {
-      char *entry = u8_environ[i];
-      if (_strnicmp(entry, name, name_len) == 0 && entry[name_len] == '=')
-        return entry + name_len + 1;
-    }
-    return nullptr;
+    return musl::getenv(name);
   }
 } // namespace mingw_thunk

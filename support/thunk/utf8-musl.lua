@@ -1,5 +1,10 @@
 function utf8_musl_files()
   return {
+    'utf8-musl/env/__environ.cc',
+    'utf8-musl/env/getenv.cc',
+    'utf8-musl/env/putenv.cc',
+    'utf8-musl/env/setenv.cc',
+    'utf8-musl/env/unsetenv.cc',
     'utf8-musl/internal/floatscan.cc',
     'utf8-musl/internal/intscan.cc',
     'utf8-musl/internal/shgetc.cc',
@@ -29,10 +34,12 @@ function utf8_musl_files()
     'utf8-musl/stdio/ungetc.cc',
     'utf8-musl/stdio/vfprintf.cc',
     'utf8-musl/stdio/vfscanf.cc',
+    'utf8-musl/string/strchrnul.cc',
     'utf8-musl/unistd/read.cc',
     'utf8-musl/unistd/readv.cc',
     'utf8-musl/unistd/write.cc',
     'utf8-musl/unistd/writev.cc',
+    'utf8-musl/win32/utf8_argv.cc',
     'utf8-musl/win32/utf8_buffer.cc',
   }
 end
