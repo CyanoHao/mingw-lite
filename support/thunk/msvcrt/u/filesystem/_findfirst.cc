@@ -1,8 +1,5 @@
 #include <thunk/_common.h>
-
-#include <io.h>
-
-#undef _findfirst
+#include <thunk/wntcrt/find_data.h>
 
 namespace mingw_thunk
 {

@@ -3,14 +3,14 @@
 
 namespace mingw_thunk
 {
-  __DEFINE_THUNK(api_ms_win_crt_filesystem_l1_1_0,
+  __DEFINE_THUNK(msvcrt,
                  0,
                  int,
                  __cdecl,
-                 stat64i32,
+                 stat32i64,
                  const char *path,
-                 struct _stat64i32 *buffer)
+                 struct _stat32i64 *buffer)
   {
-    return _stat64i32(path, buffer);
+    return _stat32i64(path, buffer);
   }
 } // namespace mingw_thunk

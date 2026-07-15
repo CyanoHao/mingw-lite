@@ -1,9 +1,8 @@
 #include <thunk/_common.h>
-#include <thunk/crt_find_data.h>
 #include <thunk/string.h>
+#include <thunk/wntcrt/find_data.h>
 
 #include <errno.h>
-#include <io.h>
 
 namespace mingw_thunk
 {
@@ -33,7 +32,7 @@ namespace mingw_thunk
     if (res == intptr_t(-1))
       return res;
 
-    *fileinfo = internal::w2u(w_file_info);
+    *fileinfo = i::w2u(w_file_info);
     return res;
   }
 } // namespace mingw_thunk
