@@ -1,10 +1,6 @@
 #include <thunk/_common.h>
 #include <thunk/string.h>
-
-#include <sys/stat.h>
-#include <sys/types.h>
-
-#undef _stat
+#include <thunk/wntcrt/stat.h>
 
 namespace mingw_thunk
 {

@@ -1,7 +1,5 @@
 #include <thunk/_common.h>
-
-#include <sys/stat.h>
-#include <sys/types.h>
+#include <thunk/wntcrt/stat.h>
 
 namespace mingw_thunk
 {

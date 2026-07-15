@@ -14,9 +14,6 @@ function add_thunk_flags()
     '-nostdinc++')
   add_defines(
     'NOMINMAX',
-    'NOSTL_NOCRT',
-    'NS_NOSTL=mingw_thunk::stl',
-    'NS_NOCRT=mingw_thunk::libc',
     'THUNK_LEVEL=' .. ntddi_version(),
     'WIN32_LEAN_AND_MEAN',
     '_WIN32_WINNT=0x0A00',
