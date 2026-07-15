@@ -2,10 +2,17 @@ function msvcrt_utf8_files()
   return {
     'msvcrt/u/environment/__initenv.cc',
     'msvcrt/u/environment/__p__environ.cc',
+    'msvcrt/u/environment/_dupenv_s.cc',
     'msvcrt/u/environment/_putenv.cc',
+    'msvcrt/u/environment/_putenv_s.cc',
+    'msvcrt/u/environment/_searchenv.cc',
+    'msvcrt/u/environment/_searchenv_s.cc',
     'msvcrt/u/environment/_wputenv.cc',
+    'msvcrt/u/environment/_wputenv_s.cc',
     'msvcrt/u/environment/getenv.cc',
+    'msvcrt/u/environment/getenv_s.cc',
     'msvcrt/u/environment/putenv.cc',
+    'msvcrt/u/environment/searchenv.cc',
     'msvcrt/u/filesystem/_chmod.cc',
     'msvcrt/u/filesystem/_findfirst.cc',
     'msvcrt/u/filesystem/_findfirst32.cc',
@@ -129,7 +136,6 @@ end
 
 function msvcrt_thunk_toolchain_6_0()
   return {
-    {'_wputenv_s'},
     {'wcscat_s'},
     {'wcscpy_s'},
     {'wcsncat_s'},
@@ -272,6 +278,9 @@ target('overlay-msvcrt-os')
   if profile_toolchain() then
     if ntddi_version() < ntddi_win2k() then
       add_msvcrt_sources(msvcrt_thunk_toolchain_a_5_0(), 'msvcrt/a/5.0')
+    end
+    if ntddi_version() < ntddi_vista() then
+      add_files('msvcrt/6.0/_wputenv_s.cc')
     end
   end
 

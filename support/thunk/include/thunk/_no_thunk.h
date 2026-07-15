@@ -144,6 +144,11 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(_putenv)
   __DECLARE_MS_IMPORT(_wgetcwd)
   __DECLARE_MS_IMPORT(_wputenv)
+  __DECLARE_MS_IMPORT(_wputenv_s)
+  // _wsearchenv_s has a C++ template overload (__DEFINE_CPP_OVERLOAD_SECURE_FUNC),
+  // so decltype(::_wsearchenv_s) is ambiguous; declare the signature explicitly.
+  extern "C" __attribute__((dllimport)) errno_t __cdecl __ms__wsearchenv_s(
+      const wchar_t *, const wchar_t *, wchar_t *, size_t);
 
   // crt: filesystem
   __DECLARE_MS_IMPORT(_chdir)

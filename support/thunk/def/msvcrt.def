@@ -3,6 +3,8 @@ EXPORTS
   ; environment
   __ms__putenv == _putenv
   __ms__wputenv == _wputenv
+  __ms__wputenv_s == _wputenv_s
+  __ms__wsearchenv_s == _wsearchenv_s
 
   ; stdio
   __ms__read == _read

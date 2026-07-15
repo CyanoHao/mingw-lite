@@ -1,7 +1,14 @@
 LIBRARY api-ms-win-crt-environment-l1-1-0.dll
 EXPORTS
   __ms___p__environ == __p__environ
+  __ms__dupenv_s == _dupenv_s
   __ms__putenv == _putenv
+  __ms__putenv_s == _putenv_s
+  __ms__searchenv == _searchenv
+  __ms__searchenv_s == _searchenv_s
   __ms__wputenv == _wputenv
+  __ms__wputenv_s == _wputenv_s
   __ms_getenv == getenv
+  __ms_getenv_s == getenv_s
   __ms_putenv == _putenv
+  __ms_searchenv == _searchenv

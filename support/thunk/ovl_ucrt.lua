@@ -1,10 +1,17 @@
 function ucrt_utf8_files()
   return {
     'ucrt/environment/__p__environ.cc',
+    'ucrt/environment/_dupenv_s.cc',
     'ucrt/environment/_putenv.cc',
+    'ucrt/environment/_putenv_s.cc',
+    'ucrt/environment/_searchenv.cc',
+    'ucrt/environment/_searchenv_s.cc',
     'ucrt/environment/_wputenv.cc',
+    'ucrt/environment/_wputenv_s.cc',
     'ucrt/environment/getenv.cc',
+    'ucrt/environment/getenv_s.cc',
     'ucrt/environment/putenv.cc',
+    'ucrt/environment/searchenv.cc',
     'ucrt/filesystem/_chmod.cc',
     'ucrt/filesystem/_findfirst.cc',
     'ucrt/filesystem/_findfirst32.cc',
