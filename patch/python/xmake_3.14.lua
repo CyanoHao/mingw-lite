@@ -1,5 +1,5 @@
 set_languages('c11')
-add_rules('mode.debug', 'mode.release')
+add_rules('mode.debug', 'mode.release', 'mode.minsizerel')
 
 add_defines(
   'DONT_USE_SEH',

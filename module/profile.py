@@ -1,8 +1,18 @@
 import argparse
 import dataclasses
 from dataclasses import dataclass
+from enum import Enum
 from packaging.version import Version
 from typing import Callable, Dict, Optional
+
+class OptLv(Enum):
+  O0 = '-O0'
+  Og = '-Og'
+  O1 = '-O1'
+  Oz = '-Oz'
+  Os = '-Os'
+  O2 = '-O2'
+  O3 = '-O3'
 
 @dataclass
 class BranchVersions:
@@ -10,7 +20,7 @@ class BranchVersions:
   rev: str
 
   abi_frozen: bool
-  branch_opt_speed: bool
+  branch_opt_lv: OptLv
   iconv_win32: bool
   lto_zstd: bool
   native_tls: bool
@@ -58,7 +68,7 @@ class ProfileInfo:
   min_os: Version
 
   profile_opt_lto: bool
-  profile_opt_speed: bool
+  profile_opt_lv: Optional[OptLv]
   utf8_user_crt: bool
 
 @dataclass
@@ -71,8 +81,10 @@ class BranchProfile(BranchVersions, ProfileInfo):
       return self.min_os.major * 0x100 + self.min_os.minor
 
   @property
-  def opt_speed(self) -> bool:
-    return self.branch_opt_speed or self.profile_opt_speed
+  def opt_lv(self) -> OptLv:
+    if self.profile_opt_lv is not None:
+      return self.profile_opt_lv
+    return self.branch_opt_lv
 
   @property
   def thunk_free(self) -> bool:
@@ -89,7 +101,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     display_version = 'next-17-20260719',
 
     abi_frozen = False,
-    branch_opt_speed = True,
+    branch_opt_lv = OptLv.O2,
     iconv_win32 = True,
     lto_zstd = True,
     native_tls = True,
@@ -122,7 +134,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     display_version = 'current-16-20260718',
 
     abi_frozen = False,
-    branch_opt_speed = True,
+    branch_opt_lv = OptLv.O2,
     iconv_win32 = True,
     lto_zstd = True,
     native_tls = True,
@@ -154,7 +166,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     rev = '0.1',
 
     abi_frozen = False,
-    branch_opt_speed = True,
+    branch_opt_lv = OptLv.O2,
     iconv_win32 = True,
     lto_zstd = True,
     native_tls = True,
@@ -186,7 +198,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     rev = '0.1',
 
     abi_frozen = True,
-    branch_opt_speed = False,
+    branch_opt_lv = OptLv.Os,
     iconv_win32 = False,
     lto_zstd = False,
     native_tls = False,
@@ -220,7 +232,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     rev = '0.1',
 
     abi_frozen = True,
-    branch_opt_speed = False,
+    branch_opt_lv = OptLv.Os,
     iconv_win32 = False,
     lto_zstd = False,
     native_tls = False,
@@ -254,7 +266,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     rev = '7.1',
 
     abi_frozen = True,
-    branch_opt_speed = False,
+    branch_opt_lv = OptLv.Os,
     iconv_win32 = False,
     lto_zstd = False,
     native_tls = False,
@@ -326,7 +338,7 @@ def _create_profile(
   min_os: str,
 
   opt_lto: bool = False,
-  opt_speed: bool = False,
+  opt_lv: Optional[OptLv] = None,
   u8crt: bool = False,
 ) -> ProfileInfo:
   mingw_arch = arch.split('_')[0]
@@ -349,7 +361,7 @@ def _create_profile(
     min_os = Version(min_os),
 
     profile_opt_lto = opt_lto,
-    profile_opt_speed = opt_speed,
+    profile_opt_lv = opt_lv,
     utf8_user_crt = u8crt,
   )
 
@@ -359,9 +371,9 @@ PROFILES: Dict[str, Optional[ProfileInfo]] = {
   '64-ucrt':   None, # branch-dependent
   '64-msvcrt': None, # branch-dependent
 
-  'arm64-mcf':   _create_profile('arm64', 'ucrt', 'mcf',   '10.0.16299', opt_speed = True),
-  'arm64-win32': _create_profile('arm64', 'ucrt', 'win32', '10.0.16299', opt_speed = True),
-  'arm64-ucrt':  _create_profile('arm64', 'ucrt', 'posix', '10.0.16299', opt_speed = True),
+  'arm64-mcf':   _create_profile('arm64', 'ucrt', 'mcf',   '10.0.16299'),
+  'arm64-win32': _create_profile('arm64', 'ucrt', 'win32', '10.0.16299'),
+  'arm64-ucrt':  _create_profile('arm64', 'ucrt', 'posix', '10.0.16299'),
 
   '32-mcf':    _create_profile('32', 'ucrt',   'mcf',   '6.1'),
   '32-win32':  _create_profile('32', 'ucrt',   'win32', '6.0'),
@@ -372,10 +384,10 @@ PROFILES: Dict[str, Optional[ProfileInfo]] = {
   # profile variants for micro architectures #
   ############################################
 
-  '64_v2-mcf':    _create_profile('64_v2', 'ucrt',   'mcf',   '6.1', opt_lto = True, opt_speed = True),
-  '64_v2-win32':  _create_profile('64_v2', 'ucrt',   'win32', '6.0', opt_lto = True, opt_speed = True),
-  '64_v2-ucrt':   _create_profile('64_v2', 'ucrt',   'posix', '5.2', opt_lto = True, opt_speed = True),
-  '64_v2-msvcrt': _create_profile('64_v2', 'msvcrt', 'posix', '5.2', opt_lto = True, opt_speed = True),
+  '64_v2-mcf':    _create_profile('64_v2', 'ucrt',   'mcf',   '6.1', opt_lto = True, opt_lv = OptLv.O2),
+  '64_v2-win32':  _create_profile('64_v2', 'ucrt',   'win32', '6.0', opt_lto = True, opt_lv = OptLv.O2),
+  '64_v2-ucrt':   _create_profile('64_v2', 'ucrt',   'posix', '5.2', opt_lto = True, opt_lv = OptLv.O2),
+  '64_v2-msvcrt': _create_profile('64_v2', 'msvcrt', 'posix', '5.2', opt_lto = True, opt_lv = OptLv.O2),
 
   #################################################
   # profile variants for earlier Windows versions #
@@ -394,32 +406,38 @@ PROFILES: Dict[str, Optional[ProfileInfo]] = {
   # beyond MinGW Lite #
   #####################
 
-  '64-u8crt': _create_profile('64', 'ucrt', 'posix', '5.2', opt_speed = True, u8crt = True),
-  '32-u8crt': _create_profile('32', 'ucrt', 'posix', '5.1', opt_speed = True, u8crt = True),
+  '64-u8crt': _create_profile('64', 'ucrt', 'posix', '5.2', u8crt = True),
+  '32-u8crt': _create_profile('32', 'ucrt', 'posix', '5.1', u8crt = True),
+
+  '64-ucrt_og': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.Og),
+  '64-ucrt_o1': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.O1),
+  '64-ucrt_oz': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.Oz),
+  '64-ucrt_os': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.Os),
+  '64-ucrt_o3': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.O3),
 }
 
-def _native_tls_requires_vista(
+def _gcc_16_requires_vista(
   arch: str,
   crt: str,
   thread: str,
-  emu_min_os: str,
+  min_os: str,
 
+  opt_lv: Optional[OptLv] = None,
   opt_lto: bool = False,
-  opt_speed: bool = False,
 ) -> Callable[[str, str], ProfileInfo]:
   def _profile(branch: str, v_gcc: str) -> ProfileInfo:
     v = Version(v_gcc)
     if v.major >= 16:
-      return _create_profile(arch, crt, thread, '6.0', opt_lto = opt_lto, opt_speed = opt_speed)
-    return _create_profile(arch, crt, thread, emu_min_os, opt_lto = opt_lto, opt_speed = opt_speed)
+      return _create_profile(arch, crt, thread, '6.0', opt_lv = opt_lv, opt_lto = opt_lto)
+    return _create_profile(arch, crt, thread, min_os, opt_lv = opt_lv, opt_lto = opt_lto)
 
   return _profile
 
 BRANCH_DEPENDENT_PROFILES: Dict[str, Callable[[str, str], ProfileInfo]] = {
-  '64-ucrt':   _native_tls_requires_vista('64', 'ucrt',   'posix', '5.2'),
-  '64-msvcrt': _native_tls_requires_vista('64', 'msvcrt', 'posix', '5.2'),
-  '32-ucrt':   _native_tls_requires_vista('32', 'ucrt',   'posix', '5.1'),
-  '32-msvcrt': _native_tls_requires_vista('32', 'msvcrt', 'posix', '5.1'),
+  '64-ucrt':   _gcc_16_requires_vista('64', 'ucrt',   'posix', '5.2'),
+  '64-msvcrt': _gcc_16_requires_vista('64', 'msvcrt', 'posix', '5.2'),
+  '32-ucrt':   _gcc_16_requires_vista('32', 'ucrt',   'posix', '5.1'),
+  '32-msvcrt': _gcc_16_requires_vista('32', 'msvcrt', 'posix', '5.1'),
 }
 
 def resolve_profile(config: argparse.Namespace) -> BranchProfile:

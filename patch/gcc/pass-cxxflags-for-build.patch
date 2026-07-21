@@ -1,0 +1,24 @@
+diff --git a/Makefile.in b/Makefile.in
+index f34142cc077..0bd3c5073b0 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -181,6 +181,7 @@ BUILD_EXPORTS = \
+ # built for the build system to override those in BASE_FLAGS_TO_PASS.
+ EXTRA_BUILD_FLAGS = \
+ 	CFLAGS="$(CFLAGS_FOR_BUILD)" \
++	CXXFLAGS="$(CXXFLAGS_FOR_BUILD)" \
+ 	LDFLAGS="$(LDFLAGS_FOR_BUILD)"
+ 
+ # This is the list of directories to built for the host system.
+diff --git a/Makefile.tpl b/Makefile.tpl
+index 5891b67b697..c5be9a46375 100644
+--- a/Makefile.tpl
++++ b/Makefile.tpl
+@@ -184,6 +184,7 @@ BUILD_EXPORTS = \
+ # built for the build system to override those in BASE_FLAGS_TO_PASS.
+ EXTRA_BUILD_FLAGS = \
+ 	CFLAGS="$(CFLAGS_FOR_BUILD)" \
++	CXXFLAGS="$(CXXFLAGS_FOR_BUILD)" \
+ 	LDFLAGS="$(LDFLAGS_FOR_BUILD)"
+ 
+ # This is the list of directories to built for the host system.
