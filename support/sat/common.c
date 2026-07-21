@@ -16,6 +16,7 @@ static void install_shared_libs_recursive(const wchar_t *tar_dir,
                                           const wchar_t *ref_dir);
 static void mkdir_exist_ok(const wchar_t *dir);
 static bool need_quote(const wchar_t *arg);
+static OSVERSIONINFOA get_os_version();
 
 void change_to_self_dir() {
   wchar_t dir[MAX_PATH];
@@ -70,6 +71,14 @@ static void clean_shared_libs_recursive(const wchar_t *tar_dir,
   FindClose(hFind);
 }
 
+bool dlopen_tls_ok() {
+#ifdef NATIVE_TLS
+  return !lt_vista();
+#else
+  return !lt_win98();
+#endif
+}
+
 void error_exit(const char *msg) {
   fprintf(stderr, "%s\n", msg);
   flush_console_and_get_char();
@@ -79,6 +88,13 @@ void error_exit(const char *msg) {
 void flush_console_and_get_char() {
   FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
   _getch();
+}
+
+static OSVERSIONINFOA get_os_version() {
+  static OSVERSIONINFOA osvi = {sizeof(osvi)};
+  if (!osvi.dwMajorVersion)
+    GetVersionExA(&osvi);
+  return osvi;
 }
 
 void install_shared_libs() {
@@ -128,20 +144,25 @@ static void install_shared_libs_recursive(const wchar_t *tar_dir,
 }
 
 bool is_nt() {
-  static OSVERSIONINFOA osvi = {sizeof(osvi)};
-  if (!osvi.dwMajorVersion)
-    GetVersionExA(&osvi);
+  OSVERSIONINFOA osvi = get_os_version();
   return osvi.dwPlatformId >= VER_PLATFORM_WIN32_NT;
 }
 
-bool is_utf8_acp() {
-  return GetACP() == 65001;
+bool is_utf8_acp() { return GetACP() == 65001; }
+
+bool lt_vista() {
+  OSVERSIONINFOA osvi = get_os_version();
+  if (osvi.dwPlatformId < VER_PLATFORM_WIN32_NT)
+    return true;
+  if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT) {
+    if (osvi.dwMajorVersion < 6)
+      return true;
+  }
+  return false;
 }
 
 bool lt_win98() {
-  static OSVERSIONINFOA osvi = {sizeof(osvi)};
-  if (!osvi.dwMajorVersion)
-    GetVersionExA(&osvi);
+  OSVERSIONINFOA osvi = get_os_version();
   if (osvi.dwPlatformId < VER_PLATFORM_WIN32_WINDOWS)
     return true;
   if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
@@ -197,6 +218,14 @@ static bool need_quote(const wchar_t *arg) {
     arg++;
   }
   return false;
+}
+
+bool path_utf8_ok() {
+#ifdef ENABLE_UTF8
+  return is_nt();
+#else
+  return is_utf8_acp();
+#endif
 }
 
 void prepend_to_env_path(const wchar_t *path) {

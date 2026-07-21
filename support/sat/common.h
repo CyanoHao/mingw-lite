@@ -5,13 +5,16 @@
 
 void change_to_self_dir();
 void clean_shared_libs();
+bool dlopen_tls_ok();
 void error_exit(const char *msg);
 void flush_console_and_get_char();
 void install_shared_libs();
 bool is_nt();
 bool is_utf8_acp();
+bool lt_vista();
 bool lt_win98();
 void mkdir_p(const wchar_t *dir);
+bool path_utf8_ok();
 void prepend_to_env_path(const wchar_t *path);
 int resolve_mingw_bin_dir(wchar_t dir[MAX_PATH]);
 int resolve_mingw_lib_shared_dir(wchar_t dir[MAX_PATH]);

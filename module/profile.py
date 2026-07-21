@@ -1,4 +1,5 @@
 import argparse
+import dataclasses
 from dataclasses import dataclass
 from packaging.version import Version
 from typing import Callable, Dict, Optional
@@ -284,6 +285,12 @@ BRANCHES: Dict[str, BranchVersions] = {
     zstd = '1.5.7',
   ),
 }
+
+BRANCHES['16+emutls'] = dataclasses.replace(
+  BRANCHES['16'],
+  display_version = BRANCHES['16'].gcc + '+emutls',
+  native_tls = False,
+)
 
 _MINGW_ARCH_2_TRIPLET_MAP: Dict[str, str] = {
   '64': 'x86_64-w64-mingw32',

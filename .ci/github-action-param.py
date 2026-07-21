@@ -10,7 +10,7 @@ args = parser.parse_args()
 
 all_branch = [
   'next', 'current',
-  '16', '15', '14', '13',
+  '16', '16+emutls', '15', '14', '13',
 ]
 
 common_profile = [
@@ -65,10 +65,15 @@ exclude_profile_branch = [
     ]
     for b in ['15', '14', '13']
   ),
+  *( # emutls
+    {'profile': f'{bit}-{abi}', 'branch': '16+emutls'}
+    for bit in ['64', '32', '64_v2']
+    for abi in ['mcf', 'win32', 'ucrt', 'msvcrt']
+  ),
   *( # u8crt
     {'profile': p, 'branch': b}
     for p in ['64-u8crt', '32-u8crt']
-    for b in ['16', '15', '14', '13']
+    for b in ['16', '16+emutls', '15', '14', '13']
   ),
 ]
 
@@ -159,7 +164,9 @@ sat_exclude_profile_branch = ':'.join([
 ])
 
 if args.ref_type == 'tag':
-  current_branch = args.ref_name.split('-')[0].split('.')[0]
+  base = args.ref_name.split('-')[0]
+  suffix = ('+' + base.split('+', 1)[1]) if '+' in base else ''
+  current_branch = base.split('+')[0].split('.')[0] + suffix
   branch = [current_branch]
   profile = [
     p for p in (common_profile + release_old_profile)

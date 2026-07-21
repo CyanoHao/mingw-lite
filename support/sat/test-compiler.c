@@ -21,11 +21,7 @@ int wmain(int argc, wchar_t *argv[]) {
       L"--builddir=build",
       L"--dlopen=n",
       lt_win98() ? L"--lto=n" : L"--lto=y",
-#ifdef ENABLE_UTF8
-      is_nt() ? L"--utf8=y" : L"--utf8=n",
-#else
-      is_utf8_acp() ? L"--utf8=y" : L"--utf8=n",
-#endif
+      path_utf8_ok() ? L"--utf8=y" : L"--utf8=n",
       lt_win98() ? L"--ldflags=-fno-lto" : NULL,
       NULL,
   };

@@ -88,12 +88,5 @@ namespace mingw_thunk
     {
       return os_version().platform >= VER_PLATFORM_WIN32_NT;
     }
-
-    inline uintptr_t win9x_obfuscator() noexcept
-    {
-      static uintptr_t pid = GetCurrentProcessId();
-      static uintptr_t pdb = (uintptr_t)NtCurrentTeb()->ProcessEnvironmentBlock;
-      return pid ^ pdb;
-    }
   } // namespace i
 } // namespace mingw_thunk

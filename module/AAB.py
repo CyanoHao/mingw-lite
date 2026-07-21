@@ -94,9 +94,9 @@ def _gcc_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
     if ver.fpmath:
       config_flags.append(f'--with-fpmath={ver.fpmath}')
     if ver.native_tls:
-      config_flags.append('--enable-tls=yes')
+      config_flags.append('--enable-tls')
     else:
-      config_flags.append('--enable-tls=no')
+      config_flags.append('--disable-tls')
 
     configure(build_dir, [
       f'--prefix=/usr/local',
@@ -306,8 +306,6 @@ def _crt_host(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
     thunk_src_dir = paths.in_tree_src_dir.thunk
 
     config_flags: List[str] = []
-    if ver.native_tls:
-      config_flags.append('--native-tls=y')
     if ver.utf8_thunk:
       config_flags.append('--profile=toolchain-utf8')
     else:
@@ -357,7 +355,7 @@ def _crt_host(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
     crt_inc_dir = paths.layer_AAB.crt_host / 'usr/local' / ver.target / 'include'
     shutil.copytree(crt0_inc_dir, crt_inc_dir, dirs_exist_ok = True)
 
-def _crt_target_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
+def _crt_target(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   v = Version(ver.mingw)
 
   with overlayfs_ro('/usr/local', [
@@ -373,8 +371,6 @@ def _crt_target_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Name
     thunk_src_dir = paths.in_tree_src_dir.thunk
 
     config_flags: List[str] = []
-    if ver.native_tls:
-      config_flags.append('--native-tls=y')
     if ver.min_os.major < 6:
       if ver.thunk_free:
         config_flags.append('--thunk-xp=n')
@@ -409,6 +405,9 @@ def _crt_target_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Name
 
     # u8crt
     if ver.utf8_user_crt:
+      xmake_install(thunk_src_dir, paths.layer_AAB.crt_target / 'usr/local' / ver.target, ['utf8-musl.a'])
+      xmake_install(thunk_src_dir, paths.layer_AAB.crt_shared / 'usr/local' / ver.target, ['utf8-musl.so'])
+
       # trigger post-processing import libraries
       shutil.copy(crt0_lib_dir / 'libucrt.a', crt0_lib_dir / 'libutf8-ucrt.a')
       shutil.copy(crt0_lib_dir / 'libucrt.a.import-info.json', crt0_lib_dir / 'libutf8-ucrt.a.import-info.json')
@@ -454,25 +453,6 @@ def _crt_target_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Name
     thunk_map,
     paths.layer_AAB.crt_target / 'usr/local' / ver.target / 'share/doc/crt/thunk-revert-map.json',
   )
-
-def _crt_target_2(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
-  with overlayfs_ro('/usr/local', [
-    paths.layer_AAA.xmake / 'usr/local',
-
-    paths.layer_AAB.binutils / 'usr/local',
-    paths.layer_AAB.bootstrap / 'usr/local',
-    paths.layer_AAB.crt_target / 'usr/local',
-    paths.layer_AAB.gcc / 'usr/local',
-    paths.layer_AAB.headers / 'usr/local',
-  ]):
-    thunk_src_dir = paths.in_tree_src_dir.thunk
-
-    # u8crt
-    if ver.utf8_user_crt:
-      xmake_build(thunk_src_dir, config.jobs, ['utf8-musl.so'])
-
-      xmake_install(thunk_src_dir, paths.layer_AAB.crt_target / 'usr/local' / ver.target, ['utf8-musl.a'])
-      xmake_install(thunk_src_dir, paths.layer_AAB.crt_shared / 'usr/local' / ver.target, ['utf8-musl.so'])
 
 def _utf8(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   build_dir = paths.build_dir / 'utf8'
@@ -618,8 +598,7 @@ def build_AAB_compiler(ver: BranchProfile, paths: ProjectPaths, config: argparse
   _bootstrap(ver, paths, config)
   _crt_base(ver, paths, config)
   _crt_host(ver, paths, config)
-  _crt_target_1(ver, paths, config)
-  _crt_target_2(ver, paths, config)
+  _crt_target(ver, paths, config)
   _utf8(ver, paths, config)
   _mcfgthread(ver, paths, config)
   _winpthreads(ver, paths, config)
