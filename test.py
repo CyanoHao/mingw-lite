@@ -145,8 +145,13 @@ def test_mingw_make_gdb(ver: BranchProfile, paths: ProjectPaths):
     '$2 = 2',
     '$3 = 3',
     '$4 = 5',
-    '$5 = std::vector of length 6, capacity', '= {0, 1, 1, 2, 3, 5}',
   ]
+
+  if ver.gdb_python:
+    expected_output.extend([
+      '$5 = std::vector of length 6, capacity',
+      '= {0, 1, 1, 2, 3, 5}',
+    ])
 
   bin_dir = paths.test_mingw_dir / 'bin'
   gdb_exe = bin_dir / 'gdb.exe'
