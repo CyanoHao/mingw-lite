@@ -97,6 +97,17 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     # https://github.com/redpanda-cpp/mingw-lite/issues/12
     patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'use-mingw32-make-for-lto.patch')
 
+    # Pass CXXFLAGS_FOR_BUILD
+    patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'pass-cxxflags-for-build.patch')
+
+    # Fix decloned C4 constructor
+    # error bootstrapping libstdc++ with Os/Oz:
+    #   undefined reference basic_string::basic_string(basic_string &&) (C4 version)
+    # exposed by https://gcc.gnu.org/r16-8510-g395e5cef29d
+    # patch from https://gcc.gnu.org/pipermail/gcc-patches/2026-July/724676.html
+    # see also https://github.com/skeeto/w64devkit/commit/3dc8d3da4441f6927ed8a57ee6e3cdaf480a0993
+    patch(paths.src_dir.gcc, paths.patch_dir / 'gcc' / 'avoid-decloned-c4-constructor.patch')
+
     # Fix make variable
     # - gcc 12 use `override CFLAGS +=` to handle PGO build, which breaks workaround for ucrt `access`
     if v.major >= 14:

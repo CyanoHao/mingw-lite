@@ -1,0 +1,21 @@
+diff --git a/gcc/cp/optimize.cc b/gcc/cp/optimize.cc
+index 30b5ff8125e..6eacb10b99c 100644
+--- a/gcc/cp/optimize.cc
++++ b/gcc/cp/optimize.cc
+@@ -534,9 +534,13 @@ maybe_clone_body (tree fn)
+ 
+   bool can_alias = can_alias_cdtor (fn);
+ 
+-  /* If we decide to turn clones into thunks, they will branch to fn.
+-     Must have original function available to call.  */
+-  if (!can_alias && maybe_thunk_body (fn, need_alias))
++  /* If we decide to turn clones into thunks, they will branch to FN.
++     For constructors that would make the C1/C2 entry points call the
++     unified primary ctor (C4), which is not a stable external interface.
++     Keep constructors as real cloned bodies so callers stay on C1/C2.  */
++  if (!can_alias
++      && !DECL_MAYBE_IN_CHARGE_CONSTRUCTOR_P (fn)
++      && maybe_thunk_body (fn, need_alias))
+     {
+       pop_from_top_level ();
+       /* We still need to emit the original function.  */

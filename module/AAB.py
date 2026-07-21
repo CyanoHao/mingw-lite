@@ -11,7 +11,7 @@ from module.alt_crt import generate_thunk_revert_map, postprocess_crt_import_lib
 from module.debug import shell_here
 from module.path import ProjectPaths
 from module.profile import BranchProfile
-from module.util import XMAKE_ARCH_MAP, add_objects_to_static_lib, common_cross_layers, dt_sidecar_dir, ensure, extract_shared_libs, overlayfs_ro, touch
+from module.util import OPT_LV_2_CMAKE_TYPE_MAP, OPT_LV_2_XMAKE_MODE_MAP, XMAKE_ARCH_MAP, add_objects_to_static_lib, common_cross_layers, dt_sidecar_dir, ensure, extract_shared_libs, overlayfs_ro, touch
 from module.util import cflags_A, cflags_B, configure, make_custom, make_default, make_destdir_install
 from module.util import cmake_build, cmake_config, cmake_flags_B, cmake_install
 from module.util import meson_build, meson_config, meson_flags_B, meson_install
@@ -130,7 +130,7 @@ def _gcc_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       *cflags_B('_FOR_TARGET',
         # CPPFLAGS_FOR_TARGET is not passed
         common_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        optimize_for_speed = ver.opt_speed,
+        opt_lv = ver.opt_lv,
       ),
     ])
 
@@ -280,7 +280,7 @@ def _crt_base(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
       f'--with-default-msvcrt={ver.default_crt}',
       f'--with-default-win32-winnt=0x{ver.win32_winnt:04X}',
       *multilib_flags,
-      *cflags_B(optimize_for_speed = ver.opt_speed),
+      *cflags_B(opt_lv = ver.opt_lv),
       # create modern (short) import libraries
       # https://github.com/mingw-w64/mingw-w64/issues/149
       'DLLTOOL=dlltool-wrapper',
@@ -315,6 +315,7 @@ def _crt_host(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
       '--builddir=build-AAB',
       '--plat=mingw',
       f'--arch={XMAKE_ARCH_MAP[ver.arch]}',
+      f'--mode={OPT_LV_2_XMAKE_MODE_MAP[ver.opt_lv]}',
       '--mingw=/usr/local',
       # our flags
       f'--mingw-version={v.major}',
@@ -383,6 +384,7 @@ def _crt_target(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namesp
       '--builddir=build-AAB',
       '--plat=mingw',
       f'--arch={XMAKE_ARCH_MAP[ver.arch]}',
+      f'--mode={OPT_LV_2_XMAKE_MODE_MAP[ver.opt_lv]}',
       '--mingw=/usr/local',
       # our flags
       f'--mingw-version={v.major}',
@@ -543,7 +545,7 @@ def _mcfgthread(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namesp
         '--cross-file', cross_file,
         *meson_flags_B(
           cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-          optimize_for_speed = ver.opt_speed,
+          opt_lv = ver.opt_lv,
         ),
       ],
       build_dir = build_dir,
@@ -581,7 +583,7 @@ def _winpthreads(ver: BranchProfile, paths: ProjectPaths, config: argparse.Names
       '--enable-static',
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        optimize_for_speed = ver.opt_speed,
+        opt_lv = ver.opt_lv,
       ),
     ])
     make_default(build_dir, config.jobs)
@@ -631,7 +633,7 @@ def _gmp(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
         c_extra = c_extra,
-        optimize_for_speed = ver.opt_speed,
+        opt_lv = ver.opt_lv,
       ),
       # To determine build system compiler, the configure script will firstly try host
       # compiler (i.e. *-w64-mingw32-gcc) and check whether the output is executable
@@ -660,7 +662,7 @@ def _mpfr(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       '--disable-shared',
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        optimize_for_speed = ver.opt_speed,
+        opt_lv = ver.opt_lv,
       ),
     ])
     make_default(build_dir, config.jobs)
@@ -684,7 +686,7 @@ def _mpc(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       '--disable-shared',
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        optimize_for_speed = ver.opt_speed,
+        opt_lv = ver.opt_lv,
       ),
     ])
     make_default(build_dir, config.jobs)
@@ -707,7 +709,7 @@ def _isl(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       '--disable-shared',
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        optimize_for_speed = ver.opt_speed,
+        opt_lv = ver.opt_lv,
       ),
     ])
     make_default(build_dir, config.jobs)
@@ -728,7 +730,7 @@ def _expat(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       '--disable-shared',
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        optimize_for_speed = ver.opt_speed,
+        opt_lv = ver.opt_lv,
       )
     ])
     make_default(build_dir, config.jobs)
@@ -751,7 +753,7 @@ def _iconv_gnu(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespa
       '--disable-shared',
       *cflags_B(
         cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
-        optimize_for_speed = ver.opt_speed,
+        opt_lv = ver.opt_lv,
       ),
     ])
     make_default(build_dir, config.jobs)
@@ -769,6 +771,7 @@ def _iconv_win32(ver: BranchProfile, paths: ProjectPaths, config: argparse.Names
     xmake_config(src_dir, [
       '--plat=mingw',
       f'--arch={XMAKE_ARCH_MAP[ver.arch]}',
+      f'--mode={OPT_LV_2_XMAKE_MODE_MAP[ver.opt_lv]}',
       '--mingw=/usr/local',
     ])
     xmake_build(src_dir, config.jobs)
@@ -788,6 +791,7 @@ def _intl(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
     xmake_config(src_dir, [
       '--plat=mingw',
       f'--arch={XMAKE_ARCH_MAP[ver.arch]}',
+      f'--mode={OPT_LV_2_XMAKE_MODE_MAP[ver.opt_lv]}',
       '--mingw=/usr/local',
     ])
     xmake_build(src_dir, config.jobs)
@@ -807,7 +811,7 @@ def _pdcurses(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
       f'AR={ver.target}-ar',
       *cflags_B(
         c_extra = ['-I..', '-DPDC_WIDE'],
-        optimize_for_speed = ver.opt_speed,
+        opt_lv = ver.opt_lv,
       ),
     ], config.jobs)
 
@@ -833,7 +837,7 @@ def _zlib_net(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
         '-DZLIB_BUILD_TESTING=OFF',
         '-DZLIB_BUILD_SHARED=OFF',
         *cmake_flags_B(
-          optimize_for_speed = ver.opt_speed,
+          opt_lv = ver.opt_lv,
         ),
       ],
       build_dir = build_dir,
@@ -850,7 +854,10 @@ def _zlib_net(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
     )
 
   lib_dir = paths.layer_AAB.zlib / 'usr/local' / ver.target / 'lib'
-  shutil.move(lib_dir / 'libzs.a', lib_dir / 'libz.a')
+  if OPT_LV_2_CMAKE_TYPE_MAP[ver.opt_lv] == 'Debug':
+    shutil.move(lib_dir / 'libzsd.a', lib_dir / 'libz.a')
+  else:
+    shutil.move(lib_dir / 'libzs.a', lib_dir / 'libz.a')
 
 def _zstd(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   if not ver.lto_zstd:
@@ -874,7 +881,7 @@ def _zstd(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
         # avoid complexity of threading
         '-DZSTD_MULTITHREAD_SUPPORT=OFF',
         *cmake_flags_B(
-          optimize_for_speed = ver.opt_speed,
+          opt_lv = ver.opt_lv,
         ),
       ],
       build_dir = build_dir,
@@ -909,6 +916,7 @@ def _python(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace)
     xmake_config(src_dir, [
       '--plat=mingw',
       f'--arch={XMAKE_ARCH_MAP[ver.arch]}',
+      f'--mode={OPT_LV_2_XMAKE_MODE_MAP[ver.opt_lv]}',
       '--mingw=/usr/local',
       *config_args,
     ])

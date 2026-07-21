@@ -82,13 +82,13 @@ Available branches:
 
 | Branch | GCC version | MinGW | Binutils | GDB | Optimize | TLS |
 | ------ | ----------- | ----- | -------- | --- | -------- | --- |
-| next | 17-20260719 | 14.0.0 | 2.46.1 | 17.2 | Speed | Native |
-| current | 16-20260718 | 14.0.0 | 2.46.1 | 17.2 | Speed | Native |
-| 16 | 16.1.0 | 14.0.0 | 2.46.1 | 17.2 | Speed | Native |
-| 16+emutls | 16.1.0 | 14.0.0 | 2.46.1 | 17.2 | Speed | Emulated |
-| 15 ❄️ | 15.3.0 | 13.0.0 | 2.45.1 | 17.2 | Size | Emulated |
-| 14 ❄️ | 14.4.0 | 12.0.0 | 2.43.1 | 15.2 | Size | Emulated |
-| 13 ❄️ | 13.4.0 | 11.0.1 | 2.41 | 14.2 | Size | Emulated |
+| next | 17-20260719 | 14.0.0 | 2.46.1 | 17.2 | O2 | Native |
+| current | 16-20260718 | 14.0.0 | 2.46.1 | 17.2 | O2 | Native |
+| 16 | 16.1.0 | 14.0.0 | 2.46.1 | 17.2 | O2 | Native |
+| 16+emutls | 16.1.0 | 14.0.0 | 2.46.1 | 17.2 | O2 | Emulated |
+| 15 ❄️ | 15.3.0 | 13.0.0 | 2.45.1 | 17.2 | Os | Emulated |
+| 14 ❄️ | 14.4.0 | 12.0.0 | 2.43.1 | 15.2 | Os | Emulated |
+| 13 ❄️ | 13.4.0 | 11.0.1 | 2.41 | 14.2 | Os | Emulated |
 
 A profile is composed of bitness and predefined ABI variant. The combination of CRT, thread model and exception model cannot be freely configured.
 
@@ -145,3 +145,4 @@ Limitations on Windows 95:
 There are profiles that reuse MinGW Lite’s build scripts, but have characteristics that are not adoptable in MinGW Lite.
 
 - [MinGW ∞ (mingw-infinity)](https://github.com/redpanda-cpp/mingw-infinity) (64-u8crt, 32-u8crt): derived from ucrt profiles, they reinterpret strings as UTF-8 in CRT functions (stdio, filesystem, etc.).
+- 64-ucrt_o{0,g,1,z,s,3,fast}: build toolchain with other optimization level.
