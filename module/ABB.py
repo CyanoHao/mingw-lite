@@ -12,11 +12,17 @@ from module.alt_crt import generate_thunk_revert_map, postprocess_crt_import_lib
 from module.debug import shell_here
 from module.path import ProjectPaths
 from module.profile import BranchProfile
-from module.util import XMAKE_ARCH_MAP, add_objects_to_static_lib, common_cross_layers, dt_sidecar_dir, ensure, extract_shared_libs, overlayfs_ro, remove_info_main_menu
+from module.util import XMAKE_ARCH_MAP, add_objects_to_static_lib, common_cross_layers, dt_sidecar_dir, ensure, extract_shared_libs, overlayfs_ro, remove_info_main_menu, strip_pe_tls_directory
 from module.util import cflags_B, configure, make_custom, make_default, make_destdir_install
 from module.util import cmake_build, cmake_config, cmake_flags_B, cmake_install
 from module.util import meson_build, meson_config, meson_flags_B, meson_install
 from module.util import xmake_build, xmake_config, xmake_install
+
+def _strip_dll_tls(ver: BranchProfile, dir: Path):
+  if ver.min_os >= Version('3.9999+4.10'):
+    return
+  for dll in sorted(dir.rglob('*.dll')):
+    strip_pe_tls_directory(dll)
 
 def build_ABB_test_driver(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   ensure(paths.layer_ABB.test_driver)
@@ -133,6 +139,7 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespac
       'tooldir=',
       'install',
     ], jobs = 1)
+    _strip_dll_tls(ver, paths.layer_ABB.binutils)  # libdep.dll
 
   remove_info_main_menu(paths.layer_ABB.binutils)
 
@@ -319,6 +326,7 @@ def _winpthreads(ver: BranchProfile, paths: ProjectPaths, config: argparse.Names
     ])
     make_default(build_dir, config.jobs)
     make_destdir_install(build_dir, paths.layer_ABB.winpthreads)
+    _strip_dll_tls(ver, paths.layer_ABB.winpthreads)
 
   base_prefix = paths.layer_ABB.winpthreads
   shared_prefix = paths.layer_ABB.winpthreads_shared
@@ -554,6 +562,7 @@ def _gcc_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       f'DESTDIR={paths.layer_ABB.gcc}',
       'install-host',
     ], jobs = 1)
+    _strip_dll_tls(ver, paths.layer_ABB.gcc)  # liblto_plugin.dll
 
 def _gcc_2(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   v = Version(ver.gcc)
@@ -582,6 +591,7 @@ def _gcc_2(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       f'DESTDIR={paths.layer_ABB.gcc_lib}',
       'install-target',
     ], jobs = 1)
+    _strip_dll_tls(ver, paths.layer_ABB.gcc_lib)
 
     # add `print.o` to `libstdc++.a`, allowing `<print>` without `-lstdc++exp`
     # it's okay since we only keep ABI stable in a major version

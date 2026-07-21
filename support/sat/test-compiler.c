@@ -20,9 +20,7 @@ int wmain(int argc, wchar_t *argv[]) {
       (L"--arch=" XMAKE_ARCH),
       L"--builddir=build",
       L"--dlopen=n",
-      lt_win98() ? L"--lto=n" : L"--lto=y",
       path_utf8_ok() ? L"--utf8=y" : L"--utf8=n",
-      lt_win98() ? L"--ldflags=-fno-lto" : NULL,
       NULL,
   };
   HANDLE xmake_config_process = spawn(xmake_config_argv);

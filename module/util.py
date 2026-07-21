@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import struct
 import subprocess
 from tempfile import TemporaryDirectory
 from typing import Iterable, List, Optional, Sequence, Union
@@ -316,6 +317,60 @@ def remove_info_main_menu(prefix: Path):
   info_main_menu = prefix / 'share/info/dir'
   if info_main_menu.exists():
     info_main_menu.unlink()
+
+def _pe_rva_to_offset(data: bytes, rva: int) -> int:
+  pe_off = struct.unpack_from('<I', data, 0x3C)[0]
+  num_sections = struct.unpack_from('<H', data, pe_off + 6)[0]
+  opt_size = struct.unpack_from('<H', data, pe_off + 20)[0]
+  sect_off = pe_off + 24 + opt_size
+  for i in range(num_sections):
+    s = sect_off + i * 40
+    virt_size = struct.unpack_from('<I', data, s + 8)[0]
+    virt_addr = struct.unpack_from('<I', data, s + 12)[0]
+    raw_size = struct.unpack_from('<I', data, s + 16)[0]
+    raw_off = struct.unpack_from('<I', data, s + 20)[0]
+    if virt_addr <= rva < virt_addr + max(virt_size, raw_size):
+      return raw_off + (rva - virt_addr)
+  raise ValueError(f'RVA {rva:#x} not in any section')
+
+def strip_pe_tls_directory(path: Path) -> bool:
+  data = path.read_bytes()
+
+  pe_off = struct.unpack_from('<I', data, 0x3C)[0]
+  magic = struct.unpack_from('<H', data, pe_off + 24)[0]
+  if magic == 0x10b:
+    dd_off = pe_off + 24 + 96
+    image_base = struct.unpack_from('<I', data, pe_off + 24 + 28)[0]
+  elif magic == 0x20b:
+    dd_off = pe_off + 24 + 112
+    image_base = struct.unpack_from('<Q', data, pe_off + 24 + 24)[0]
+  else:
+    return False
+
+  tls_dd_off = dd_off + 9 * 8
+  tls_rva, _ = struct.unpack_from('<II', data, tls_dd_off)
+  if tls_rva == 0:
+    return False
+
+  tls_off = _pe_rva_to_offset(data, tls_rva)
+  if magic == 0x10b:
+    start_va, end_va, _, _, zero_fill, _ = struct.unpack_from('<IIIIII', data, tls_off)
+  else:
+    start_va, end_va, _, _, zero_fill, _ = struct.unpack_from('<QQQQII', data, tls_off)
+
+  raw_size = end_va - start_va
+  placeholder_size = 4 if magic == 0x10b else 8
+  assert raw_size <= placeholder_size, f'{path.name}: TLS raw data is {raw_size} bytes (expected <= {placeholder_size})'
+  if raw_size > 0:
+    raw_off = _pe_rva_to_offset(data, start_va - image_base)
+    raw_data = data[raw_off:raw_off + raw_size]
+    assert raw_data == b'\x00' * raw_size, f'{path.name}: TLS raw data is non-zero ({raw_size} bytes)'
+  assert zero_fill == 0, f'{path.name}: TLS SizeOfZeroFill = {zero_fill} (expected 0)'
+
+  with open(path, 'r+b') as f:
+    f.seek(tls_dd_off)
+    f.write(struct.pack('<II', 0, 0))
+  return True
 
 def touch(path: Path):
   ensure(path.parent)

@@ -137,7 +137,6 @@ Limitations on Windows 95:
 - Prerequisite: Windows socket 2 update (for `msvcrt.dll` and `ws2_32.dll`).
 - Loading a dll that has static TLS is impossible. ([KB118816](./doc/kb-118816.md))
   - Unfortunately, GNU toolchain always add static TLS without checking necessity.
-  - GCC needs `-fno-lto` to prevent the linker from dynamically loading the LTO plugin.
   - The profile is no longer available for native TLS branches.
 - Atomic operations will introduce observable overhead by calling libatomic subroutines.
 
