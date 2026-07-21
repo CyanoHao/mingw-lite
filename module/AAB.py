@@ -898,6 +898,10 @@ def _zstd(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
     )
 
 def _python(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
+  if not ver.gdb_python:
+    touch(paths.layer_AAB.python / 'usr/local/.keep')
+    return
+
   with overlayfs_ro('/usr/local', [
     paths.layer_AAA.python / 'usr/local',
     paths.layer_AAA.xmake / 'usr/local',
@@ -909,7 +913,7 @@ def _python(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace)
   ]):
     src_dir = paths.src_dir.python
 
-    config_args = []
+    config_args: List[str] = []
     if ver.min_os.major < 6:
       config_args.append('--emulated-win-cv=1')
 
