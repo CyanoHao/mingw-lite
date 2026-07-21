@@ -35,6 +35,9 @@ release_old_profile = [
 beyond_profile = [
   # u8crt
   '64-u8crt', '32-u8crt',
+
+  # optimization level
+  '64-ucrt_og', '64-ucrt_o1', '64-ucrt_oz', '64-ucrt_os', '64-ucrt_o3',
 ]
 
 exclude_profile_branch = [
@@ -73,6 +76,11 @@ exclude_profile_branch = [
   *( # u8crt
     {'profile': p, 'branch': b}
     for p in ['64-u8crt', '32-u8crt']
+    for b in ['16', '16+emutls', '15', '14', '13']
+  ),
+  *( # optimization level
+    {'profile': p, 'branch': b}
+    for p in ['64-ucrt_og', '64-ucrt_o1', '64-ucrt_oz', '64-ucrt_os', '64-ucrt_o3']
     for b in ['16', '16+emutls', '15', '14', '13']
   ),
 ]
