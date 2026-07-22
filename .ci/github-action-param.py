@@ -2,6 +2,13 @@
 
 import argparse
 import json
+from typing import TypedDict
+
+class SatGroup(TypedDict):
+  name: str
+  items: list[dict[str, str]]
+  pattern: str
+  dict: str
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--ref-type')
@@ -94,41 +101,110 @@ alt_osrel = [
   'alpine323',
 ]
 
-sat_group = [
+# branch subsets for SAT group construction
+_b_std = ['next', 'current', '16', '15', '14', '13']
+_b_std_17_16 = ['next', 'current', '16']  # baseline vista; default to native TLS
+_b_std_15_14_13 = ['15', '14', '13']      # baseline xp; default to emulated TLS
+_b_dev = ['next', 'current']
+_b_emutls = ['16+emutls']
+_b_non_conforming_manifest = ['15', '14', '13']  # see above (32-msvcrt_win2000)
+
+sat_group: list[SatGroup] = [
   {
-    'name': '64-stable',
-    'profile': json.dumps(['64-mcf', '64-win32', '64-ucrt', '64-msvcrt']),
-    'pattern': '{mingw64-mcf-*,mingw64-win32-*,mingw64-ucrt-*,mingw64-msvcrt-*}',
+    'name': '64-nt61',
+    'items': [{'profile': '64-mcf', 'branch': b} for b in _b_std],
+    'pattern': 'mingw64-mcf-*',
     'dict': '512m',
   },
   {
-    'name': '64_v2-stable',
-    'profile': json.dumps(['64_v2-mcf', '64_v2-win32', '64_v2-ucrt', '64_v2-msvcrt']),
-    'pattern': '{mingw64_v2-mcf-*,mingw64_v2-win32-*,mingw64_v2-ucrt-*,mingw64_v2-msvcrt-*}',
+    'name': '64_v2-nt61',
+    'items': [{'profile': '64_v2-mcf', 'branch': b} for b in _b_std],
+    'pattern': 'mingw64_v2-mcf-*',
     'dict': '512m',
   },
   {
-    'name': '32-stable',
-    'profile': json.dumps(['32-mcf', '32-win32', '32-ucrt', '32-msvcrt']),
-    'pattern': '{mingw32-mcf-*,mingw32-win32-*,mingw32-ucrt-*,mingw32-msvcrt-*}',
+    'name': '32-nt61',
+    'items': [{'profile': '32-mcf', 'branch': b} for b in _b_std],
+    'pattern': 'mingw32-mcf-*',
     'dict': '512m',
   },
   {
-    'name': '64-unstable',
-    'profile': json.dumps(['64-ucrt_ws2003', '64-msvcrt_ws2003']),
-    'pattern': '{mingw64-ucrt_ws2003-*,mingw64-msvcrt_ws2003-*}',
+    'name': '64-nt60',
+    'items': [
+      *({'profile': '64-win32',   'branch': b} for b in _b_std),
+      *({'profile': '64-ucrt',    'branch': b} for b in _b_std_17_16),
+      *({'profile': '64-msvcrt',  'branch': b} for b in _b_std_17_16),
+      *({'profile': '64-ucrt_og', 'branch': b} for b in _b_dev),
+      *({'profile': '64-ucrt_o1', 'branch': b} for b in _b_dev),
+      *({'profile': '64-ucrt_oz', 'branch': b} for b in _b_dev),
+      *({'profile': '64-ucrt_os', 'branch': b} for b in _b_dev),
+      *({'profile': '64-ucrt_o3', 'branch': b} for b in _b_dev),
+    ],
+    'pattern': '{mingw64-win32-*,mingw64-ucrt-*,mingw64-msvcrt-*,mingw64-ucrt_og-*,mingw64-ucrt_o1-*,mingw64-ucrt_oz-*,mingw64-ucrt_os-*,mingw64-ucrt_o3-*}',
     'dict': '512m',
   },
   {
-    'name': '32-unstable',
-    'profile': json.dumps(['32-ucrt_winxp', '32-msvcrt_win2000']),
-    'pattern': '{mingw32-ucrt_winxp-*,mingw32-msvcrt_win2000-*}',
+    'name': '64_v2-nt60',
+    'items': [
+      *({'profile': '64_v2-win32',  'branch': b} for b in _b_std),
+      *({'profile': '64_v2-ucrt',   'branch': b} for b in _b_std_17_16),
+      *({'profile': '64_v2-msvcrt', 'branch': b} for b in _b_std_17_16),
+    ],
+    'pattern': '{mingw64_v2-win32-*,mingw64_v2-ucrt-*,mingw64_v2-msvcrt-*}',
     'dict': '512m',
   },
   {
-    'name': '32_686-unstable',
-    'profile': json.dumps(['32_686-msvcrt_win98']),
-    'pattern': 'mingw32_686-*',
+    'name': '32-nt60',
+    'items': [
+      *({'profile': '32-win32',  'branch': b} for b in _b_std),
+      *({'profile': '32-ucrt',   'branch': b} for b in _b_std_17_16),
+      *({'profile': '32-msvcrt', 'branch': b} for b in _b_std_17_16),
+    ],
+    'pattern': '{mingw32-win32-*,mingw32-ucrt-*,mingw32-msvcrt-*}',
+    'dict': '512m',
+  },
+  {
+    'name': '64-nt52',
+    'items': [
+      *({'profile': '64-ucrt',          'branch': b} for b in _b_std_15_14_13),
+      *({'profile': '64-msvcrt',        'branch': b} for b in _b_std_15_14_13),
+      *({'profile': '64-ucrt_ws2003',   'branch': b} for b in _b_std_17_16 + _b_emutls),
+      *({'profile': '64-msvcrt_ws2003', 'branch': b} for b in _b_std_17_16 + _b_emutls),
+      *({'profile': '64-u8crt',         'branch': b} for b in _b_dev),
+    ],
+    'pattern': '{mingw64-ucrt-*,mingw64-msvcrt-*,mingw64-ucrt_ws2003-*,mingw64-msvcrt_ws2003-*,mingw64-u8crt-*}',
+    'dict': '512m',
+  },
+  {
+    'name': '64_v2-nt52',
+    'items': [
+      *({'profile': '64_v2-ucrt',   'branch': b} for b in _b_std_15_14_13),
+      *({'profile': '64_v2-msvcrt', 'branch': b} for b in _b_std_15_14_13),
+    ],
+    'pattern': '{mingw64_v2-ucrt-*,mingw64_v2-msvcrt-*}',
+    'dict': '512m',
+  },
+  {
+    'name': '32-nt51',
+    'items': [
+      *({'profile': '32-ucrt',       'branch': b} for b in _b_std_15_14_13),
+      *({'profile': '32-msvcrt',     'branch': b} for b in _b_std_15_14_13),
+      *({'profile': '32-ucrt_winxp', 'branch': b} for b in _b_std_17_16 + _b_emutls),
+      *({'profile': '32-u8crt',      'branch': b} for b in _b_dev),
+    ],
+    'pattern': '{mingw32-ucrt-*,mingw32-msvcrt-*,mingw32-ucrt_winxp-*,mingw32-u8crt-*}',
+    'dict': '512m',
+  },
+  {
+    'name': '32-nt50',
+    'items': [{'profile': '32-msvcrt_win2000', 'branch': b} for b in _b_std_17_16 + _b_emutls + _b_non_conforming_manifest],
+    'pattern': 'mingw32-msvcrt_win2000-*',
+    'dict': '512m',
+  },
+  {
+    'name': '32_686-410',
+    'items': [{'profile': '32_686-msvcrt_win98', 'branch': b} for b in _b_std + _b_emutls],
+    'pattern': 'mingw32_686-msvcrt_win98-*',
     # may be extracted on 9x, be moderate
     # 32_386-msvcrt_win95, with all 6 branches, tested on 2026-04-24:
     #   d=192m: 184.9 MiB
@@ -138,16 +214,16 @@ sat_group = [
     'dict': '224m',
   },
   {
-    'name': '32_486-unstable',
-    'profile': json.dumps(['32_486-msvcrt_win98']),
-    'pattern': 'mingw32_486-*',
+    'name': '32_486-410',
+    'items': [{'profile': '32_486-msvcrt_win98', 'branch': b} for b in _b_std + _b_emutls],
+    'pattern': 'mingw32_486-msvcrt_win98-*',
     # may be extracted on 9x, be moderate
     'dict': '224m',
   },
   {
-    'name': '32_386-unstable',
-    'profile': json.dumps(['32_386-msvcrt_win95']),
-    'pattern': 'mingw32_386-*',
+    'name': '32_386-400',
+    'items': [{'profile': '32_386-msvcrt_win95', 'branch': b} for b in _b_emutls + _b_std_15_14_13],
+    'pattern': 'mingw32_386-msvcrt_win95-*',
     # may be extracted on 9x, be moderate
     # outdated, tested on 2026-04-24:
     #   d=192m: 184.9 MiB
@@ -156,20 +232,38 @@ sat_group = [
     #   d=320m: 169.5 MiB
     'dict': '224m',
   },
-
-  # beyond mingw lite
-  {
-    'name': 'u8crt',
-    'profile': json.dumps(['64-u8crt', '32-u8crt']),
-    'pattern': '{mingw64-u8crt-*,mingw32-u8crt-*}',
-    'dict': '512m',
-  },
 ]
 
-sat_exclude_profile_branch = ':'.join([
-  f'{x['profile']}-{x['branch']}'
-  for x in exclude_profile_branch
-])
+sat_group_repr = [
+  {
+    'name': g['name'],
+    'items': json.dumps(g['items']),
+    'pattern': g['pattern'],
+    'dict': g['dict'],
+  } for g in sat_group
+]
+
+def check_sat_coverage():
+  sat_expected = {
+    (p, b)
+    for p in common_profile + all_old_profile + beyond_profile
+    for b in all_branch
+    if {'profile': p, 'branch': b} not in exclude_profile_branch
+  }
+
+  sat_covered: set[tuple[str, str]] = set()
+  for g in sat_group:
+    for item in g['items']:
+        p = (item['profile'], item['branch'])
+        assert p not in sat_covered, f'duplicate SAT entry: {p}'
+        sat_covered.add(p)
+
+  assert sat_covered == sat_expected, (
+    f'SAT coverage mismatch:\n'
+    f'  missing: {sat_expected - sat_covered}\n'
+    f'  extra:   {sat_covered - sat_expected}'
+  )
+check_sat_coverage()
 
 if args.ref_type == 'tag':
   base = args.ref_name.split('-')[0]
@@ -198,5 +292,4 @@ print(f'alt_profile={json.dumps(alt_profile)}')
 print(f'alt_osrel={json.dumps(alt_osrel)}')
 print(f'release={json.dumps(release)}')
 print(f'prerelease={json.dumps(prerelease)}')
-print(f'sat_group={json.dumps(sat_group)}')
-print(f'sat_exclude_profile_branch={sat_exclude_profile_branch}')
+print(f'sat_group={json.dumps(sat_group_repr)}')
