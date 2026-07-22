@@ -23,7 +23,6 @@ jobs:
       release: ${{ steps.param.outputs.release }}
       prerelease: ${{ steps.param.outputs.prerelease }}
       sat_group: ${{ steps.param.outputs.sat_group }}
-      sat_exclude_profile_branch: ${{ steps.param.outputs.sat_exclude_profile_branch }}
 
   download_source:
     name: Download source
@@ -317,24 +316,11 @@ jobs:
 
       - name: Create test archive
         run: |
-          branch=(
-            $(echo '${{ needs.param.outputs.branch }}' | jq -r '.[]')
-          )
-          profile=(
-            $(echo '${{ matrix.profile }}' | jq -r '.[]')
-          )
-
-          mkdir layer
-          mkdir pkg
-
-          for b in ${branch[@]} ; do
-            for p in ${profile[@]} ; do
-              if [[ ":${{ needs.param.outputs.sat_exclude_profile_branch }}:" == *":$p-$b:"* ]] ; then
-                continue
-              fi
+          echo '${{ matrix.items }}' | jq -r '.[] | "\(.profile) \(.branch)"' | {
+            while read -r p b ; do
               ./sat.py --branch $b --profile $p
             done
-          done
+          }
 
           (
             cd pkg
