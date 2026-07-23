@@ -186,9 +186,11 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(__stdio_common_vsscanf)
 #endif
   __DECLARE_MS_IMPORT(_open)
+  __DECLARE_MS_IMPORT(_popen)
   __DECLARE_MS_IMPORT(_read)
   __DECLARE_MS_IMPORT(_wfopen)
   __DECLARE_MS_IMPORT(_wopen)
+  __DECLARE_MS_IMPORT(_wpopen)
   __DECLARE_MS_IMPORT(_write)
   __DECLARE_MS_IMPORT(fgetc)
   __DECLARE_MS_IMPORT(fflush)

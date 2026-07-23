@@ -47,9 +47,11 @@ EXPORTS
 
   ; stdio
   __ms__open == _open
+  __ms__popen == _popen
   __ms__read == _read
   __ms__wfopen == _wfopen
   __ms__wopen == _wopen
+  __ms__wpopen == _wpopen
   __ms__write == _write
   __ms_fflush == fflush
   __ms_fgetc == fgetc
