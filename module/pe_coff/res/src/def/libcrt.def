@@ -1,0 +1,14 @@
+LIBRARY msvcrt.dll
+EXPORTS
+  _access
+  _strnicmp
+  _stricmp
+  _environ DATA
+
+  access == _access
+  strnicmp == _strnicmp
+  environ DATA == _environ
+  _strcmpi == _stricmp
+
+  __msvcrt_assert DATA == _assert
+  __set_app_type == _set_app_type

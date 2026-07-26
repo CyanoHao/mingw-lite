@@ -1,0 +1,4 @@
+LIBRARY msvcrt.dll
+EXPORTS
+  __ms__access == _access
+  __ms__strnicmp == _strnicmp

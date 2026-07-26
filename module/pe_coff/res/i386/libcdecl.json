@@ -1,0 +1,136 @@
+{
+  "imports": [
+    {
+      "dll": "cdecl.dll",
+      "exports": [
+        {
+          "import_type": "DATA",
+          "name": "__ms_cdecl_data_thunk_1",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_thunk_1"
+        },
+        {
+          "import_type": "DATA",
+          "name": "__ms_cdecl_data_thunk_2",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_thunk_2"
+        },
+        {
+          "import_type": "DATA",
+          "name": "__ms_cdecl_data_thunk_3",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_thunk_3"
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_cdecl_thunk_1",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_thunk_1"
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_cdecl_thunk_2",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_thunk_2"
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_cdecl_thunk_3",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_thunk_3"
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_alias_1",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_function_1"
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_alias_2",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_function_2"
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_alias_3",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_function_3"
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_1",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_2",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_3",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_alias_1",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_1"
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_alias_2",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_2"
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_alias_3",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_3"
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_function_1",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_function_2",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_function_3",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        }
+      ]
+    }
+  ],
+  "objects": []
+}

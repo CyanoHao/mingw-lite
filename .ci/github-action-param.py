@@ -97,7 +97,7 @@ alt_profile = ['64-mcf']
 alt_osrel = [
   'archlinux',
   'debian13', 'debian12', 'debian11',
-  'ubuntu2604', 'ubuntu2404', 'ubuntu2204',
+  'ubuntu2604',
   'alpine324',
 ]
 

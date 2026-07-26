@@ -1,0 +1,6 @@
+LIBRARY kernel32.dll
+EXPORTS
+  CreateFileA@28
+  CreateFileW@28
+  MultiByteToWideChar@24
+  WideCharToMultiByte@32

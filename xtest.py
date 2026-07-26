@@ -3,7 +3,10 @@
 import os
 import sys
 
-from module.platform import is_genuine_linux, is_wsl1
+from _python_path import add_extra_path
+add_extra_path()
+
+from mingw_lite.platform import is_genuine_linux, is_wsl1
 
 def direct_run():
   os.execv(sys.executable, [sys.executable, '_xtest_impl.py'] + sys.argv[1:])

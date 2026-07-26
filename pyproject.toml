@@ -1,0 +1,23 @@
+[tool.pyright]
+exclude = [
+  "**/__pycache__",
+  "assets",
+  "build",
+  "dist",
+  "env",
+  "layer",
+  "pkg",
+]
+executionEnvironments = [
+  { root = ".ci", pythonVersion = "3.12" },
+]
+extraPaths = ["module"]
+pythonPlatform = "Linux"
+pythonVersion = "3.8"
+typeCheckingMode = "strict"
+
+[tool.pytest.ini_options]
+testpaths = [
+  "module/mingw_thunk",
+  "module/pe_coff",
+]

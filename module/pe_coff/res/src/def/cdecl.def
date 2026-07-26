@@ -1,0 +1,20 @@
+LIBRARY cdecl.dll
+EXPORTS
+  __ms_cdecl_data_thunk_1 DATA == cdecl_data_thunk_1
+  __ms_cdecl_data_thunk_2 DATA == cdecl_data_thunk_2
+  __ms_cdecl_data_thunk_3 DATA == cdecl_data_thunk_3
+  __ms_cdecl_thunk_1 == cdecl_thunk_1
+  __ms_cdecl_thunk_2 == cdecl_thunk_2
+  __ms_cdecl_thunk_3 == cdecl_thunk_3
+  cdecl_alias_1 == cdecl_function_1
+  cdecl_alias_2 == cdecl_function_2
+  cdecl_alias_3 == cdecl_function_3
+  cdecl_data_1 DATA
+  cdecl_data_2 DATA
+  cdecl_data_3 DATA
+  cdecl_data_alias_1 DATA == cdecl_data_1
+  cdecl_data_alias_2 DATA == cdecl_data_2
+  cdecl_data_alias_3 DATA == cdecl_data_3
+  cdecl_function_1
+  cdecl_function_2
+  cdecl_function_3

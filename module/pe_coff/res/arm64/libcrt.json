@@ -1,0 +1,80 @@
+{
+  "imports": [
+    {
+      "dll": "msvcrt.dll",
+      "exports": [
+        {
+          "import_type": "DATA",
+          "name": "__msvcrt_assert",
+          "ordinal": null,
+          "private": false,
+          "target": "_assert"
+        },
+        {
+          "import_type": "CODE",
+          "name": "__set_app_type",
+          "ordinal": null,
+          "private": false,
+          "target": "_set_app_type"
+        },
+        {
+          "import_type": "CODE",
+          "name": "_access",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "_environ",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "_strcmpi",
+          "ordinal": null,
+          "private": false,
+          "target": "_stricmp"
+        },
+        {
+          "import_type": "CODE",
+          "name": "_stricmp",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "_strnicmp",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "access",
+          "ordinal": null,
+          "private": false,
+          "target": "_access"
+        },
+        {
+          "import_type": "DATA",
+          "name": "environ",
+          "ordinal": null,
+          "private": false,
+          "target": "_environ"
+        },
+        {
+          "import_type": "CODE",
+          "name": "strnicmp",
+          "ordinal": null,
+          "private": false,
+          "target": "_strnicmp"
+        }
+      ]
+    }
+  ],
+  "objects": []
+}

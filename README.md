@@ -11,7 +11,7 @@
   - To opt-in shared runtime libraries, copy `$prefix/lib/shared/*` or `$prefix/lib/shared-unstable/*` to `$prefix/`.
   - Do not mix shared runtime libraries from different branches or profiles.
   - If the shared runtime libraries are marked “unstable” (i.e. branch is not frozen, or [thunks](./doc/thunk.md) are applied to target CRT), do not mix them from different release versions.
-- Cross toolchain: tools are built for Ubuntu 20.04 (glibc 2.31) and organized by package. Mount required packages to `/usr/local`:
+- Cross toolchain: tools are built for Ubuntu 24.04 (glibc 2.39) and organized by package. Mount required packages to `/usr/local`:
   ```bash
   layers=(
     /path/to/mingw/AAB/{binutils,crt-target,gcc,gcc-lib,headers,mcfgthread,winpthreads}/usr/local
@@ -31,8 +31,8 @@ There are several options for build environment:
 
 | Host OS | Technology | Build OS |
 | ------- | ---------- | -------- |
-| Linux | Rootless container (podman) | Ubuntu 20.04 (default)<br>Alpine Linux 3.24<br>Arch Linux<br>Debian ≥ 11<br>Ubuntu ≥ 20.04 |
-| Windows | WSL | Ubuntu 20.04 |
+| Linux | Rootless container (podman) | Ubuntu 24.04 (default)<br>Alpine Linux 3.24<br>Arch Linux<br>Debian ≥ 12<br>Ubuntu ≥ 24.04 |
+| Windows | WSL | Ubuntu 24.04 |
 
 Steps:
 
