@@ -5,10 +5,13 @@ from pathlib import Path
 import shutil
 import subprocess
 
-from module.args import parse_args
-from module.path import ProjectPaths
-from module.profile import BranchProfile, resolve_profile
-from module.util import XMAKE_ARCH_MAP, ensure
+from _python_path import add_extra_path
+add_extra_path()
+
+from mingw_lite.args import parse_args
+from mingw_lite.path import ProjectPaths
+from mingw_lite.profile import BranchProfile, resolve_profile
+from mingw_lite.util import XMAKE_ARCH_MAP, ensure
 
 def clean(config: argparse.Namespace, paths: ProjectPaths):
   if paths.sat_dir.exists():

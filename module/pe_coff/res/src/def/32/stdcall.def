@@ -1,0 +1,17 @@
+LIBRARY stdcall.dll
+EXPORTS
+  StdcallAlias1@4 == StdcallFunction1
+  StdcallAlias2@8 == StdcallFunction2
+  StdcallAlias3@12 == StdcallFunction3
+  StdcallData1 DATA
+  StdcallData2 DATA
+  StdcallData3 DATA
+  StdcallFunction1@4
+  StdcallFunction2@8
+  StdcallFunction3@12
+  StdcallOrdinal1@4 @1 NONAME
+  StdcallOrdinal2@8 @2 NONAME
+  StdcallOrdinal3@12 @3 NONAME
+  __ms_StdcallThunk1@4 == StdcallThunk1
+  __ms_StdcallThunk2@8 == StdcallThunk2
+  __ms_StdcallThunk3@12 == StdcallThunk3

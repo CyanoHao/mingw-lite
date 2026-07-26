@@ -1,0 +1,197 @@
+{
+  "imports": [
+    {
+      "dll": "cdecl.dll",
+      "exports": [
+        {
+          "import_type": "DATA",
+          "name": "__ms_cdecl_data_thunk_1",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_thunk_1"
+        },
+        {
+          "import_type": "DATA",
+          "name": "__ms_cdecl_data_thunk_2",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_thunk_2"
+        },
+        {
+          "import_type": "DATA",
+          "name": "__ms_cdecl_data_thunk_3",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_thunk_3"
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_cdecl_thunk_1",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_thunk_1"
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_cdecl_thunk_2",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_thunk_2"
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_cdecl_thunk_3",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_thunk_3"
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_alias_1",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_function_1"
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_alias_2",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_function_2"
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_alias_3",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_function_3"
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_1",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_2",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_3",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_alias_1",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_1"
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_alias_2",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_2"
+        },
+        {
+          "import_type": "DATA",
+          "name": "cdecl_data_alias_3",
+          "ordinal": null,
+          "private": false,
+          "target": "cdecl_data_3"
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_function_1",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_function_2",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "cdecl_function_3",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        }
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "b64data": "ZKoFAAAAAAA/AQAADwAAAAAAAAAudGV4dAAAAAAAAAAAAAAACAAAANwAAAAAAAAAAAAAAAAAAAAgADBgLmRhdGEAAAAAAAAAAAAAAAgAAADkAAAA7AAAAAAAAAABAAAAQABAwC5ic3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAMMAuZGVidWckUwAAAAAAAAAASAAAAPYAAAAAAAAAAAAAAAAAAABAADBCLzQAAAAAAAAAAAAAAAAAAAEAAAA+AQAAAAAAAAAAAAAAAAAAAAgQACAAgFLAA1/WAAAAAAAAAAAAAAAACwAAAA4ABAAAAPEAAAA8AAAACgABEQAAAAAAAAAALgA8EQBAAAD2ABYAAQAIAAAAAlYAAAAAAABjbGFuZyB2ZXJzaW9uIDIyLjEuOAAACy50ZXh0AAAAAAAAAAEAAAADAQgAAAAAAAAAAIyNgwEAAAAAAC5kYXRhAAAAAAAAAAIAAAADAQgAAAABAAAAAAAAAAIAAAAAAC5ic3MAAAAAAAAAAAMAAAADAQAAAAAAAAAAAAAAAAMAAAAAAC5kZWJ1ZyRTAAAAAAQAAAADAUgAAAAAAAAAEAPaFwQAAAAAAAAAAAAEAAAAAAAAAAUAAAADAQEAAAAAAAAAiNnSlwUAAAAAAEBmZWF0LjAwAAAAAP//AAADAAAAAAAYAAAAAAAAAAEAIAACAAAAAAASAAAAAAAAAAIAAAACAC5maWxlAAAAAAAAAP7/AABnAWNkZWNsX3RodW5rXzEuYwAAACYAAAAubGx2bV9hZGRyc2lnAF9faW1wX2NkZWNsX3RodW5rXzEA",
+      "name": "cdecl_thunk_1.o",
+      "symbols": [
+        {
+          "alias_target": null,
+          "name": "__imp_cdecl_thunk_1",
+          "section_number": 2,
+          "storage_class": 2,
+          "type_letter": "D"
+        },
+        {
+          "alias_target": null,
+          "name": "cdecl_thunk_1",
+          "section_number": 1,
+          "storage_class": 2,
+          "type_letter": "T"
+        }
+      ]
+    },
+    {
+      "b64data": "ZKoFAAAAAAA/AQAADwAAAAAAAAAudGV4dAAAAAAAAAAAAAAACAAAANwAAAAAAAAAAAAAAAAAAAAgADBgLmRhdGEAAAAAAAAAAAAAAAgAAADkAAAA7AAAAAAAAAABAAAAQABAwC5ic3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAMMAuZGVidWckUwAAAAAAAAAASAAAAPYAAAAAAAAAAAAAAAAAAABAADBCLzQAAAAAAAAAAAAAAAAAAAEAAAA+AQAAAAAAAAAAAAAAAAAAAAgQAEAAgFLAA1/WAAAAAAAAAAAAAAAACwAAAA4ABAAAAPEAAAA8AAAACgABEQAAAAAAAAAALgA8EQBAAAD2ABYAAQAIAAAAAlYAAAAAAABjbGFuZyB2ZXJzaW9uIDIyLjEuOAAACy50ZXh0AAAAAAAAAAEAAAADAQgAAAAAAAAAuyxmUwEAAAAAAC5kYXRhAAAAAAAAAAIAAAADAQgAAAABAAAAAAAAAAIAAAAAAC5ic3MAAAAAAAAAAAMAAAADAQAAAAAAAAAAAAAAAAMAAAAAAC5kZWJ1ZyRTAAAAAAQAAAADAUgAAAAAAAAAEAPaFwQAAAAAAAAAAAAEAAAAAAAAAAUAAAADAQEAAAAAAAAAiNnSlwUAAAAAAEBmZWF0LjAwAAAAAP//AAADAAAAAAAYAAAAAAAAAAEAIAACAAAAAAASAAAAAAAAAAIAAAACAC5maWxlAAAAAAAAAP7/AABnAWNkZWNsX3RodW5rXzIuYwAAACYAAAAubGx2bV9hZGRyc2lnAF9faW1wX2NkZWNsX3RodW5rXzIA",
+      "name": "cdecl_thunk_2.o",
+      "symbols": [
+        {
+          "alias_target": null,
+          "name": "__imp_cdecl_thunk_2",
+          "section_number": 2,
+          "storage_class": 2,
+          "type_letter": "D"
+        },
+        {
+          "alias_target": null,
+          "name": "cdecl_thunk_2",
+          "section_number": 1,
+          "storage_class": 2,
+          "type_letter": "T"
+        }
+      ]
+    },
+    {
+      "b64data": "ZKoFAAAAAAA/AQAADwAAAAAAAAAudGV4dAAAAAAAAAAAAAAACAAAANwAAAAAAAAAAAAAAAAAAAAgADBgLmRhdGEAAAAAAAAAAAAAAAgAAADkAAAA7AAAAAAAAAABAAAAQABAwC5ic3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAMMAuZGVidWckUwAAAAAAAAAASAAAAPYAAAAAAAAAAAAAAAAAAABAADBCLzQAAAAAAAAAAAAAAAAAAAEAAAA+AQAAAAAAAAAAAAAAAAAAAAgQAGAAgFLAA1/WAAAAAAAAAAAAAAAACwAAAA4ABAAAAPEAAAA8AAAACgABEQAAAAAAAAAALgA8EQBAAAD2ABYAAQAIAAAAAlYAAAAAAABjbGFuZyB2ZXJzaW9uIDIyLjEuOAAACy50ZXh0AAAAAAAAAAEAAAADAQgAAAAAAAAA7U4QqgEAAAAAAC5kYXRhAAAAAAAAAAIAAAADAQgAAAABAAAAAAAAAAIAAAAAAC5ic3MAAAAAAAAAAAMAAAADAQAAAAAAAAAAAAAAAAMAAAAAAC5kZWJ1ZyRTAAAAAAQAAAADAUgAAAAAAAAAEAPaFwQAAAAAAAAAAAAEAAAAAAAAAAUAAAADAQEAAAAAAAAAiNnSlwUAAAAAAEBmZWF0LjAwAAAAAP//AAADAAAAAAAYAAAAAAAAAAEAIAACAAAAAAASAAAAAAAAAAIAAAACAC5maWxlAAAAAAAAAP7/AABnAWNkZWNsX3RodW5rXzMuYwAAACYAAAAubGx2bV9hZGRyc2lnAF9faW1wX2NkZWNsX3RodW5rXzMA",
+      "name": "cdecl_thunk_3.o",
+      "symbols": [
+        {
+          "alias_target": null,
+          "name": "__imp_cdecl_thunk_3",
+          "section_number": 2,
+          "storage_class": 2,
+          "type_letter": "D"
+        },
+        {
+          "alias_target": null,
+          "name": "cdecl_thunk_3",
+          "section_number": 1,
+          "storage_class": 2,
+          "type_letter": "T"
+        }
+      ]
+    }
+  ]
+}

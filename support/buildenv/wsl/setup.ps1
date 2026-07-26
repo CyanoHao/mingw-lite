@@ -14,14 +14,14 @@ $OsArch = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture
 $WslImage = switch ($OsArch) {
   'X64' {
     @{
-      Name = 'ubuntu-20.04.6-wsl-amd64.wsl'
-      UrlBase = 'https://releases.ubuntu.com/20.04'
+      Name = 'ubuntu-24.04.4-wsl-amd64.wsl'
+      UrlBase = 'https://releases.ubuntu.com/24.04'
     }
   }
   'Arm64' {
     @{
-      Name = 'ubuntu-20.04.6-wsl-arm64.wsl'
-      UrlBase = 'https://cdimages.ubuntu.com/ubuntu/releases/20.04/release'
+      Name = 'ubuntu-24.04.4-wsl-arm64.wsl'
+      UrlBase = 'https://cdimages.ubuntu.com/ubuntu/releases/24.04/release'
     }
   }
   default {
@@ -50,6 +50,10 @@ wsl --distribution $Distro --exec apt update
 # don't update -- systemd will fail on WSL 1
 wsl --distribution $Distro --exec env DEBIAN_FRONTEND=noninteractive `
   apt-get install --no-install-recommends -y `
-    build-essential cmake flex gettext libtool llvm m4 ninja-build texinfo `
-    ca-certificates curl file gawk libarchive-tools p7zip-full python3 python3-packaging zstd
+    build-essential cmake flex gettext libtool llvm-19 m4 ninja-build texinfo `
+    7zip ca-certificates curl file gawk libarchive-tools python3 python3-packaging zstd
+foreach ($t in 'llvm-config', 'llvm-ar', 'llvm-ranlib', 'llvm-dlltool') {
+  wsl --distribution $Distro --exec update-alternatives --install "/usr/bin/$t" $t "/usr/bin/$t-19" 100
+  wsl --distribution $Distro --exec update-alternatives --set $t "/usr/bin/$t-19"
+}
 wsl --distribution $Distro --exec sync

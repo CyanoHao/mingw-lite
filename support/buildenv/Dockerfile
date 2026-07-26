@@ -1,1 +1,1 @@
-ubuntu2004/Dockerfile
+ubuntu2404/Dockerfile

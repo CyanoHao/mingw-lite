@@ -82,7 +82,7 @@ function build_short_import_library(sourcefiles)
       for _, sourcefile in ipairs(sourcefiles) do
         local temp_a = path.join(tmpdir, path.filename(sourcefile) .. '.a')
         mri_content = mri_content .. 'addlib ' .. temp_a .. '\n'
-        os.runv('dlltool-wrapper', {
+        os.runv('llvm-dlltool', {
           '-m', machine,
           '-k',
           '-l', temp_a,
@@ -92,9 +92,9 @@ function build_short_import_library(sourcefiles)
       local mri = path.join(tmpdir, 'mri')
       io.writefile(mri, mri_content)
 
-      os.execv('ar-wrapper', {'-M'}, {stdin = mri})
+      os.execv('llvm-ar', {'-M'}, {stdin = mri})
     else
-      os.runv('dlltool-wrapper', {
+      os.runv('llvm-dlltool', {
         '-m', machine,
         '-k',
         '-l', target:targetfile(),

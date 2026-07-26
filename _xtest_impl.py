@@ -10,10 +10,13 @@ from pprint import pprint
 import sys
 from typing import Dict, List, Union
 
-from module.args import parse_args
-from module.path import ProjectPaths
-from module.profile import BranchProfile, resolve_profile
-from module.util import XMAKE_ARCH_MAP, ensure, overlayfs_ro, common_cross_layers
+from _python_path import add_extra_path
+add_extra_path()
+
+from mingw_lite.args import parse_args
+from mingw_lite.path import ProjectPaths
+from mingw_lite.profile import BranchProfile, resolve_profile
+from mingw_lite.util import XMAKE_ARCH_MAP, ensure, overlayfs_ro, common_cross_layers
 
 def clean(config: argparse.Namespace, paths: ProjectPaths):
   if paths.test_dir.exists():

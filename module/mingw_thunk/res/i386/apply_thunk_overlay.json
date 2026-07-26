@@ -1,0 +1,71 @@
+{
+  "output": {
+    "import": [
+      {
+        "dll": "kernel32.dll",
+        "exports": [
+          {
+            "import_type": "CODE",
+            "name": "__ms_CreateFileA@28",
+            "ordinal": null,
+            "private": false,
+            "target": "CreateFileA"
+          },
+          {
+            "import_type": "CODE",
+            "name": "__ms_CreateFileW@28",
+            "ordinal": null,
+            "private": false,
+            "target": "CreateFileW"
+          },
+          {
+            "import_type": "CODE",
+            "name": "__ms_MultiByteToWideChar@24",
+            "ordinal": null,
+            "private": false,
+            "target": "MultiByteToWideChar"
+          },
+          {
+            "import_type": "CODE",
+            "name": "__ms_WideCharToMultiByte@32",
+            "ordinal": null,
+            "private": false,
+            "target": "WideCharToMultiByte"
+          }
+        ]
+      }
+    ],
+    "thunk": [
+      {
+        "name": "CreateFileA.o",
+        "symbol": [
+          "__imp__CreateFileA@28"
+        ]
+      },
+      {
+        "name": "CreateFileW.o",
+        "symbol": [
+          "__imp__CreateFileW@28"
+        ]
+      },
+      {
+        "name": "MultiByteToWideChar.o",
+        "symbol": [
+          "__imp__MultiByteToWideChar@24"
+        ]
+      },
+      {
+        "name": "WideCharToMultiByte.o",
+        "symbol": [
+          "__imp__WideCharToMultiByte@32"
+        ]
+      }
+    ]
+  },
+  "result": {
+    "CreateFileA@28": "__ms_CreateFileA@28",
+    "CreateFileW@28": "__ms_CreateFileW@28",
+    "MultiByteToWideChar@24": "__ms_MultiByteToWideChar@24",
+    "WideCharToMultiByte@32": "__ms_WideCharToMultiByte@32"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "imports": [
+    {
+      "dll": "i386.dll",
+      "exports": [
+        {
+          "import_type": "CODE",
+          "name": "_ZN12RuntimeClass6methodEv",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "_ZN12RuntimeClassD0Ev",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "_ZN12RuntimeClassD1Ev",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "_ZN12RuntimeClassD2Ev",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "_ZTI12RuntimeClass",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "_ZTS12RuntimeClass",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "_ZTV12RuntimeClass",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "runtime_data",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        }
+      ]
+    }
+  ],
+  "objects": []
+}

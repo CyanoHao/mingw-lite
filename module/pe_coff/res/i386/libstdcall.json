@@ -1,0 +1,115 @@
+{
+  "imports": [
+    {
+      "dll": "stdcall.dll",
+      "exports": [
+        {
+          "import_type": "CODE",
+          "name": "StdcallAlias1@4",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallFunction1"
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallAlias2@8",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallFunction2"
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallAlias3@12",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallFunction3"
+        },
+        {
+          "import_type": "DATA",
+          "name": "StdcallData1",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "StdcallData2",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "StdcallData3",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallFunction1@4",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallFunction2@8",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallFunction3@12",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallOrdinal1@4",
+          "ordinal": 1,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallOrdinal2@8",
+          "ordinal": 2,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallOrdinal3@12",
+          "ordinal": 3,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_StdcallThunk1@4",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallThunk1"
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_StdcallThunk2@8",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallThunk2"
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_StdcallThunk3@12",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallThunk3"
+        }
+      ]
+    }
+  ],
+  "objects": []
+}

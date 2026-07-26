@@ -8,21 +8,43 @@ from pathlib import Path
 import shutil
 import subprocess
 from subprocess import PIPE, Popen
+import sys
 from tempfile import NamedTemporaryFile
 from typing import Dict, List
 
-from module.args import parse_args
-from module.path import ProjectPaths
-from module.prepare_source import prepare_source
-from module.profile import resolve_profile
-from module.util import ensure, overlayfs_ro
+from _python_path import add_extra_path
+add_extra_path()
+
+from mingw_lite.args import parse_args
+from mingw_lite.path import ProjectPaths
+from mingw_lite.prepare_source import prepare_source
+from mingw_lite.profile import BranchProfile, resolve_profile
+from mingw_lite.util import ensure, overlayfs_ro
 
 # A = x86_64-linux-gnu or x86_64-linux-musl
 # B = {i686,x86_64}-w64-mingw32
 # XYZ: build = X, host = Y, target = Z
-from module.AAA import build_AAA_library, build_AAA_tool
-from module.AAB import build_AAB_compiler, build_AAB_library
-from module.ABB import build_ABB_test_driver, build_ABB_toolchain, build_ABB_xmake
+from mingw_lite.AAA import build_AAA_library, build_AAA_tool
+from mingw_lite.AAB import build_AAB_compiler, build_AAB_library
+from mingw_lite.ABB import build_ABB_test_driver, build_ABB_toolchain, build_ABB_xmake
+
+def check_short_import_version(ver: BranchProfile, download_only: bool):
+  if not ver.short_import:
+    return
+
+  if Version(ver.binutils) < Version('2.47'):
+    raise Exception('short import requires binutils >= 2.47')
+
+  if download_only:
+    return
+
+  llvm_version = subprocess.run(
+    ['llvm-config', '--version'],
+    check = True,
+    stdout = PIPE,
+  ).stdout.decode().strip()
+  if Version(llvm_version).major < 19:
+    raise Exception('short import requires LLVM >= 19')
 
 def clean(config: argparse.Namespace, paths: ProjectPaths):
   if paths.build_dir.exists():
@@ -156,6 +178,7 @@ def main():
   logging.info("building GCC %s for %s", config.branch, config.profile)
 
   ver = resolve_profile(config)
+  check_short_import_version(ver, config.download_only)
   paths = ProjectPaths(config, ver)
 
   if config.clean:

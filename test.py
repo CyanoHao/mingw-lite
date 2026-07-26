@@ -15,11 +15,14 @@ from tempfile import TemporaryDirectory
 from traceback import print_exc
 from typing import Dict, List, Union
 
-from module.args import parse_args
-from module.path import ProjectPaths
-from module.platform import is_win32, win32_set_utf8_pipe
-from module.profile import BranchProfile, resolve_profile
-from module.util import XMAKE_ARCH_MAP, ensure
+from _python_path import add_extra_path
+add_extra_path()
+
+from mingw_lite.args import parse_args
+from mingw_lite.path import ProjectPaths
+from mingw_lite.platform import is_win32, win32_set_utf8_pipe
+from mingw_lite.profile import BranchProfile, resolve_profile
+from mingw_lite.util import XMAKE_ARCH_MAP, ensure
 
 def clean(config: argparse.Namespace, paths: ProjectPaths):
   if paths.test_dir.exists():

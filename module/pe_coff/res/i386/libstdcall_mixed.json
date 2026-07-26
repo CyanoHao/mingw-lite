@@ -1,0 +1,176 @@
+{
+  "imports": [
+    {
+      "dll": "stdcall.dll",
+      "exports": [
+        {
+          "import_type": "CODE",
+          "name": "StdcallAlias1@4",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallFunction1"
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallAlias2@8",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallFunction2"
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallAlias3@12",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallFunction3"
+        },
+        {
+          "import_type": "DATA",
+          "name": "StdcallData1",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "StdcallData2",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "DATA",
+          "name": "StdcallData3",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallFunction1@4",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallFunction2@8",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallFunction3@12",
+          "ordinal": null,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallOrdinal1@4",
+          "ordinal": 1,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallOrdinal2@8",
+          "ordinal": 2,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "StdcallOrdinal3@12",
+          "ordinal": 3,
+          "private": false,
+          "target": null
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_StdcallThunk1@4",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallThunk1"
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_StdcallThunk2@8",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallThunk2"
+        },
+        {
+          "import_type": "CODE",
+          "name": "__ms_StdcallThunk3@12",
+          "ordinal": null,
+          "private": false,
+          "target": "StdcallThunk3"
+        }
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "b64data": "TAEFAAAAAABCAQAADwAAAAAAAAAudGV4dAAAAAAAAAAAAAAADwAAANwAAAAAAAAAAAAAAAAAAAAgAFBgLmRhdGEAAAAAAAAAAAAAAAQAAADrAAAA7wAAAAAAAAABAAAAQAAwwC5ic3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAMMAuZGVidWckUwAAAAAAAAAASAAAAPkAAAAAAAAAAAAAAAAAAABAADBCLzQAAAAAAAAAAAAAAAAAAAEAAABBAQAAAAAAAAAAAAAAAAAAAAgQAFWJ5YtFCLgBAAAAXcIEAAAAAAAAAAAACwAAAAYABAAAAPEAAAA8AAAACgABEQAAAAAAAAAALgA8EQAAAAAHABYAAQAIAAAAAlYAAAAAAABjbGFuZyB2ZXJzaW9uIDIyLjEuOAAACy50ZXh0AAAAAAAAAAEAAAADAQ8AAAAAAAAAuAomdgEAAAAAAC5kYXRhAAAAAAAAAAIAAAADAQQAAAABAAAAAAAAAAIAAAAAAC5ic3MAAAAAAAAAAAMAAAADAQAAAAAAAAAAAAAAAAMAAAAAAC5kZWJ1ZyRTAAAAAAQAAAADAUgAAAAAAAAAgXSyFAQAAAAAAAAAAAAEAAAAAAAAAAUAAAADAQEAAAAAAAAAiNnSlwUAAAAAAEBmZWF0LjAwAQAAAP//AAADAAAAAAAYAAAAAAAAAAEAIAACAAAAAAASAAAAAAAAAAIAAAACAC5maWxlAAAAAAAAAP7/AABnAVN0ZGNhbGxUaHVuazEuYwAAACkAAAAubGx2bV9hZGRyc2lnAF9faW1wX19TdGRjYWxsVGh1bmsxQDQA",
+      "name": "StdcallThunk1.o",
+      "symbols": [
+        {
+          "alias_target": null,
+          "name": "_StdcallThunk1@4",
+          "section_number": 1,
+          "storage_class": 2,
+          "type_letter": "T"
+        },
+        {
+          "alias_target": null,
+          "name": "__imp__StdcallThunk1@4",
+          "section_number": 2,
+          "storage_class": 2,
+          "type_letter": "D"
+        }
+      ]
+    },
+    {
+      "b64data": "TAEFAAAAAABFAQAADwAAAAAAAAAudGV4dAAAAAAAAAAAAAAAEgAAANwAAAAAAAAAAAAAAAAAAAAgAFBgLmRhdGEAAAAAAAAAAAAAAAQAAADuAAAA8gAAAAAAAAABAAAAQAAwwC5ic3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAMMAuZGVidWckUwAAAAAAAAAASAAAAPwAAAAAAAAAAAAAAAAAAABAADBCLzQAAAAAAAAAAAAAAAAAAAEAAABEAQAAAAAAAAAAAAAAAAAAAAgQAFWJ5YtFDItFCLgCAAAAXcIIAAAAAAAAAAAACwAAAAYABAAAAPEAAAA8AAAACgABEQAAAAAAAAAALgA8EQAAAAAHABYAAQAIAAAAAlYAAAAAAABjbGFuZyB2ZXJzaW9uIDIyLjEuOAAACy50ZXh0AAAAAAAAAAEAAAADARIAAAAAAAAA+41JDAEAAAAAAC5kYXRhAAAAAAAAAAIAAAADAQQAAAABAAAAAAAAAAIAAAAAAC5ic3MAAAAAAAAAAAMAAAADAQAAAAAAAAAAAAAAAAMAAAAAAC5kZWJ1ZyRTAAAAAAQAAAADAUgAAAAAAAAAgXSyFAQAAAAAAAAAAAAEAAAAAAAAAAUAAAADAQEAAAAAAAAAiNnSlwUAAAAAAEBmZWF0LjAwAQAAAP//AAADAAAAAAAYAAAAAAAAAAEAIAACAAAAAAASAAAAAAAAAAIAAAACAC5maWxlAAAAAAAAAP7/AABnAVN0ZGNhbGxUaHVuazIuYwAAACkAAAAubGx2bV9hZGRyc2lnAF9faW1wX19TdGRjYWxsVGh1bmsyQDgA",
+      "name": "StdcallThunk2.o",
+      "symbols": [
+        {
+          "alias_target": null,
+          "name": "_StdcallThunk2@8",
+          "section_number": 1,
+          "storage_class": 2,
+          "type_letter": "T"
+        },
+        {
+          "alias_target": null,
+          "name": "__imp__StdcallThunk2@8",
+          "section_number": 2,
+          "storage_class": 2,
+          "type_letter": "D"
+        }
+      ]
+    },
+    {
+      "b64data": "TAEFAAAAAABIAQAADwAAAAAAAAAudGV4dAAAAAAAAAAAAAAAFQAAANwAAAAAAAAAAAAAAAAAAAAgAFBgLmRhdGEAAAAAAAAAAAAAAAQAAADxAAAA9QAAAAAAAAABAAAAQAAwwC5ic3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAMMAuZGVidWckUwAAAAAAAAAASAAAAP8AAAAAAAAAAAAAAAAAAABAADBCLzQAAAAAAAAAAAAAAAAAAAEAAABHAQAAAAAAAAAAAAAAAAAAAAgQAFWJ5YtFEItFDItFCLgDAAAAXcIMAAAAAAAAAAAACwAAAAYABAAAAPEAAAA8AAAACgABEQAAAAAAAAAALgA8EQAAAAAHABYAAQAIAAAAAlYAAAAAAABjbGFuZyB2ZXJzaW9uIDIyLjEuOAAACy50ZXh0AAAAAAAAAAEAAAADARUAAAAAAAAAkW+LYgEAAAAAAC5kYXRhAAAAAAAAAAIAAAADAQQAAAABAAAAAAAAAAIAAAAAAC5ic3MAAAAAAAAAAAMAAAADAQAAAAAAAAAAAAAAAAMAAAAAAC5kZWJ1ZyRTAAAAAAQAAAADAUgAAAAAAAAAgXSyFAQAAAAAAAAAAAAEAAAAAAAAAAUAAAADAQEAAAAAAAAAiNnSlwUAAAAAAEBmZWF0LjAwAQAAAP//AAADAAAAAAAYAAAAAAAAAAEAIAACAAAAAAASAAAAAAAAAAIAAAACAC5maWxlAAAAAAAAAP7/AABnAVN0ZGNhbGxUaHVuazMuYwAAACoAAAAubGx2bV9hZGRyc2lnAF9faW1wX19TdGRjYWxsVGh1bmszQDEyAA==",
+      "name": "StdcallThunk3.o",
+      "symbols": [
+        {
+          "alias_target": null,
+          "name": "_StdcallThunk3@12",
+          "section_number": 1,
+          "storage_class": 2,
+          "type_letter": "T"
+        },
+        {
+          "alias_target": null,
+          "name": "__imp__StdcallThunk3@12",
+          "section_number": 2,
+          "storage_class": 2,
+          "type_letter": "D"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+LIBRARY kernel32.dll
+EXPORTS
+  __ms_CreateFileA@28 == CreateFileA
+  __ms_CreateFileW@28 == CreateFileW
+  __ms_MultiByteToWideChar@24 == MultiByteToWideChar
+  __ms_WideCharToMultiByte@32 == WideCharToMultiByte
