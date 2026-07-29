@@ -82,7 +82,7 @@ Available branches:
 
 | Branch | GCC version | MinGW | Binutils | GDB | Optimize | TLS |
 | ------ | ----------- | ----- | -------- | --- | -------- | --- |
-| next | 17-20260726 | 14.0.0 | 2.46.1 | 17.2 | O2 | Native |
+| next | 17-20260727 | 14.0.0 | 2.46.1 | 17.2 | O2 | Native |
 | current | 16-20260725 | 14.0.0 | 2.46.1 | 17.2 | O2 | Native |
 | 16 | 16.1.0 | 14.0.0 | 2.46.1 | 17.2 | O2 | Native |
 | 16+emutls | 16.1.0 | 14.0.0 | 2.46.1 | 17.2 | O2 | Emulated |
