@@ -99,9 +99,9 @@ class BranchProfile(BranchVersions, ProfileInfo):
 
 BRANCHES: Dict[str, BranchVersions] = {
   'next': BranchVersions(
-    gcc = '17-20260726',
+    gcc = '17-20260727',
     rev = '0',
-    display_version = 'next-17-20260726',
+    display_version = 'next-17-20260727',
 
     abi_frozen = False,
     branch_opt_lv = OptLv.O2,
