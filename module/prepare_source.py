@@ -42,6 +42,10 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     else:
       patch(paths.src_dir.binutils, paths.patch_dir / 'binutils' / 'ignore-long-path_buggy.patch')
 
+    # Disable development flag
+    if v == Version('2.47'):
+      patch(paths.src_dir.binutils, paths.patch_dir / 'binutils/disable-development-flag.patch')
+
     patch_done(paths.src_dir.binutils)
 
 def _expat(ver: BranchProfile, paths: ProjectPaths, download_only: bool):

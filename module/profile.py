@@ -116,7 +116,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     mingw = '14.0.0',
     nowide = '11.3.1',
 
-    binutils = '2.46.1',
+    binutils = '2.47',
     expat = '2.8.2',
     gdb = '17.2',
     gmp = '6.3.0',
@@ -149,7 +149,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     mingw = '14.0.0',
     nowide = '11.3.1',
 
-    binutils = '2.46.1',
+    binutils = '2.47',
     expat = '2.8.2',
     gdb = '17.2',
     gmp = '6.3.0',
@@ -181,7 +181,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     mingw = '14.0.0',
     nowide = '11.3.1',
 
-    binutils = '2.46.1',
+    binutils = '2.47',
     expat = '2.8.2',
     gdb = '17.2',
     gmp = '6.3.0',
