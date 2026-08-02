@@ -10,7 +10,7 @@ CHECKSUMS: Dict[str, str] = {
   'binutils-2.41.tar.xz': 'ae9a5789e23459e59606e6714723f2d3ffc31c03174191ef0d015bdf06007450',
   'binutils-2.43.1.tar.zst': 'ad1b625031099c8ac09c7864bf9d352f908510de4bd25cf50ff21022bc66f7ca',
   'binutils-2.45.1.tar.zst': '5249c7eb75aed113091aae5418903109e4651d81cb974d6aec274607dfe988bc',
-  'binutils-2.46.1.tar.zst': '48c8ef46be94120bf7d34e14e1b5f1b34207684fbb531da8b151cf98e30d5bc5',
+  'binutils-2.47.tar.zst': '6b65d318b49c3b59c329ba712c3f4f0b0282269ce6dc5a2038a100aaf309059f',
 
   'expat-2.5.0.tar.xz': 'ef2420f0232c087801abf705e89ae65f6257df6b7931d37846a193ef2e8cdcbe',
   'expat-2.6.4.tar.xz': 'a695629dae047055b37d50a0ff4776d1d45d0a4c842cf4ccee158441f55ff7ee',
