@@ -1,5 +1,7 @@
 FROM docker.io/library/ubuntu:24.04
 
+ENV LANG=C.UTF-8
+
 RUN apt-get update && \
     env DEBIAN_FRONTEND=noninteractive \
       apt-get install --no-install-recommends -y \
