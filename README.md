@@ -31,7 +31,7 @@ There are several options for build environment:
 
 | Host OS | Technology | Build OS |
 | ------- | ---------- | -------- |
-| Linux | Rootless container (podman) | Ubuntu 20.04 (default)<br>Alpine Linux 3.23<br>Arch Linux<br>Debian ≥ 11<br>Ubuntu ≥ 20.04 |
+| Linux | Rootless container (podman) | Ubuntu 20.04 (default)<br>Alpine Linux 3.24<br>Arch Linux<br>Debian ≥ 11<br>Ubuntu ≥ 20.04 |
 | Windows | WSL | Ubuntu 20.04 |
 
 Steps:

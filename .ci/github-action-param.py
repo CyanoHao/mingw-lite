@@ -98,7 +98,7 @@ alt_osrel = [
   'archlinux',
   'debian13', 'debian12', 'debian11',
   'ubuntu2604', 'ubuntu2404', 'ubuntu2204',
-  'alpine323',
+  'alpine324',
 ]
 
 # branch subsets for SAT group construction
