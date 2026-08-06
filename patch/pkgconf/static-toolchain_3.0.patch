@@ -1,0 +1,16 @@
+diff --git a/cli/main.c b/cli/main.c
+index ef181a6..9777f07 100644
+--- a/cli/main.c
++++ b/cli/main.c
+@@ -255,7 +255,11 @@ main(int argc, char *argv[])
+ 
+ 	int ret;
+ 	pkgconf_cli_state_t state = {
++#ifdef _WIN32
++		.want_flags = PKG_STATIC,
++#else
+ 		.want_flags = 0,
++#endif
+ 		.maximum_traverse_depth = 256,
+ 	};
+ 	pkgconf_list_t dir_list = PKGCONF_LIST_INITIALIZER;

@@ -4,8 +4,8 @@ CHECKSUMS: Dict[str, str] = {
   'PDCurses-3.9.tar.gz': '590dbe0f5835f66992df096d3602d0271103f90cf8557a5d124f693c2b40d7ec',
 
   'Python-3.12.13.tar.xz': 'c08bc65a81971c1dd5783182826503369466c7e67374d1646519adf05207b684',
-  'Python-3.13.14.tar.xz': '639e43243c620a308f968213df9e00f2f8f62332f7adbaa7a7eeb9783057c690',
-  'Python-3.14.6.tar.xz': '143b1dddefaec3bd2e21e3b839b34a2b7fb9842272883c576420d605e9f30c63',
+  'Python-3.13.15.tar.xz': '1e66a7945a48390ee4c2a4268a0e4185884059a13c4aab6d148aa208deea4a76',
+  'Python-3.14.7.tar.xz': '3b48dac8fb59f62eaa67ac83c1eb12bda1b7a08406dd286e252c11a66be27f81',
 
   'binutils-2.41.tar.xz': 'ae9a5789e23459e59606e6714723f2d3ffc31c03174191ef0d015bdf06007450',
   'binutils-2.43.1.tar.zst': 'ad1b625031099c8ac09c7864bf9d352f908510de4bd25cf50ff21022bc66f7ca',
@@ -33,6 +33,7 @@ CHECKSUMS: Dict[str, str] = {
 
   'isl-0.26.tar.xz': 'a0b5cb06d24f9fa9e77b55fabbe9a3c94a336190345c2555f9915bb38e976504',
   'isl-0.27.tar.xz': '6d8babb59e7b672e8cb7870e874f3f7b813b6e00e6af3f8b04f7579965643d5c',
+  'isl-0.28.tar.xz': '3dc31b8e1b18329e42d5dfbf84dd55e15c59b61569a2ab246f61497d9592f727',
 
   'libiconv-1.17.tar.gz': '8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313',
   'libiconv-1.18.tar.gz': '3b08f5f4f9b4eb82f151a7040bfd6fe6c6fb922efe4b1659c66ea933276965e8',
@@ -42,9 +43,9 @@ CHECKSUMS: Dict[str, str] = {
 
   'mcfgthread-1.8-ga.4.tar.gz': 'd2318ef761927860b7a8963308145065047d8ad2102313b26e6eb2d88d9ef1e3',
   'mcfgthread-2.1-ga.1.tar.gz': '73d4ea39e8eee30738ed3f4a35f6cc4e5c6cba62570908ee37d1fc0bf5a7d722',
-  'mcfgthread-2.4-ga.1.tar.gz': '3f889741c99520deafa63a42ffa8eed3df81754ed5c9f5dbd408a0815eea0fb8',
+  'mcfgthread-2.4-ga.2.tar.gz': '5980164f6aa7ac4ea89dc8522b51a449afcc644c3786a25236124bec045e70f3',
 
-  'meson-1.11.1.tar.gz': '6788ae299979643f8d841bcaf64352558436cae45a0355148a3aeeccf7913866',
+  'meson-1.11.2.tar.gz': '698feae069cef3ecd4d7aaf281d7df359bdfcf555a9a1564383d3b913fa8a736',
 
   'mingw-w64-v11.0.1.tar.bz2': '3f66bce069ee8bed7439a1a13da7cb91a5e67ea6170f21317ac7f5794625ee10',
   'mingw-w64-v12.0.0.tar.bz2': 'cc41898aac4b6e8dd5cffd7331b9d9515b912df4420a3a612b5ea2955bbeed2f',
@@ -62,8 +63,9 @@ CHECKSUMS: Dict[str, str] = {
   'pkgconf-pkgconf-2.1.1.tar.gz': '6a181e0bf1195e95b7cd535a1854827aedb383b26b1fc24ca13586cb5e8e55af',
   'pkgconf-pkgconf-2.3.0.tar.gz': '0ee103cd390c3ee0e77a7a1c71dcb79a50a426fa2a648f6d07f2678c23adc5e3',
   'pkgconf-pkgconf-2.5.1.tar.gz': '79721badcad1987dead9c3609eb4877ab9b58821c06bdacb824f2c8897c11f2a',
+  'pkgconf-3.0.5.tar.xz': '3acd3a8a3cce65a8d620321855d92fb602e026cbe8e13ee36bdec58483b59ace',
 
-  'setuptools-82.0.1.tar.gz': 'c2e2bc8ab0d2bad5b3cebdf61d071334acc087335ff26406a2ce063c370d8bbd',
+  'setuptools-83.0.0.tar.gz': '188917862e785dc039fbc353b809ff185237411101fa270241034a6ec0e4f44b',
 
   'xmake-3.0.9.tar.gz': '45335220e83cee7ab9ad9e50900f9e751f32510e204719f89c5866c143ef3a5a',
 

@@ -49,8 +49,8 @@ class BranchVersions:
 
   display_version: Optional[str] = None
 
-  meson: str = '1.11.1'
-  setuptools: str = '82.0.1'
+  meson: str = '1.11.2'
+  setuptools: str = '83.0.0'
   xmake: str = '3.0.9'
 
 @dataclass
@@ -112,7 +112,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     thunk_free_os = Version('6.0'),
     utf8_thunk = True,
 
-    mcfgthread = '2.4-ga.1',
+    mcfgthread = '2.4-ga.2',
     mingw = '14.0.0',
     nowide = '11.3.1',
 
@@ -121,13 +121,13 @@ BRANCHES: Dict[str, BranchVersions] = {
     gdb = '17.2',
     gmp = '6.3.0',
     iconv = '1.19',
-    isl = '0.27',
+    isl = '0.28',
     make = '4.4.1',
     mpc = '1.4.1',
     mpfr = '4.2.2',
     pdcurses = '3.9',
-    pkgconf = '2.5.1',
-    python = '3.14.6',
+    pkgconf = '3.0.5',
+    python = '3.14.7',
     zlib_net = '1.3.2',
     zstd = '1.5.7',
   ),
@@ -145,7 +145,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     thunk_free_os = Version('6.0'),
     utf8_thunk = True,
 
-    mcfgthread = '2.4-ga.1',
+    mcfgthread = '2.4-ga.2',
     mingw = '14.0.0',
     nowide = '11.3.1',
 
@@ -154,13 +154,13 @@ BRANCHES: Dict[str, BranchVersions] = {
     gdb = '17.2',
     gmp = '6.3.0',
     iconv = '1.19',
-    isl = '0.27',
+    isl = '0.28',
     make = '4.4.1',
     mpc = '1.4.1',
     mpfr = '4.2.2',
     pdcurses = '3.9',
-    pkgconf = '2.5.1',
-    python = '3.14.6',
+    pkgconf = '3.0.5',
+    python = '3.14.7',
     zlib_net = '1.3.2',
     zstd = '1.5.7',
   ),
@@ -177,7 +177,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     thunk_free_os = Version('6.0'),
     utf8_thunk = True,
 
-    mcfgthread = '2.4-ga.1',
+    mcfgthread = '2.4-ga.2',
     mingw = '14.0.0',
     nowide = '11.3.1',
 
@@ -186,13 +186,13 @@ BRANCHES: Dict[str, BranchVersions] = {
     gdb = '17.2',
     gmp = '6.3.0',
     iconv = '1.19',
-    isl = '0.27',
+    isl = '0.28',
     make = '4.4.1',
     mpc = '1.4.1',
     mpfr = '4.2.2',
     pdcurses = '3.9',
-    pkgconf = '2.5.1',
-    python = '3.14.6',
+    pkgconf = '3.0.5',
+    python = '3.14.7',
     zlib_net = '1.3.2',
     zstd = '1.5.7',
   ),
@@ -226,7 +226,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     mpfr = '4.2.2',
     pdcurses = '3.9',
     pkgconf = '2.5.1',
-    python = '3.14.6',
+    python = '3.14.7',
     zlib_net = '1.3.2',
     zstd = '1.5.7',
   ),
@@ -260,7 +260,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     mpfr = '4.2.2',
     pdcurses = '3.9',
     pkgconf = '2.3.0',
-    python = '3.13.14',
+    python = '3.13.15',
     zlib_net = '1.3.2',
     zstd = '1.5.7',
   ),

@@ -417,16 +417,22 @@ def _pdcurses(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   patch_done(paths.src_dir.pdcurses)
 
 def _pkgconf(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
-  url = f'https://github.com/pkgconf/pkgconf/archive/refs/tags/pkgconf-{ver.pkgconf}.tar.gz'
+  v = Version(ver.pkgconf)
+
+  if v >= Version('3.0'):
+    url = f'https://github.com/pkgconf/pkgconf/releases/download/pkgconf-{ver.pkgconf}/{paths.src_arx.pkgconf.name}'
+  else:
+    url = f'https://github.com/pkgconf/pkgconf/archive/refs/tags/pkgconf-{ver.pkgconf}.tar.gz'
+
   validate_and_download(paths.src_arx.pkgconf, url)
   if download_only:
     return
 
   if check_and_extract(paths.src_dir.pkgconf, paths.src_arx.pkgconf):
-    ver = Version(ver.pkgconf)
-
     # Build for static toolchain
-    if ver >= Version('2.5.0'):
+    if v >= Version('3.0'):
+      patch(paths.src_dir.pkgconf, paths.patch_dir / 'pkgconf/static-toolchain_3.0.patch')
+    elif v >= Version('2.5'):
       patch(paths.src_dir.pkgconf, paths.patch_dir / 'pkgconf/static-toolchain_2.5.patch')
     else:
       patch(paths.src_dir.pkgconf, paths.patch_dir / 'pkgconf/static-toolchain_2.1.patch')

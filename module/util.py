@@ -249,7 +249,7 @@ def meson_build(
 
 def meson_config(
   cwd: Path,
-  extra_args: List[str],
+  extra_args: Sequence[Union[str, Path]],
   build_dir: str = 'build',
 ):
   subprocess.run(
