@@ -814,6 +814,12 @@ def _pkgconf(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace
     *common_cross_layers(paths),
   ]):
     build_dir = 'build-ABB'
+    v = Version(ver.pkgconf)
+
+    config_flags: List[str] = []
+
+    if v.major < 3:
+      config_flags.append('-Dtests=disabled')
 
     meson_config(
       paths.src_dir.pkgconf,
@@ -822,7 +828,7 @@ def _pkgconf(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace
         '--prefix', '/',
         '--default-library', 'static',
         '--prefer-static',
-        '-Dtests=disabled',
+        *config_flags,
         *meson_flags_B(
           cpp_extra = [f'-D_WIN32_WINNT=0x{ver.min_winnt:04X}'],
           opt_lv = ver.opt_lv,

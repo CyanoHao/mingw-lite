@@ -200,6 +200,14 @@ class ProjectPaths:
     self.layer_dir = Path(f'/tmp/layer/{abi_name}')
     self.pkg_dir = Path(f'/tmp/pkg/{abi_name}')
 
+    v_pkgconf = Version(ver.pkgconf)
+    if v_pkgconf.major >= 3:
+      pkgconf_name = f'pkgconf-{ver.pkgconf}'
+      pkgconf_arx = f'{pkgconf_name}.tar.xz'
+    else:
+      pkgconf_name = f'pkgconf-pkgconf-{ver.pkgconf}'
+      pkgconf_arx = f'{pkgconf_name}.tar.gz'
+
     src_name = SourcePaths(
       binutils = Path(f'binutils-{ver.binutils}'),
       expat = Path(f'expat-{ver.expat}'),
@@ -216,7 +224,7 @@ class ProjectPaths:
       mpfr = Path(f'mpfr-{ver.mpfr}'),
       nowide = Path(f'nowide_standalone_v{ver.nowide}'),
       pdcurses = Path(f'PDCurses-{ver.pdcurses}'),
-      pkgconf = Path(f'pkgconf-pkgconf-{ver.pkgconf}'),
+      pkgconf = Path(pkgconf_name),
       python = Path(f'Python-{ver.python}'),
       setuptools = Path(f'setuptools-{ver.setuptools}'),
       xmake = Path(f'xmake-{ver.xmake}'),
@@ -269,7 +277,7 @@ class ProjectPaths:
       nowide = self.assets_dir / f'{src_name.nowide}.tar.gz',
       pdcurses = self.assets_dir / f'{src_name.pdcurses}.tar.gz',
       python = self.assets_dir / f'{src_name.python}.tar.xz',
-      pkgconf = self.assets_dir / f'{src_name.pkgconf}.tar.gz',
+      pkgconf = self.assets_dir / pkgconf_arx,
       setuptools = self.assets_dir / f'{src_name.setuptools}.tar.gz',
       xmake = self.assets_dir / f'{src_name.xmake}.tar.gz',
       zlib_net = self.assets_dir / f'{src_name.zlib_net}.tar.gz',
