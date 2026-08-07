@@ -8,7 +8,7 @@ import shutil
 import subprocess
 from typing import List, Optional
 
-from .alt_crt import generate_thunk_revert_map, postprocess_crt_import_libraries
+from .alt_crt import convert_to_short_import_libraries, generate_thunk_revert_map, postprocess_crt_import_libraries
 from .debug import shell_here
 from .path import ProjectPaths
 from .profile import BranchProfile, OptLv
@@ -328,6 +328,8 @@ def _winpthreads(ver: BranchProfile, paths: ProjectPaths, config: argparse.Names
     make_destdir_install(build_dir, paths.layer_ABB.winpthreads)
     _strip_dll_tls(ver, paths.layer_ABB.winpthreads)
 
+  convert_to_short_import_libraries(ver, paths.layer_ABB.winpthreads / 'lib', [])
+
   base_prefix = paths.layer_ABB.winpthreads
   shared_prefix = paths.layer_ABB.winpthreads_shared
   shared_exclude: List[str] = []
@@ -394,6 +396,8 @@ def _mcfgthread(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namesp
       destdir = paths.layer_ABB.mcfgthread,
       build_dir = build_dir,
     )
+
+  convert_to_short_import_libraries(ver, base_prefix / 'lib', [])
 
   extract_shared_libs(base_prefix, shared_prefix)
 
@@ -609,18 +613,23 @@ def _gcc_2(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
         [build_dir / ver.target / 'libstdc++-v3/src/c++23/print.o'],
       )
 
+  # Regenerate the shared-runtime import libraries (libstdc++, libgomp,
+  # libatomic, libgcc_s) in short form before they are moved to `lib/shared`.
   base_prefix = paths.layer_ABB.gcc_lib
   shared_prefix = paths.layer_ABB.gcc_lib_shared
+  shared_include: List[str] = [
+    'lib/libgcc_s.a',  # shared libgcc
+  ]
   shared_exclude: List[str] = []
   if ver.march == 'i386':
     shared_exclude.append('bin/libatomic-1.dll')
 
+  convert_to_short_import_libraries(ver, base_prefix / 'lib', shared_include)
+
   extract_shared_libs(
     base_prefix,
     shared_prefix,
-    include = [
-      'lib/libgcc_s.a',  # shared libgcc
-    ],
+    include = shared_include,
     exclude = shared_exclude,
   )
 

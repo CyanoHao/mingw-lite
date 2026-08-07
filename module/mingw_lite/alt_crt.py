@@ -1,10 +1,12 @@
 from concurrent.futures import Future, ThreadPoolExecutor
 import json
+import os
 from pathlib import Path
 import shutil
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence, Set, Union
 
 from mingw_thunk import PeMachine, apply_thunk
+from pe_coff import read_import_library
 
 from .profile import BranchProfile
 from .util import ensure
@@ -100,3 +102,39 @@ def generate_thunk_revert_map(thunk_map: ThunkMap, output_path: Path):
   with open(output_path, 'w') as f:
     json.dump(thunk_map, f, indent=2, sort_keys=True)
     f.write('\n')
+
+def convert_to_short_import_libraries(
+  ver: BranchProfile,
+  lib_dir: Path,
+  include: Sequence[Union[str, Path]],
+) -> None:
+  if not ver.short_import:
+    return
+
+  arch = _ARCH_TO_PE[ver.arch]
+
+  candidates: Set[Path] = set(lib_dir.glob('*.dll.a'))
+  base_prefix = lib_dir.parent
+  for item in include:
+    candidates.add(base_prefix / item)
+
+  for path in sorted(candidates):
+    if not path.is_file():
+      continue
+    if not read_import_library(path, arch)['imports']:
+      continue
+    tmp = path.with_name(path.name + '.short')
+    apply_thunk(
+      arch,
+      path,
+      None,
+      None,
+      tmp,
+      True,
+      False,
+      False,
+      '__ms_',
+      False,
+      '__force_override_mingw_emu__imp_',
+    )
+    os.replace(tmp, path)
