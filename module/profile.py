@@ -49,8 +49,8 @@ class BranchVersions:
 
   display_version: Optional[str] = None
 
-  meson: str = '1.11.2'
-  setuptools: str = '83.0.0'
+  meson: str = '1.11.1'
+  setuptools: str = '82.0.1'
   xmake: str = '3.0.9'
 
 @dataclass
@@ -67,9 +67,6 @@ class ProfileInfo:
   win32_winnt: int
   min_os: Version
 
-  gdb_python: bool
-  lang_lto: bool
-  nls: bool
   profile_opt_lto: bool
   profile_opt_lv: Optional[OptLv]
   utf8_user_crt: bool
@@ -99,9 +96,9 @@ class BranchProfile(BranchVersions, ProfileInfo):
 
 BRANCHES: Dict[str, BranchVersions] = {
   'next': BranchVersions(
-    gcc = '17-20260802',
+    gcc = '17-20260719',
     rev = '0',
-    display_version = 'next-17-20260802',
+    display_version = 'next-17-20260719',
 
     abi_frozen = False,
     branch_opt_lv = OptLv.O2,
@@ -112,29 +109,29 @@ BRANCHES: Dict[str, BranchVersions] = {
     thunk_free_os = Version('6.0'),
     utf8_thunk = True,
 
-    mcfgthread = '2.4-ga.2',
+    mcfgthread = '2.4-ga.1',
     mingw = '14.0.0',
     nowide = '11.3.1',
 
-    binutils = '2.47',
+    binutils = '2.46.1',
     expat = '2.8.2',
     gdb = '17.2',
     gmp = '6.3.0',
     iconv = '1.19',
-    isl = '0.28',
+    isl = '0.27',
     make = '4.4.1',
     mpc = '1.4.1',
     mpfr = '4.2.2',
     pdcurses = '3.9',
-    pkgconf = '3.0.5',
-    python = '3.14.7',
+    pkgconf = '2.5.1',
+    python = '3.14.6',
     zlib_net = '1.3.2',
     zstd = '1.5.7',
   ),
   'current': BranchVersions(
-    gcc = '16-20260801',
+    gcc = '16-20260718',
     rev = '0',
-    display_version = 'current-16-20260801',
+    display_version = 'current-16-20260718',
 
     abi_frozen = False,
     branch_opt_lv = OptLv.O2,
@@ -145,22 +142,22 @@ BRANCHES: Dict[str, BranchVersions] = {
     thunk_free_os = Version('6.0'),
     utf8_thunk = True,
 
-    mcfgthread = '2.4-ga.2',
+    mcfgthread = '2.4-ga.1',
     mingw = '14.0.0',
     nowide = '11.3.1',
 
-    binutils = '2.47',
+    binutils = '2.46.1',
     expat = '2.8.2',
     gdb = '17.2',
     gmp = '6.3.0',
     iconv = '1.19',
-    isl = '0.28',
+    isl = '0.27',
     make = '4.4.1',
     mpc = '1.4.1',
     mpfr = '4.2.2',
     pdcurses = '3.9',
-    pkgconf = '3.0.5',
-    python = '3.14.7',
+    pkgconf = '2.5.1',
+    python = '3.14.6',
     zlib_net = '1.3.2',
     zstd = '1.5.7',
   ),
@@ -177,22 +174,22 @@ BRANCHES: Dict[str, BranchVersions] = {
     thunk_free_os = Version('6.0'),
     utf8_thunk = True,
 
-    mcfgthread = '2.4-ga.2',
+    mcfgthread = '2.4-ga.1',
     mingw = '14.0.0',
     nowide = '11.3.1',
 
-    binutils = '2.47',
+    binutils = '2.46.1',
     expat = '2.8.2',
     gdb = '17.2',
     gmp = '6.3.0',
     iconv = '1.19',
-    isl = '0.28',
+    isl = '0.27',
     make = '4.4.1',
     mpc = '1.4.1',
     mpfr = '4.2.2',
     pdcurses = '3.9',
-    pkgconf = '3.0.5',
-    python = '3.14.7',
+    pkgconf = '2.5.1',
+    python = '3.14.6',
     zlib_net = '1.3.2',
     zstd = '1.5.7',
   ),
@@ -226,7 +223,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     mpfr = '4.2.2',
     pdcurses = '3.9',
     pkgconf = '2.5.1',
-    python = '3.14.7',
+    python = '3.14.6',
     zlib_net = '1.3.2',
     zstd = '1.5.7',
   ),
@@ -260,7 +257,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     mpfr = '4.2.2',
     pdcurses = '3.9',
     pkgconf = '2.3.0',
-    python = '3.13.15',
+    python = '3.13.14',
     zlib_net = '1.3.2',
     zstd = '1.5.7',
   ),
@@ -340,9 +337,6 @@ def _create_profile(
   thread: str,
   min_os: str,
 
-  gdb_python: bool = True,
-  lang_lto: bool = True,
-  nls: bool = True,
   opt_lto: bool = False,
   opt_lv: Optional[OptLv] = None,
   u8crt: bool = False,
@@ -366,9 +360,6 @@ def _create_profile(
     win32_winnt = 0x0A00,
     min_os = Version(min_os),
 
-    gdb_python = gdb_python,
-    lang_lto = lang_lto,
-    nls = nls,
     profile_opt_lto = opt_lto,
     profile_opt_lv = opt_lv,
     utf8_user_crt = u8crt,
@@ -419,9 +410,9 @@ PROFILES: Dict[str, Optional[ProfileInfo]] = {
   '32-u8crt': _create_profile('32', 'ucrt', 'posix', '5.1', u8crt = True),
 
   '64-ucrt_og': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.Og),
-  '64-ucrt_o1': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.O1, lang_lto = False, nls = False),
-  '64-ucrt_oz': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.Oz, lang_lto = False, nls = False, gdb_python = False),
-  '64-ucrt_os': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.Os, lang_lto = False, nls = False),
+  '64-ucrt_o1': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.O1),
+  '64-ucrt_oz': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.Oz),
+  '64-ucrt_os': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.Os),
   '64-ucrt_o3': _create_profile('64', 'ucrt', 'posix', '6.0', opt_lv = OptLv.O3),
 }
 
