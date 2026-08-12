@@ -174,6 +174,14 @@ bool lt_win98() {
   return false;
 }
 
+bool lto_bigobj_ok() {
+#ifdef LTO_BIGOBJ
+  return true;
+#else
+  return false;
+#endif
+}
+
 void mkdir_exist_ok(const wchar_t *dir) {
   if (CreateDirectoryW(dir, NULL))
     return;

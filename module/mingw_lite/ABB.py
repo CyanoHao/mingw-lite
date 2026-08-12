@@ -44,6 +44,8 @@ def build_ABB_test_driver(ver: BranchProfile, paths: ProjectPaths, config: argpa
     flags.append('-DNATIVE_TLS')
   if ver.utf8_thunk:
     flags.append('-DENABLE_UTF8')
+  if ver.lto_bigobj:
+    flags.append('-DLTO_BIGOBJ')
 
   with overlayfs_ro('/usr/local', [
     # override CRT
@@ -575,6 +577,12 @@ def _gcc_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       'install-host',
     ], jobs = 1)
     _strip_dll_tls(ver, paths.layer_ABB.gcc)  # liblto_plugin.dll
+
+    if ver.lang_lto:
+      bfd_plugins_dir = paths.layer_ABB.gcc / 'lib/bfd-plugins'
+      ensure(bfd_plugins_dir)
+      gcc_lib_dir = paths.layer_ABB.gcc / 'lib/gcc' / ver.target / str(v.major)
+      shutil.copy(gcc_lib_dir / 'liblto_plugin.dll', bfd_plugins_dir / 'liblto_plugin.dll')
 
 def _gcc_2(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   v = Version(ver.gcc)

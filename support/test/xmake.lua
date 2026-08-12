@@ -15,6 +15,10 @@ option("utf8")
   set_default(true)
   set_showmenu(true)
 
+option("lto-bigobj")
+  set_default(true)
+  set_showmenu(true)
+
 target("c89/hello")
   add_files("c89/hello.c")
   add_tests("default", {pass_outputs = "Hello, world!\n"})

@@ -55,11 +55,12 @@ def test_corss_compiler(ver: BranchProfile, paths: ProjectPaths, verbose: List[s
     paths.layer_AAB.crt_target / 'usr/local',
     *common_cross_layers(paths),
   ]):
+    lto_bigobj = 'y' if ver.lto_bigobj else 'n'
     subprocess.check_call([
       'xmake', 'f', *verbose,
       '-p', 'mingw', '-a', XMAKE_ARCH_MAP[ver.arch],
       '--mingw=/usr/local',
-      '--dlopen=n', '--iconv-error=n', '--utf8=y',
+      '--dlopen=n', '--iconv-error=n', f'--lto-bigobj={lto_bigobj}', '--utf8=y',
     ], cwd = paths.test_dir)
     subprocess.check_call(['xmake', 'b', *verbose], cwd = paths.test_dir)
     subprocess.check_call(['xmake', 'test', *verbose], cwd = paths.test_dir)
@@ -75,12 +76,13 @@ def test_cross_shared(ver: BranchProfile, paths: ProjectPaths, verbose: List[str
     paths.layer_AAB.winpthreads_shared / 'usr/local',
     *common_cross_layers(paths),
   ]):
+    lto_bigobj = 'y' if ver.lto_bigobj else 'n'
     subprocess.check_call([
       'xmake', 'f', *verbose,
       '--builddir=build-shared',
       '-p', 'mingw', '-a', XMAKE_ARCH_MAP[ver.arch],
       '--mingw=/usr/local',
-      '--dlopen=y', '--iconv-error=n', '--utf8=y',
+      '--dlopen=y', '--iconv-error=n', f'--lto-bigobj={lto_bigobj}', '--utf8=y',
     ], cwd = paths.test_dir)
     subprocess.check_call(['xmake', 'b', *verbose], cwd = paths.test_dir)
     subprocess.check_call(

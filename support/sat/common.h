@@ -13,6 +13,7 @@ bool is_nt();
 bool is_utf8_acp();
 bool lt_vista();
 bool lt_win98();
+bool lto_bigobj_ok();
 void mkdir_p(const wchar_t *dir);
 bool path_utf8_ok();
 void prepend_to_env_path(const wchar_t *path);

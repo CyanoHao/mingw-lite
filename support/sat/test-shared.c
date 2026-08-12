@@ -22,6 +22,7 @@ int wmain(int argc, wchar_t *argv[]) {
       L"--builddir=build-shared",
       dlopen_tls_ok() ? L"--dlopen=y" : L"--dlopen=n",
       path_utf8_ok() ? L"--utf8=y" : L"--utf8=n",
+      lto_bigobj_ok() ? L"--lto-bigobj=y" : L"--lto-bigobj=n",
       NULL,
   };
   HANDLE xmake_config_process = spawn(xmake_config_argv);

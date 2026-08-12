@@ -79,13 +79,14 @@ def available_port():
     return s.getsockname()[1]
 
 def test_mingw_compiler(ver: BranchProfile, paths: ProjectPaths, verbose: List[str]):
+  lto_bigobj = 'y' if ver.lto_bigobj else 'n'
   rel_mingw_dir = paths.test_mingw_dir.relative_to(paths.test_dir)
   xmake = paths.test_mingw_dir / 'bin/xmake.exe'
   subprocess.check_call([
     xmake, 'f', *verbose,
     '-p', 'mingw', '-a', XMAKE_ARCH_MAP[ver.arch],
     f'--mingw={rel_mingw_dir}',
-    '--dlopen=n', '--utf8=y',
+    '--dlopen=n', f'--lto-bigobj={lto_bigobj}', '--utf8=y',
   ], cwd = paths.test_dir)
   subprocess.check_call([xmake, 'b', *verbose], cwd = paths.test_dir)
   subprocess.check_call([xmake, 'test', *verbose], cwd = paths.test_dir)
@@ -93,6 +94,7 @@ def test_mingw_compiler(ver: BranchProfile, paths: ProjectPaths, verbose: List[s
 def test_mingw_shared(ver: BranchProfile, paths: ProjectPaths, verbose: List[str]):
   shutil.copytree(paths.test_mingw_dir / paths.shared_dir, paths.test_mingw_dir, dirs_exist_ok = True)
 
+  lto_bigobj = 'y' if ver.lto_bigobj else 'n'
   rel_mingw_dir = paths.test_mingw_dir.relative_to(paths.test_dir)
   xmake = paths.test_mingw_dir / 'bin/xmake.exe'
   subprocess.check_call([
@@ -100,7 +102,7 @@ def test_mingw_shared(ver: BranchProfile, paths: ProjectPaths, verbose: List[str
     f'--builddir=build-shared',
     '-p', 'mingw', '-a', XMAKE_ARCH_MAP[ver.arch],
     f'--mingw={rel_mingw_dir}',
-    '--dlopen=y', '--utf8=y',
+    '--dlopen=y', f'--lto-bigobj={lto_bigobj}', '--utf8=y',
   ], cwd = paths.test_dir)
   subprocess.check_call([xmake, 'b', *verbose], cwd = paths.test_dir)
   subprocess.check_call([xmake, 'test', *verbose], cwd = paths.test_dir)

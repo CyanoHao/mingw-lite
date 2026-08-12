@@ -97,6 +97,12 @@ class BranchProfile(BranchVersions, ProfileInfo):
       return False
     return True
 
+  @property
+  def lto_bigobj(self) -> bool:
+    # liblto_plugin (libiberty simple-object-coff.c) gained PE BigObj COFF
+    # support in GCC 16; older toolchains cannot link -flto -Wa,-mbig-obj.
+    return self.lang_lto and Version(self.gcc).major >= 16
+
 BRANCHES: Dict[str, BranchVersions] = {
   'next': BranchVersions(
     gcc = '17-20260809',

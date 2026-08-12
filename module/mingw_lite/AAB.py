@@ -140,6 +140,10 @@ def _gcc_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
       'install-host',
     ], jobs = 1)
 
+    bfd_plugins_dir = paths.layer_AAB.gcc / 'usr/local/lib/bfd-plugins'
+    ensure(bfd_plugins_dir)
+    os.symlink(f'../gcc/{ver.target}/{v.major}/liblto_plugin.so', bfd_plugins_dir / 'liblto_plugin.so')
+
 def _gcc_2(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   build_dir = paths.src_dir.gcc / 'build-AAB'
 
