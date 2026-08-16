@@ -324,7 +324,7 @@ jobs:
 
           (
             cd pkg
-            7z a -t7z -mx9 -ms=on -mqs -m0=LZMA:d=${{ matrix.dict }}:fb64 ../dist/sat${{ matrix.name }}.7z sat*
+            7z a -t7z -mx9 -ms=8g -mf=off -mqs -m0=LZMA:d=${{ matrix.dict }}:fb64 ../dist/sat${{ matrix.name }}.7z sat*
           )
 
       - uses: actions/upload-artifact@v7

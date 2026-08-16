@@ -114,18 +114,19 @@ sat_group: list[SatGroup] = [
     'name': '64-nt61',
     'items': [{'profile': '64-mcf', 'branch': b} for b in _b_std],
     'pattern': 'mingw64-mcf-*',
-    'dict': '512m',
+    'dict': '1024m',
   },
   {
     'name': '64_v2-nt61',
     'items': [{'profile': '64_v2-mcf', 'branch': b} for b in _b_std],
     'pattern': 'mingw64_v2-mcf-*',
-    'dict': '512m',
+    'dict': '1024m',
   },
   {
     'name': '32-nt61',
     'items': [{'profile': '32-mcf', 'branch': b} for b in _b_std],
     'pattern': 'mingw32-mcf-*',
+    # 32-bit limited address space
     'dict': '512m',
   },
   {
@@ -134,14 +135,9 @@ sat_group: list[SatGroup] = [
       *({'profile': '64-win32',   'branch': b} for b in _b_std),
       *({'profile': '64-ucrt',    'branch': b} for b in _b_std_17_16),
       *({'profile': '64-msvcrt',  'branch': b} for b in _b_std_17_16),
-      *({'profile': '64-ucrt_og', 'branch': b} for b in _b_dev),
-      *({'profile': '64-ucrt_o1', 'branch': b} for b in _b_dev),
-      *({'profile': '64-ucrt_oz', 'branch': b} for b in _b_dev),
-      *({'profile': '64-ucrt_os', 'branch': b} for b in _b_dev),
-      *({'profile': '64-ucrt_o3', 'branch': b} for b in _b_dev),
     ],
-    'pattern': '{mingw64-win32-*,mingw64-ucrt-*,mingw64-msvcrt-*,mingw64-ucrt_og-*,mingw64-ucrt_o1-*,mingw64-ucrt_oz-*,mingw64-ucrt_os-*,mingw64-ucrt_o3-*}',
-    'dict': '512m',
+    'pattern': '{mingw64-win32-*,mingw64-ucrt-*,mingw64-msvcrt-*}',
+    'dict': '1024m',
   },
   {
     'name': '64_v2-nt60',
@@ -151,7 +147,7 @@ sat_group: list[SatGroup] = [
       *({'profile': '64_v2-msvcrt', 'branch': b} for b in _b_std_17_16),
     ],
     'pattern': '{mingw64_v2-win32-*,mingw64_v2-ucrt-*,mingw64_v2-msvcrt-*}',
-    'dict': '512m',
+    'dict': '1024m',
   },
   {
     'name': '32-nt60',
@@ -161,6 +157,7 @@ sat_group: list[SatGroup] = [
       *({'profile': '32-msvcrt', 'branch': b} for b in _b_std_17_16),
     ],
     'pattern': '{mingw32-win32-*,mingw32-ucrt-*,mingw32-msvcrt-*}',
+    # 32-bit limited address space
     'dict': '512m',
   },
   {
@@ -170,10 +167,9 @@ sat_group: list[SatGroup] = [
       *({'profile': '64-msvcrt',        'branch': b} for b in _b_std_15_14_13),
       *({'profile': '64-ucrt_ws2003',   'branch': b} for b in _b_std_17_16 + _b_emutls),
       *({'profile': '64-msvcrt_ws2003', 'branch': b} for b in _b_std_17_16 + _b_emutls),
-      *({'profile': '64-u8crt',         'branch': b} for b in _b_dev),
     ],
-    'pattern': '{mingw64-ucrt-*,mingw64-msvcrt-*,mingw64-ucrt_ws2003-*,mingw64-msvcrt_ws2003-*,mingw64-u8crt-*}',
-    'dict': '512m',
+    'pattern': '{mingw64-ucrt-*,mingw64-msvcrt-*,mingw64-ucrt_ws2003-*,mingw64-msvcrt_ws2003-*}',
+    'dict': '1024m',
   },
   {
     'name': '64_v2-nt52',
@@ -182,7 +178,7 @@ sat_group: list[SatGroup] = [
       *({'profile': '64_v2-msvcrt', 'branch': b} for b in _b_std_15_14_13),
     ],
     'pattern': '{mingw64_v2-ucrt-*,mingw64_v2-msvcrt-*}',
-    'dict': '512m',
+    'dict': '1024m',
   },
   {
     'name': '32-nt51',
@@ -190,47 +186,60 @@ sat_group: list[SatGroup] = [
       *({'profile': '32-ucrt',       'branch': b} for b in _b_std_15_14_13),
       *({'profile': '32-msvcrt',     'branch': b} for b in _b_std_15_14_13),
       *({'profile': '32-ucrt_winxp', 'branch': b} for b in _b_std_17_16 + _b_emutls),
-      *({'profile': '32-u8crt',      'branch': b} for b in _b_dev),
     ],
-    'pattern': '{mingw32-ucrt-*,mingw32-msvcrt-*,mingw32-ucrt_winxp-*,mingw32-u8crt-*}',
+    'pattern': '{mingw32-ucrt-*,mingw32-msvcrt-*,mingw32-ucrt_winxp-*}',
+    # 32-bit limited address space
     'dict': '512m',
   },
   {
     'name': '32-nt50',
     'items': [{'profile': '32-msvcrt_win2000', 'branch': b} for b in _b_std_17_16 + _b_emutls + _b_non_conforming_manifest],
     'pattern': 'mingw32-msvcrt_win2000-*',
+    # 32-bit limited address space
     'dict': '512m',
   },
   {
     'name': '32_686-410',
     'items': [{'profile': '32_686-msvcrt_win98', 'branch': b} for b in _b_std + _b_emutls],
     'pattern': 'mingw32_686-msvcrt_win98-*',
-    # may be extracted on 9x, be moderate
-    # 32_386-msvcrt_win95, with all 6 branches, tested on 2026-04-24:
-    #   d=192m: 184.9 MiB
-    #   d=224m: 170.1 MiB
-    #   d=256m: 169.8 MiB
-    #   d=320m: 169.5 MiB
-    'dict': '224m',
+    # 9x limited memory
+    'dict': '128m',
   },
   {
     'name': '32_486-410',
     'items': [{'profile': '32_486-msvcrt_win98', 'branch': b} for b in _b_std + _b_emutls],
     'pattern': 'mingw32_486-msvcrt_win98-*',
-    # may be extracted on 9x, be moderate
-    'dict': '224m',
+    # 9x limited memory
+    'dict': '128m',
   },
   {
     'name': '32_386-400',
     'items': [{'profile': '32_386-msvcrt_win95', 'branch': b} for b in _b_emutls + _b_std_15_14_13],
     'pattern': 'mingw32_386-msvcrt_win95-*',
-    # may be extracted on 9x, be moderate
-    # outdated, tested on 2026-04-24:
-    #   d=192m: 184.9 MiB
-    #   d=224m: 170.1 MiB
-    #   d=256m: 169.8 MiB
-    #   d=320m: 169.5 MiB
-    'dict': '224m',
+    # 9x limited memory
+    'dict': '128m',
+  },
+  {
+    'name': '-u8crt',
+    'items': [
+      *({'profile': '64-u8crt', 'branch': b} for b in _b_dev),
+      *({'profile': '32-u8crt', 'branch': b} for b in _b_dev),
+    ],
+    'pattern': 'mingw*-u8crt-*',
+    # 32-bit limited address space
+    'dict': '512m',
+  },
+  {
+    'name': '-optimize',
+    'items': [
+      *({'profile': '64-ucrt_og', 'branch': b} for b in _b_dev),
+      *({'profile': '64-ucrt_o1', 'branch': b} for b in _b_dev),
+      *({'profile': '64-ucrt_oz', 'branch': b} for b in _b_dev),
+      *({'profile': '64-ucrt_os', 'branch': b} for b in _b_dev),
+      *({'profile': '64-ucrt_o3', 'branch': b} for b in _b_dev),
+    ],
+    'pattern': 'mingw64-ucrt_o*-*',
+    'dict': '1024m',
   },
 ]
 
