@@ -228,6 +228,10 @@ jobs:
       matrix:
         branch: ${{ fromJson(needs.param.outputs.branch) }}
     runs-on: ubuntu-24.04
+
+    permissions:
+      contents: write
+
     steps:
       - uses: ConorMacBride/install-package@v1
         with:
@@ -279,7 +283,7 @@ jobs:
           wait
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           prerelease: ${{ needs.param.outputs.prerelease }}
           make_latest: 'false'
