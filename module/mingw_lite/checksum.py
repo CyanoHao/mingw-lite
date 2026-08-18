@@ -3,7 +3,7 @@ from typing import Dict
 CHECKSUMS: Dict[str, str] = {
   'PDCurses-3.9.tar.gz': '590dbe0f5835f66992df096d3602d0271103f90cf8557a5d124f693c2b40d7ec',
 
-  'Python-3.12.13.tar.xz': 'c08bc65a81971c1dd5783182826503369466c7e67374d1646519adf05207b684',
+  'Python-3.12.14.tar.xz': '5c8462af5790baf43a321a1559dbe0db06d1be4300fb85fb53c40060668e548a',
   'Python-3.13.15.tar.xz': '1e66a7945a48390ee4c2a4268a0e4185884059a13c4aab6d148aa208deea4a76',
   'Python-3.14.7.tar.xz': '3b48dac8fb59f62eaa67ac83c1eb12bda1b7a08406dd286e252c11a66be27f81',
 
@@ -15,7 +15,7 @@ CHECKSUMS: Dict[str, str] = {
   'expat-2.5.0.tar.xz': 'ef2420f0232c087801abf705e89ae65f6257df6b7931d37846a193ef2e8cdcbe',
   'expat-2.6.4.tar.xz': 'a695629dae047055b37d50a0ff4776d1d45d0a4c842cf4ccee158441f55ff7ee',
   'expat-2.7.5.tar.xz': '1032dfef4ff17f70464827daa28369b20f6584d108bc36f17ab1676e1edd2f91',
-  'expat-2.8.2.tar.xz': '3ad89b8588e6644bd4e49981480d48b21289eebbcd4f0a1a4afb1c29f99b6ab4',
+  'expat-2.8.3.tar.xz': 'f6256df90c906773d344da084402b7d3e4f22ed41b1a59c989098a83d3ea0c85',
 
   'gcc-13.4.0.tar.xz': '9c4ce6dbb040568fdc545588ac03c5cbc95a8dbf0c7aa490170843afb59ca8f5',
   'gcc-14.4.0.tar.xz': '752b6f567beac83159c77a7680b1316bdd784738bff9a9d070112c09da90f6d9',
@@ -65,9 +65,9 @@ CHECKSUMS: Dict[str, str] = {
   'pkgconf-pkgconf-2.5.1.tar.gz': '79721badcad1987dead9c3609eb4877ab9b58821c06bdacb824f2c8897c11f2a',
   'pkgconf-3.0.5.tar.xz': '3acd3a8a3cce65a8d620321855d92fb602e026cbe8e13ee36bdec58483b59ace',
 
-  'setuptools-83.0.0.tar.gz': '188917862e785dc039fbc353b809ff185237411101fa270241034a6ec0e4f44b',
+  'setuptools-84.0.0.tar.gz': '1cdd0d67229315c742282343f265cac91bb0976f83b2cf78dfa2f4a14343fe2a',
 
-  'xmake-3.0.9.tar.gz': '45335220e83cee7ab9ad9e50900f9e751f32510e204719f89c5866c143ef3a5a',
+  'xmake-3.1.0.tar.gz': '84aae0926d293f486297dfb63fc4cd802218124c9c91b141f2004dcc4d509fdd',
 
   'zlib-1.3.2.tar.gz': 'bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16',
 

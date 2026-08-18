@@ -50,8 +50,8 @@ class BranchVersions:
   display_version: Optional[str] = None
 
   meson: str = '1.11.2'
-  setuptools: str = '83.0.0'
-  xmake: str = '3.0.9'
+  setuptools: str = '84.0.0'
+  xmake: str = '3.1.0'
 
 @dataclass
 class ProfileInfo:
@@ -123,7 +123,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     nowide = '11.3.1',
 
     binutils = '2.47',
-    expat = '2.8.2',
+    expat = '2.8.3',
     gdb = '17.2',
     gmp = '6.3.0',
     iconv = '1.19',
@@ -156,7 +156,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     nowide = '11.3.1',
 
     binutils = '2.47',
-    expat = '2.8.2',
+    expat = '2.8.3',
     gdb = '17.2',
     gmp = '6.3.0',
     iconv = '1.19',
@@ -188,7 +188,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     nowide = '11.3.1',
 
     binutils = '2.47',
-    expat = '2.8.2',
+    expat = '2.8.3',
     gdb = '17.2',
     gmp = '6.3.0',
     iconv = '1.19',
@@ -301,7 +301,7 @@ BRANCHES: Dict[str, BranchVersions] = {
     nowide = '11.3.0',  # 11.3.1 is not ABI compatible
     pdcurses = '3.9',
     pkgconf = '2.1.1',
-    python = '3.12.13',
+    python = '3.12.14',
     zlib_net = '1.3.2',
     zstd = '1.5.7',
   ),
