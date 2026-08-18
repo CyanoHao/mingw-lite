@@ -286,7 +286,7 @@ if args.ref_type == 'tag':
       for x in exclude_profile_branch)]
   exclude_profile_branch = []
   release = True
-  prerelease = not current_branch.isdigit() or int(current_branch) >= 16
+  prerelease = not current_branch.isdigit() or int(current_branch) >= 17
 else:
   branch = all_branch
   profile = common_profile + all_old_profile + beyond_profile
