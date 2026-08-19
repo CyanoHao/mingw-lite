@@ -46,6 +46,11 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     if v == Version('2.47'):
       patch(paths.src_dir.binutils, paths.patch_dir / 'binutils/disable-development-flag.patch')
 
+    # Windres: avoid cmd quoting
+    # by default, windres use pipe (_popen) to invoke cpp, which is roughly `cmd /c "path (to)/cpp" in.rc`.
+    # it is almost impossible to quote correctly, and known to be broken in our test cases (< Vista).
+    patch(paths.src_dir.binutils, paths.patch_dir / 'binutils/windres-avoid-cmd-quoting.patch')
+
     patch_done(paths.src_dir.binutils)
 
 def _expat(ver: BranchProfile, paths: ProjectPaths, download_only: bool):

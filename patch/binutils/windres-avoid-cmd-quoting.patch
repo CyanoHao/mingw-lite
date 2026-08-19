@@ -1,0 +1,16 @@
+diff --git a/binutils/windres.c b/binutils/windres.c
+index 11cf3d5652c..8e4f1d4667f 100644
+--- a/binutils/windres.c
++++ b/binutils/windres.c
+@@ -806,7 +806,11 @@ main (int argc, char **argv)
+   preprocessor = NULL;
+   preprocargs = NULL;
+   language = 0x409;   /* LANG_ENGLISH, SUBLANG_ENGLISH_US.  */
++#ifdef _WIN32
++  use_temp_file = 1;
++#else
+   use_temp_file = 0;
++#endif
+ 
+   while ((c = getopt_long (argc, argv, "c:f:i:l:o:I:J:O:F:D:U:rhHvV", long_options,
+ 			   (int *) 0)) != EOF)
