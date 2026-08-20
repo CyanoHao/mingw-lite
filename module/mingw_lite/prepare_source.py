@@ -51,6 +51,10 @@ def _binutils(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     # it is almost impossible to quote correctly, and known to be broken in our test cases (< Vista).
     patch(paths.src_dir.binutils, paths.patch_dir / 'binutils/windres-avoid-cmd-quoting.patch')
 
+    # Libdep: link to static libgcc
+    # libutf8-musl:vfprintf -> libgcc_s:__udivmoddi4 (32-bit)
+    patch(paths.src_dir.binutils, paths.patch_dir / 'binutils/libdep-link-to-static-libgcc.patch')
+
     patch_done(paths.src_dir.binutils)
 
 def _expat(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
