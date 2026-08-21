@@ -172,7 +172,7 @@ BRANCHES: Dict[str, BranchVersions] = {
   ),
   '16': BranchVersions(
     gcc = '16.2.0',
-    rev = '1',
+    rev = '1.1',
 
     abi_frozen = False,
     branch_opt_lv = OptLv.O2,
@@ -205,7 +205,7 @@ BRANCHES: Dict[str, BranchVersions] = {
   ),
   '15': BranchVersions(
     gcc = '15.3.0',
-    rev = '1',
+    rev = '1.1',
 
     abi_frozen = True,
     branch_opt_lv = OptLv.Os,
@@ -239,7 +239,7 @@ BRANCHES: Dict[str, BranchVersions] = {
   ),
   '14': BranchVersions(
     gcc = '14.4.0',
-    rev = '1',
+    rev = '1.1',
 
     abi_frozen = True,
     branch_opt_lv = OptLv.Os,
@@ -273,7 +273,7 @@ BRANCHES: Dict[str, BranchVersions] = {
   ),
   '13': BranchVersions(
     gcc = '13.4.0',
-    rev = '8',
+    rev = '8.1',
 
     abi_frozen = True,
     branch_opt_lv = OptLv.Os,
