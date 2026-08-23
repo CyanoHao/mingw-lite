@@ -6,15 +6,18 @@ EXPORTS
   __ms__wputenv == _wputenv
 
   ; filesystem
+  __ms__access == _access
   __ms__chdir == _chdir
   __ms__chmod == _chmod
   __ms__fstat32 == _fstat
   __ms__fstat32i64 == _fstati64
   __ms__fstat64 == _fstat64
   __ms__mkdir == _mkdir
+  __ms__rmdir == _rmdir
   __ms__stat32 == _stat
   __ms__stat32i64 == _stati64
   __ms__unlink == _unlink
+  __ms__waccess == _waccess
   __ms__wchdir == _wchdir
   __ms__wchmod == _wchmod
   __ms__wfindfirst == _wfindfirst
@@ -29,6 +32,9 @@ EXPORTS
   __ms__wmkdir == _wmkdir
   __ms__wrename == _wrename
   __ms__wremove == _wremove
+  __ms__wrmdir == _wrmdir
+  __ms__wsopen == _wsopen
+  __ms__wsystem == _wsystem
   __ms__wstat32 == _wstat
   __ms__wstat32i64 == _wstati64
   __ms__wstat64 == _wstat64
@@ -44,15 +50,21 @@ EXPORTS
 
   ; runtime
   __ms__beginthreadex == _beginthreadex
+  __ms_system == system
 
   ; stdio
   __ms__open == _open
   __ms__popen == _popen
   __ms__read == _read
+  __ms__sopen == _sopen
+  __ms__tempnam == _tempnam
   __ms__wfopen == _wfopen
+  __ms__wfreopen == _wfreopen
   __ms__wopen == _wopen
   __ms__wpopen == _wpopen
   __ms__write == _write
+  __ms__wtempnam == _wtempnam
+  __ms__wtmpnam == _wtmpnam
   __ms_fflush == fflush
   __ms_fgetc == fgetc
   __ms_fgets == fgets
@@ -60,11 +72,13 @@ EXPORTS
   __ms_fputc == fputc
   __ms_fputs == fputs
   __ms_fread == fread
+  __ms_freopen == freopen
   __ms_fwrite == fwrite
   __ms_getc == getc
   __ms_getchar == getchar
   __ms_putc == putc
   __ms_puts == puts
+  __ms_tmpnam == tmpnam
   __ms_ungetc == ungetc
 
   ; time

@@ -6,6 +6,8 @@ EXPORTS
   __ms__open == _open
   __ms__popen == _popen
   __ms__read == _read
+  __ms__sopen == _sopen
+  __ms__tempnam == _tempnam
   __ms__write == _write
   __ms_fflush == fflush
   __ms_fgetc == fgetc
@@ -14,6 +16,7 @@ EXPORTS
   __ms_fputc == fputc
   __ms_fputs == fputs
   __ms_fread == fread
+  __ms_freopen == freopen
   __ms_fwrite == fwrite
   __ms_getc == getc
   __ms_getchar == getchar
@@ -23,5 +26,6 @@ EXPORTS
   __ms_putc == putc
   __ms_puts == puts
   __ms_read == _read
+  __ms_tmpnam == tmpnam
   __ms_ungetc == ungetc
   __ms_write == _write

@@ -6,7 +6,9 @@ function msvcrt_utf8_files()
     'msvcrt/u/environment/_wputenv.cc',
     'msvcrt/u/environment/getenv.cc',
     'msvcrt/u/environment/putenv.cc',
+    'msvcrt/u/filesystem/_access.cc',
     'msvcrt/u/filesystem/_chmod.cc',
+    'msvcrt/u/filesystem/_chdir.cc',
     'msvcrt/u/filesystem/_findfirst.cc',
     'msvcrt/u/filesystem/_findfirst32.cc',
     'msvcrt/u/filesystem/_findfirst32i64.cc',
@@ -20,6 +22,8 @@ function msvcrt_utf8_files()
     'msvcrt/u/filesystem/_findnext64i32.cc',
     'msvcrt/u/filesystem/_findnexti64.cc',
     'msvcrt/u/filesystem/_fullpath.cc',
+    'msvcrt/u/filesystem/_mkdir.cc',
+    'msvcrt/u/filesystem/_rmdir.cc',
     'msvcrt/u/filesystem/_stat.cc',
     'msvcrt/u/filesystem/_stat32.cc',
     'msvcrt/u/filesystem/_stat32i64.cc',
@@ -27,14 +31,18 @@ function msvcrt_utf8_files()
     'msvcrt/u/filesystem/_stat64i32.cc',
     'msvcrt/u/filesystem/_stati64.cc',
     'msvcrt/u/filesystem/_unlink.cc',
+    'msvcrt/u/filesystem/_utime64.cc',
     'msvcrt/u/filesystem/remove.cc',
     'msvcrt/u/filesystem/rename.cc',
     'msvcrt/u/filesystem/unlink.cc',
+    'msvcrt/u/runtime/system.cc',
     'msvcrt/u/runtime/__p___argv.cc',
     'msvcrt/u/stdio/_getcwd.cc',
     'msvcrt/u/stdio/_open.cc',
     'msvcrt/u/stdio/_popen.cc',
     'msvcrt/u/stdio/_read.cc',
+    'msvcrt/u/stdio/_sopen.cc',
+    'msvcrt/u/stdio/_tempnam.cc',
     'msvcrt/u/stdio/_write.cc',
     'msvcrt/u/stdio/fflush.cc',
     'msvcrt/u/stdio/fgetc.cc',
@@ -43,6 +51,7 @@ function msvcrt_utf8_files()
     'msvcrt/u/stdio/fputc.cc',
     'msvcrt/u/stdio/fputs.cc',
     'msvcrt/u/stdio/fread.cc',
+    'msvcrt/u/stdio/freopen.cc',
     'msvcrt/u/stdio/fwrite.cc',
     'msvcrt/u/stdio/getc.cc',
     'msvcrt/u/stdio/getchar.cc',
@@ -52,6 +61,7 @@ function msvcrt_utf8_files()
     'msvcrt/u/stdio/putc.cc',
     'msvcrt/u/stdio/puts.cc',
     'msvcrt/u/stdio/read.cc',
+    'msvcrt/u/stdio/tmpnam.cc',
     'msvcrt/u/stdio/ungetc.cc',
     'msvcrt/u/stdio/write.cc',
   }
@@ -225,6 +235,7 @@ target('overlay-msvcrt-os')
     if ntddi_version() < ntddi_win4() then
       add_msvcrt_sources(msvcrt_thunk_toolchain_4_0(), 'msvcrt/4.0')
       add_files(
+        'msvcrt/w/_waccess.cc',
         'msvcrt/w/_wchdir.cc',
         'msvcrt/w/_wchmod.cc',
         'msvcrt/w/_wfindfirst.cc',
@@ -236,6 +247,7 @@ target('overlay-msvcrt-os')
         'msvcrt/w/_wfindnext32i64.cc',
         'msvcrt/w/_wfindnexti64.cc',
         'msvcrt/w/_wfopen.cc',
+        'msvcrt/w/_wfreopen.cc',
         'msvcrt/w/_wfullpath.cc',
         'msvcrt/w/_wgetcwd.cc',
         'msvcrt/w/_wmkdir.cc',
@@ -243,9 +255,14 @@ target('overlay-msvcrt-os')
         'msvcrt/w/_wpopen.cc',
         'msvcrt/w/_wremove.cc',
         'msvcrt/w/_wrename.cc',
+        'msvcrt/w/_wrmdir.cc',
+        'msvcrt/w/_wsopen.cc',
         'msvcrt/w/_wstat32.cc',
         'msvcrt/w/_wstat32i64.cc',
         'msvcrt/w/_wstati64.cc',
+        'msvcrt/w/_wsystem.cc',
+        'msvcrt/w/_wtempnam.cc',
+        'msvcrt/w/_wtmpnam.cc',
         'msvcrt/w/_wunlink.cc',
         'msvcrt/w/_wutime.cc',
         'msvcrt/w/_wutime32.cc')
@@ -317,6 +334,7 @@ target('thunk-msvcrt')
       'msvcrt/5.0/fstat64.cc',
       'msvcrt/5.1/_aligned_free.cc',
       'msvcrt/5.1/_aligned_malloc.cc',
+      'msvcrt/w/_waccess.cc',
       'msvcrt/w/_wchdir.cc',
       'msvcrt/w/_wchmod.cc',
       'msvcrt/w/_wfindfirst.cc',
@@ -328,14 +346,20 @@ target('thunk-msvcrt')
       'msvcrt/w/_wfindnext32i64.cc',
       'msvcrt/w/_wfindnexti64.cc',
       'msvcrt/w/_wfopen.cc',
+      'msvcrt/w/_wfreopen.cc',
       'msvcrt/w/_wfullpath.cc',
       'msvcrt/w/_wgetcwd.cc',
       'msvcrt/w/_wmkdir.cc',
       'msvcrt/w/_wopen.cc',
       'msvcrt/w/_wpopen.cc',
+      'msvcrt/w/_wrmdir.cc',
+      'msvcrt/w/_wsopen.cc',
       'msvcrt/w/_wstat32.cc',
       'msvcrt/w/_wstat32i64.cc',
       'msvcrt/w/_wstati64.cc',
+      'msvcrt/w/_wsystem.cc',
+      'msvcrt/w/_wtempnam.cc',
+      'msvcrt/w/_wtmpnam.cc',
       'msvcrt/w/_wunlink.cc',
       'msvcrt/w/_wutime.cc',
       'msvcrt/w/_wutime32.cc')
@@ -420,7 +444,9 @@ target('console-msvcrt')
 
 target('argv-msvcrt')
   add_cxxflags('-nostdinc++')
-  add_defines('__MSVCRT_VERSION__=0x0600')
+  add_defines(
+    'THUNK_LEVEL=' .. ntddi_version(), -- for startup files
+    '__MSVCRT_VERSION__=0x0600')
   add_deps('thunk-msvcrt-u')
   add_files('test/argv.c')
   add_files(table.unpack(msvcrt_utf8_startup_deps()))

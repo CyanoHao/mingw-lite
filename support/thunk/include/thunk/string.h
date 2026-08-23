@@ -266,6 +266,156 @@ namespace mingw_thunk
       }
     };
 
+    class cp_str : public buffer<MAX_PATH, char>
+    {
+    public:
+      cp_str() noexcept = default;
+
+      cp_str(max_path_tag) noexcept : buffer<MAX_PATH, char>()
+      {
+        resize(MAX_PATH - 1);
+      }
+
+      const char *c_str() const noexcept
+      {
+        return data();
+      }
+
+      static int size_from_w(int cp, const wchar_t *str, int len) noexcept
+      {
+        if (len == 0)
+          return 0;
+
+        if (cp == CP_UTF8)
+          return WideCharToMultiByte(
+              CP_UTF8, 0, str, len, nullptr, 0, nullptr, nullptr);
+
+        return __ms_WideCharToMultiByte(
+            cp, 0, str, len, nullptr, 0, nullptr, nullptr);
+      }
+
+      static int fixed_buffer_from_w(int cp,
+                                     char *dest,
+                                     int dest_size,
+                                     const wchar_t *src,
+                                     int src_len) noexcept
+      {
+        if (dest_size == 0)
+          return 0;
+
+        if (cp == CP_UTF8)
+          return WideCharToMultiByte(
+              CP_UTF8, 0, src, src_len, dest, dest_size, nullptr, nullptr);
+
+        return __ms_WideCharToMultiByte(
+            cp, 0, src, src_len, dest, dest_size, nullptr, nullptr);
+      }
+
+      bool from_w(int cp, const wchar_t *str, int len) noexcept
+      {
+        if (len == 0) {
+          this->clear();
+          return true;
+        }
+
+        int required = size_from_w(cp, str, len);
+        if (required == 0)
+          return false;
+
+        if (!this->resize(required))
+          return false;
+
+        int result =
+            fixed_buffer_from_w(cp, this->data(), this->size(), str, len);
+
+        if (result != required) {
+          SetLastError(ERROR_INVALID_DATA);
+          this->clear();
+          return false;
+        }
+
+        return true;
+      }
+
+      bool from_w(int cp, const wchar_t *str) noexcept
+      {
+        size_t len = c::wcslen(str);
+        if (len > size_t(INT_MAX))
+          return false;
+        return from_w(cp, str, int(len));
+      }
+    };
+
+    class o_str : public buffer<MAX_PATH, char>
+    {
+    public:
+      o_str() noexcept = default;
+
+      o_str(max_path_tag) noexcept : buffer<MAX_PATH, char>()
+      {
+        resize(MAX_PATH - 1);
+      }
+
+      const char *c_str() const noexcept
+      {
+        return data();
+      }
+
+      static int size_from_w(const wchar_t *str, int len) noexcept
+      {
+        if (len == 0)
+          return 0;
+
+        return __ms_WideCharToMultiByte(
+            CP_OEMCP, 0, str, len, nullptr, 0, nullptr, nullptr);
+      }
+
+      static int fixed_buffer_from_w(char *dest,
+                                     int dest_size,
+                                     const wchar_t *src,
+                                     int src_len) noexcept
+      {
+        if (dest_size == 0)
+          return 0;
+
+        return __ms_WideCharToMultiByte(
+            CP_OEMCP, 0, src, src_len, dest, dest_size, nullptr, nullptr);
+      }
+
+      bool from_w(const wchar_t *str, int len) noexcept
+      {
+        if (len == 0) {
+          this->clear();
+          return true;
+        }
+
+        int required = size_from_w(str, len);
+        if (required == 0)
+          return false;
+
+        if (!this->resize(required))
+          return false;
+
+        int result = fixed_buffer_from_w(this->data(), this->size(), str, len);
+
+        if (result != required) {
+          SetLastError(ERROR_INVALID_DATA);
+          this->clear();
+          return false;
+        }
+
+        return true;
+      }
+
+      bool from_w(const wchar_t *str) noexcept
+      {
+        size_t len = c::wcslen(str);
+        if (len > size_t(INT_MAX))
+          return false;
+        return from_w(str, int(len));
+      }
+    };
+
     class u_str : public buffer<MAX_PATH, char>
     {
     public:
@@ -438,6 +588,122 @@ namespace mingw_thunk
         if (len > size_t(INT_MAX))
           return false;
         return best_effort_from_a(dest, dest_size, src, int(len));
+      }
+
+      static int size_from_cp(int cp, const char *str, int len) noexcept
+      {
+        if (cp == CP_UTF8)
+          return size_from_u(str, len);
+
+        if (len == 0)
+          return 0;
+
+        return __ms_MultiByteToWideChar(cp, 0, str, len, nullptr, 0);
+      }
+
+      static int fixed_buffer_from_cp(int cp,
+                                      wchar_t *dest,
+                                      int dest_size,
+                                      const char *src,
+                                      int src_len) noexcept
+      {
+        if (cp == CP_UTF8)
+          return fixed_buffer_from_u(dest, dest_size, src, src_len);
+
+        if (dest_size == 0)
+          return 0;
+
+        return __ms_MultiByteToWideChar(cp, 0, src, src_len, dest, dest_size);
+      }
+
+      bool from_cp(int cp, const char *str, int len) noexcept
+      {
+        if (cp == CP_UTF8)
+          return from_u(str, len);
+
+        if (len == 0) {
+          this->clear();
+          return true;
+        }
+
+        int required = size_from_cp(cp, str, len);
+        if (required == 0)
+          return false;
+
+        if (!this->resize(required))
+          return false;
+
+        int result =
+            fixed_buffer_from_cp(cp, this->data(), this->size(), str, len);
+
+        if (result != required) {
+          SetLastError(ERROR_INVALID_DATA);
+          this->clear();
+          return false;
+        }
+
+        return true;
+      }
+
+      bool from_cp(int cp, const char *str) noexcept
+      {
+        size_t len = c::strlen(str);
+        if (len > size_t(INT_MAX))
+          return false;
+        return from_cp(cp, str, int(len));
+      }
+
+      static int size_from_o(const char *str, int len) noexcept
+      {
+        if (len == 0)
+          return 0;
+
+        return __ms_MultiByteToWideChar(CP_OEMCP, 0, str, len, nullptr, 0);
+      }
+
+      static int fixed_buffer_from_o(wchar_t *dest,
+                                     int dest_size,
+                                     const char *src,
+                                     int src_len) noexcept
+      {
+        if (dest_size == 0)
+          return 0;
+
+        return __ms_MultiByteToWideChar(
+            CP_OEMCP, 0, src, src_len, dest, dest_size);
+      }
+
+      bool from_o(const char *str, int len) noexcept
+      {
+        if (len == 0) {
+          this->clear();
+          return true;
+        }
+
+        int required = size_from_o(str, len);
+        if (required == 0)
+          return false;
+
+        if (!this->resize(required))
+          return false;
+
+        int result = fixed_buffer_from_o(this->data(), this->size(), str, len);
+
+        if (result != required) {
+          SetLastError(ERROR_INVALID_DATA);
+          this->clear();
+          return false;
+        }
+
+        return true;
+      }
+
+      bool from_o(const char *str) noexcept
+      {
+        size_t len = c::strlen(str);
+        if (len > size_t(INT_MAX))
+          return false;
+        return from_o(str, int(len));
       }
 
       static int size_from_u(const char *str, int len) noexcept

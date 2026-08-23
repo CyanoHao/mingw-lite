@@ -1,0 +1,6 @@
+LIBRARY api-ms-win-crt-locale-l1-1-0.dll
+EXPORTS
+  __ms_setlocale == setlocale
+  __ms_localeconv == localeconv
+  __ms____lc_codepage_func == ___lc_codepage_func
+  __ms____mb_cur_max_func == ___mb_cur_max_func

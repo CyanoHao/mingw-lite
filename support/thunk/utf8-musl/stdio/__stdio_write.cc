@@ -2,7 +2,7 @@
 #include "../internal/stdio_impl.h"
 
 #include <io.h>
-#include <thunk/utf8-musl.h>
+#include <thunk/u8crt/musl.h>
 #include <unistd.h>
 
 namespace mingw_thunk

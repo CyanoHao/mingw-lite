@@ -12,5 +12,8 @@ namespace mingw_thunk
   {
     size_t mbrtoc16(char16_t *pwc, const char *s, size_t n, mbstate_t *ps);
     size_t mbrtoc16(wchar_t *pwc, const char *s, size_t n, mbstate_t *ps);
+
+    size_t c16rtomb(char *s, char16_t c16, mbstate_t *ps);
+    size_t c16rtomb(char *s, wchar_t c16, mbstate_t *ps);
   } // namespace musl
 } // namespace mingw_thunk

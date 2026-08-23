@@ -47,13 +47,25 @@ jobs:
       - name: Build
         run: |
           zstdcat assets/buildenv.tar.zst | podman load
-          podman run --rm --cap-add=sys_admin -v $PWD:/mnt -w /mnt mingw-lite/buildenv \
+          mkdir -p layer
+          podman run --rm --cap-add=sys_admin \
+            -v $PWD:/mnt -w /mnt \
+            -v $PWD/layer:/tmp/layer \
+            mingw-lite/buildenv \
             ./main.py --branch ${{ inputs.branch }} --profile ${{ inputs.profile }}
 
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ inputs.upload_prefix }}mingw${{ inputs.profile }}-${{ inputs.branch }}
           path: dist
+
+      - name: u8crt verify
+        run: |
+          podman run --rm \
+            -v $PWD:/mnt -w /mnt \
+            -v $PWD/layer:/tmp/layer \
+            mingw-lite/buildenv \
+            ./u8crt_verify.py --branch ${{ inputs.branch }} --profile ${{ inputs.profile }} --verbose
 
   test_on_linux:
     name: Test on Linux

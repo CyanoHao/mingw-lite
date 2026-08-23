@@ -3,13 +3,13 @@
 #include "_dll.h"
 #include "ddk.h"
 
-#include <ntdef.h>
-#include <shlobj.h>
 #include <windows.h>
-#include <winternl.h>
 
-// after <windows.h>
+#include <ntdef.h>
 #include <shellapi.h>
+#include <shlobj.h>
+#include <tlhelp32.h>
+#include <winternl.h>
 
 #include <direct.h>
 #include <io.h>
@@ -34,6 +34,8 @@ namespace mingw_thunk
     __DECLARE_NON_THUNK_FUNCTION(kernel32, CreateWaitableTimerA)
     __DECLARE_NON_THUNK_FUNCTION(kernel32, GetFileAttributesExA)
     __DECLARE_NON_THUNK_FUNCTION(kernel32, GetLongPathNameA)
+    __DECLARE_NON_THUNK_FUNCTION(kernel32, Module32First)
+    __DECLARE_NON_THUNK_FUNCTION(kernel32, Module32Next)
 
     __DECLARE_NON_THUNK_FUNCTION(ntdll, NtQueryDirectoryFile)
     __DECLARE_NON_THUNK_FUNCTION(ntdll, NtQueryInformationFile)
@@ -65,6 +67,10 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(CreateEventW)
   __DECLARE_MS_IMPORT(CreateFileA)
   __DECLARE_MS_IMPORT(CreateFileW)
+  __DECLARE_MS_IMPORT(CreateFileMappingA)
+  __DECLARE_MS_IMPORT(CreateFileMappingW)
+  __DECLARE_MS_IMPORT(CreateMutexA)
+  __DECLARE_MS_IMPORT(CreateMutexW)
   __DECLARE_MS_IMPORT(CreateProcessA)
   __DECLARE_MS_IMPORT(CreateProcessW)
   __DECLARE_MS_IMPORT(CreateSemaphoreA)
@@ -74,10 +80,14 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(CreateWaitableTimerW)
   __DECLARE_MS_IMPORT(DeleteFileA)
   __DECLARE_MS_IMPORT(DeleteFileW)
+  __DECLARE_MS_IMPORT(FillConsoleOutputCharacterA)
+  __DECLARE_MS_IMPORT(FillConsoleOutputCharacterW)
   __DECLARE_MS_IMPORT(FindFirstFileA)
   __DECLARE_MS_IMPORT(FindFirstFileW)
   __DECLARE_MS_IMPORT(FindNextFileA)
   __DECLARE_MS_IMPORT(FindNextFileW)
+  __DECLARE_MS_IMPORT(FormatMessageA)
+  __DECLARE_MS_IMPORT(FormatMessageW)
   __DECLARE_MS_IMPORT(FreeEnvironmentStringsA)
   __DECLARE_MS_IMPORT(FreeEnvironmentStringsW)
   __DECLARE_MS_IMPORT(GetCurrentDirectoryA)
@@ -95,8 +105,18 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(GetHandleInformation)
   __DECLARE_MS_IMPORT(GetModuleFileNameA)
   __DECLARE_MS_IMPORT(GetModuleFileNameW)
+  __DECLARE_MS_IMPORT(GetModuleHandleA)
+  __DECLARE_MS_IMPORT(GetModuleHandleW)
+  __DECLARE_MS_IMPORT(GetStartupInfoA)
+  __DECLARE_MS_IMPORT(GetStartupInfoW)
   __DECLARE_MS_IMPORT(GetTempPathA)
   __DECLARE_MS_IMPORT(GetTempPathW)
+  __DECLARE_MS_IMPORT(GetVersionExA)
+  __DECLARE_MS_IMPORT(GetVersionExW)
+  __DECLARE_MS_IMPORT(GetLocaleInfoA)
+  __DECLARE_MS_IMPORT(GetLocaleInfoW)
+  __DECLARE_MS_IMPORT(GetVolumeInformationA)
+  __DECLARE_MS_IMPORT(GetVolumeInformationW)
   __DECLARE_MS_IMPORT(LCMapStringW)
   __DECLARE_MS_IMPORT(LoadLibraryW)
   __DECLARE_MS_IMPORT(LockFileEx)
@@ -105,6 +125,20 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(MoveFileExW)
   __DECLARE_MS_IMPORT(MoveFileW)
   __DECLARE_MS_IMPORT(MultiByteToWideChar)
+  __DECLARE_MS_IMPORT(OpenEventA)
+  __DECLARE_MS_IMPORT(OpenEventW)
+  __DECLARE_MS_IMPORT(OpenFileMappingA)
+  __DECLARE_MS_IMPORT(OpenFileMappingW)
+  __DECLARE_MS_IMPORT(OpenMutexA)
+  __DECLARE_MS_IMPORT(OpenMutexW)
+  __DECLARE_MS_IMPORT(OpenSemaphoreA)
+  __DECLARE_MS_IMPORT(OpenSemaphoreW)
+  __DECLARE_MS_IMPORT(OutputDebugStringA)
+  __DECLARE_MS_IMPORT(OutputDebugStringW)
+  __DECLARE_MS_IMPORT(PeekConsoleInputA)
+  __DECLARE_MS_IMPORT(PeekConsoleInputW)
+  __DECLARE_MS_IMPORT(ReadConsoleInputA)
+  __DECLARE_MS_IMPORT(ReadConsoleInputW)
   __DECLARE_MS_IMPORT(RemoveDirectoryA)
   __DECLARE_MS_IMPORT(RemoveDirectoryW)
   __DECLARE_MS_IMPORT(SearchPathA)
@@ -120,6 +154,9 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(WriteConsoleA)
   __DECLARE_MS_IMPORT(WriteConsoleW)
   __DECLARE_MS_IMPORT(WriteFile)
+
+  // user32
+  __DECLARE_MS_IMPORT(CharNextExA)
 
   // ntdll
   __DECLARE_MS_IMPORT(NtQueryDirectoryFile)
@@ -144,6 +181,7 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(_wputenv)
 
   // crt: filesystem
+  __DECLARE_MS_IMPORT(_access)
   __DECLARE_MS_IMPORT(_chdir)
   __DECLARE_MS_IMPORT(_chmod)
 #if !defined(_UCRT) && !defined(_WIN64)
@@ -151,11 +189,13 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(_fstat32i64)
 #endif
   __DECLARE_MS_IMPORT(_mkdir)
+  __DECLARE_MS_IMPORT(_rmdir)
 #if !defined(_UCRT) && !defined(_WIN64)
   __DECLARE_MS_IMPORT(_stat32)
   __DECLARE_MS_IMPORT(_stat32i64)
 #endif
   __DECLARE_MS_IMPORT(_unlink)
+  __DECLARE_MS_IMPORT(_waccess)
   __DECLARE_MS_IMPORT(_wchdir)
   __DECLARE_MS_IMPORT(_wchmod)
 #if !defined(_UCRT) && !defined(_WIN64)
@@ -168,6 +208,7 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(_wmkdir)
   __DECLARE_MS_IMPORT(_wremove)
   __DECLARE_MS_IMPORT(_wrename)
+  __DECLARE_MS_IMPORT(_wrmdir)
 #if !defined(_UCRT) && !defined(_WIN64)
   __DECLARE_MS_IMPORT(_wstat32)
   __DECLARE_MS_IMPORT(_wstat32i64)
@@ -178,6 +219,8 @@ namespace mingw_thunk
 
   // crt: runtime
   __DECLARE_MS_IMPORT(_beginthreadex)
+  __DECLARE_MS_IMPORT(_wsystem)
+  __DECLARE_MS_IMPORT(system)
 
   // crt: stdio
 #ifdef _UCRT
@@ -188,9 +231,15 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(_open)
   __DECLARE_MS_IMPORT(_popen)
   __DECLARE_MS_IMPORT(_read)
+  __DECLARE_MS_IMPORT(_sopen)
+  __DECLARE_MS_IMPORT(_tempnam)
   __DECLARE_MS_IMPORT(_wfopen)
+  __DECLARE_MS_IMPORT(_wfreopen)
   __DECLARE_MS_IMPORT(_wopen)
   __DECLARE_MS_IMPORT(_wpopen)
+  __DECLARE_MS_IMPORT(_wsopen)
+  __DECLARE_MS_IMPORT(_wtempnam)
+  __DECLARE_MS_IMPORT(_wtmpnam)
   __DECLARE_MS_IMPORT(_write)
   __DECLARE_MS_IMPORT(fgetc)
   __DECLARE_MS_IMPORT(fflush)
@@ -199,11 +248,13 @@ namespace mingw_thunk
   __DECLARE_MS_IMPORT(fputc)
   __DECLARE_MS_IMPORT(fputs)
   __DECLARE_MS_IMPORT(fread)
+  __DECLARE_MS_IMPORT(freopen)
   __DECLARE_MS_IMPORT(fwrite)
   __DECLARE_MS_IMPORT(getc)
   __DECLARE_MS_IMPORT(getchar)
   __DECLARE_MS_IMPORT(putc)
   __DECLARE_MS_IMPORT(puts)
+  __DECLARE_MS_IMPORT(tmpnam)
   __DECLARE_MS_IMPORT(ungetc)
 
   // crt: time

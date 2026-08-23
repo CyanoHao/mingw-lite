@@ -5,7 +5,18 @@ function ucrt_utf8_files()
     'ucrt/environment/_wputenv.cc',
     'ucrt/environment/getenv.cc',
     'ucrt/environment/putenv.cc',
+
+    'ucrt/convert/mbrtowc.cc',
+    'ucrt/convert/mbsrtowcs.cc',
+    'ucrt/convert/mbstowcs.cc',
+    'ucrt/convert/mbtowc.cc',
+    'ucrt/convert/wcrtomb.cc',
+    'ucrt/convert/wcsrtombs.cc',
+    'ucrt/convert/wcstombs.cc',
+
+    'ucrt/filesystem/_access.cc',
     'ucrt/filesystem/_chmod.cc',
+    'ucrt/filesystem/_chdir.cc',
     'ucrt/filesystem/_findfirst.cc',
     'ucrt/filesystem/_findfirst32.cc',
     'ucrt/filesystem/_findfirst32i64.cc',
@@ -19,6 +30,8 @@ function ucrt_utf8_files()
     'ucrt/filesystem/_findnext64i32.cc',
     'ucrt/filesystem/_findnexti64.cc',
     'ucrt/filesystem/_fullpath.cc',
+    'ucrt/filesystem/_mkdir.cc',
+    'ucrt/filesystem/_rmdir.cc',
     'ucrt/filesystem/_stat.cc',
     'ucrt/filesystem/_stat32.cc',
     'ucrt/filesystem/_stat32i64.cc',
@@ -26,6 +39,7 @@ function ucrt_utf8_files()
     'ucrt/filesystem/_stat64i32.cc',
     'ucrt/filesystem/_stati64.cc',
     'ucrt/filesystem/_unlink.cc',
+    'ucrt/filesystem/_utime64.cc',
     'ucrt/filesystem/remove.cc',
     'ucrt/filesystem/rename.cc',
     'ucrt/filesystem/stat.cc',
@@ -34,13 +48,28 @@ function ucrt_utf8_files()
     'ucrt/filesystem/stat64.cc',
     'ucrt/filesystem/stat64i32.cc',
     'ucrt/filesystem/unlink.cc',
+
+    'ucrt/locale/___lc_codepage_func.cc',
+    'ucrt/locale/___mb_cur_max_func.cc',
+    'ucrt/locale/setlocale.cc',
+    'ucrt/locale/localeconv.cc',
+
+    'ucrt/string/mbrlen.cc',
+    'ucrt/string/strcoll.cc',
+    'ucrt/string/towlower.cc',
+    'ucrt/string/towupper.cc',
+
+    'ucrt/runtime/system.cc',
     'ucrt/runtime/__p___argv.cc',
+
     'ucrt/stdio/__stdio_common_vfprintf.cc',
     'ucrt/stdio/__stdio_common_vfscanf.cc',
     'ucrt/stdio/_getcwd.cc',
     'ucrt/stdio/_open.cc',
     'ucrt/stdio/_popen.cc',
     'ucrt/stdio/_read.cc',
+    'ucrt/stdio/_sopen.cc',
+    'ucrt/stdio/_tempnam.cc',
     'ucrt/stdio/_write.cc',
     'ucrt/stdio/fflush.cc',
     'ucrt/stdio/fgetc.cc',
@@ -49,6 +78,7 @@ function ucrt_utf8_files()
     'ucrt/stdio/fputc.cc',
     'ucrt/stdio/fputs.cc',
     'ucrt/stdio/fread.cc',
+    'ucrt/stdio/freopen.cc',
     'ucrt/stdio/fwrite.cc',
     'ucrt/stdio/getc.cc',
     'ucrt/stdio/getchar.cc',
@@ -58,6 +88,7 @@ function ucrt_utf8_files()
     'ucrt/stdio/putc.cc',
     'ucrt/stdio/puts.cc',
     'ucrt/stdio/read.cc',
+    'ucrt/stdio/tmpnam.cc',
     'ucrt/stdio/ungetc.cc',
     'ucrt/stdio/write.cc',
   }
@@ -77,9 +108,13 @@ end
 
 function ucrt_def_files()
   local result = {
+    'def/api-ms-win-crt-convert-l1-1-0.def',
     'def/api-ms-win-crt-environment-l1-1-0.def',
+    'def/api-ms-win-crt-locale-l1-1-0.def',
     'def/api-ms-win-crt-runtime-l1-1-0.def',
     'def/api-ms-win-crt-stdio-l1-1-0.def',
+    'def/api-ms-win-crt-string-l1-1-0.def',
+    'def/api-ms-win-crt-time-l1-1-0.def',
   }
 
   if is_arch('i386', 'i686') then
@@ -145,7 +180,13 @@ target('test-ucrt-u')
   add_deps('thunk-ucrt-u')
   add_files(
     'ucrt/stdio/_open.test.cc',
-    'ucrt/stdio/fopen.test.cc')
+    'ucrt/stdio/fopen.test.cc',
+    'ucrt/convert/mbsrtowcs.test.cc',
+    'ucrt/convert/mbstowcs.test.cc',
+    'ucrt/convert/mbtowc.test.cc',
+    'ucrt/convert/mbrtowc.test.cc',
+    'ucrt/convert/wcrtomb.test.cc',
+    'ucrt/convert/wcstombs.test.cc')
   add_tests('default')
   add_ucrt_test_links('thunk-ucrt-u')
   enable_test_options()
@@ -162,7 +203,9 @@ target('console-ucrt')
 
 target('argv-ucrt')
   add_cxxflags('-nostdinc++')
-  add_defines('_UCRT')
+  add_defines(
+    'THUNK_LEVEL=' .. ntddi_version(), -- for startup files
+    '_UCRT')
   add_deps('thunk-ucrt-u')
   add_files('test/argv.c')
   add_files(table.unpack(ucrt_utf8_startup_deps()))

@@ -3,9 +3,24 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <sys/types.h>
+#include <wchar.h>
 
 namespace mingw_thunk
 {
+  namespace musl // multibyte
+  {
+    struct mbstate_t;
+
+    size_t mbrtoc16(char16_t *pc16, const char *s, size_t n, mbstate_t *ps);
+    size_t mbrtoc16(wchar_t *pc16, const char *s, size_t n, mbstate_t *ps);
+    size_t mbrtoc32(char32_t *pc32, const char *s, size_t n, mbstate_t *ps);
+    size_t mbrtowc(char32_t *wc, const char *s, size_t n, mbstate_t *ps);
+
+    size_t c16rtomb(char *s, char16_t c16, mbstate_t *ps);
+    size_t c16rtomb(char *s, wchar_t c16, mbstate_t *ps);
+    size_t c32rtomb(char *s, char32_t c32, mbstate_t *ps);
+  } // namespace musl
+
   namespace musl // env
   {
     extern char **__environ;

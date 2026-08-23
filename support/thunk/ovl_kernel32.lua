@@ -40,13 +40,17 @@ target('overlay-kernel32')
         'kernel32/w/CopyFileW.cc',
         'kernel32/w/CreateDirectoryW.cc',
         'kernel32/w/CreateEventW.cc',
+        'kernel32/w/CreateFileMappingW.cc',
         'kernel32/w/CreateFileW.cc',
+        'kernel32/w/CreateMutexW.cc',
         'kernel32/w/CreateProcessW.cc',
         'kernel32/w/CreateSemaphoreW.cc',
         'kernel32/w/CreateWaitableTimerW.cc',
         'kernel32/w/DeleteFileW.cc',
+        'kernel32/w/FillConsoleOutputCharacterW.cc',
         'kernel32/w/FindFirstFileW.cc',
         'kernel32/w/FindNextFileW.cc',
+        'kernel32/w/FormatMessageW.cc',
         'kernel32/w/FreeEnvironmentStringsW.cc',
         'kernel32/w/GetCurrentDirectoryW.cc',
         'kernel32/w/GetEnvironmentStringsW.cc',
@@ -54,10 +58,20 @@ target('overlay-kernel32')
         'kernel32/w/GetFileAttributesExW.cc',
         'kernel32/w/GetFileAttributesW.cc',
         'kernel32/w/GetFullPathNameW.cc',
+        'kernel32/w/GetLocaleInfoW.cc',
         'kernel32/w/GetModuleFileNameW.cc',
+        'kernel32/w/GetModuleHandleW.cc',
+        'kernel32/w/GetStartupInfoW.cc',
         'kernel32/w/GetTempPathW.cc',
+        'kernel32/w/GetVolumeInformationW.cc',
         'kernel32/w/LoadLibraryW.cc',
         'kernel32/w/MoveFileExW.cc',
+        'kernel32/w/OpenEventW.cc',
+        'kernel32/w/OpenFileMappingW.cc',
+        'kernel32/w/OpenMutexW.cc',
+        'kernel32/w/OpenSemaphoreW.cc',
+        'kernel32/w/PeekConsoleInputW.cc',
+        'kernel32/w/ReadConsoleInputW.cc',
         'kernel32/w/RemoveDirectoryW.cc',
         'kernel32/w/SearchPathW.cc',
         'kernel32/w/SetCurrentDirectoryW.cc',
@@ -77,8 +91,8 @@ target('overlay-kernel32')
         'kernel32/5.0/GetLongPathNameW.cc',
         'kernel32/5.0/GetVolumePathNameW.cc',
         'kernel32/5.0/GlobalMemoryStatusEx.cc',
-        'kernel32/5.0/Module32First.cc',
-        'kernel32/5.0/Module32Next.cc',
+        'kernel32/5.0/Module32FirstW.cc',
+        'kernel32/5.0/Module32NextW.cc',
         'kernel32/5.0/OpenThread.cc',
         'kernel32/5.0/Process32FirstW.cc',
         'kernel32/5.0/Process32NextW.cc',
@@ -150,29 +164,54 @@ target('overlay-kernel32')
   if profile_toolchain_utf8() then
     add_files(
       'kernel32/u/CopyFileExA.cc',
+      'kernel32/u/CreateEventA.cc',
       'kernel32/u/CreateFileA.cc',
+      'kernel32/u/CreateFileMappingA.cc',
+      'kernel32/u/CreateMutexA.cc',
       'kernel32/u/CreateProcessA.cc',
+      'kernel32/u/CreateSemaphoreA.cc',
       'kernel32/u/CreateSymbolicLinkA.cc',
       'kernel32/u/CreateWaitableTimerA.cc',
+      'kernel32/u/FillConsoleOutputCharacterA.cc',
       'kernel32/u/FindFirstFileA.cc',
       'kernel32/u/FindNextFileA.cc',
       'kernel32/u/GetACP.cc',
       'kernel32/u/GetCPInfoExA.cc',
+      'kernel32/u/GetCurrentDirectoryA.cc',
+      'kernel32/u/GetEnvironmentVariableA.cc',
       'kernel32/u/GetFileAttributesA.cc',
       'kernel32/u/GetFileAttributesExA.cc',
       'kernel32/u/GetFinalPathNameByHandleA.cc',
       'kernel32/u/GetFullPathNameA.cc',
+      'kernel32/u/GetLocaleInfoA.cc',
       'kernel32/u/GetModuleFileNameA.cc',
+      'kernel32/u/GetModuleHandleA.cc',
       'kernel32/u/GetModuleHandleExA.cc',
       'kernel32/u/GetOEMCP.cc',
+      'kernel32/u/GetStartupInfoA.cc',
       'kernel32/u/GetSystemWow64DirectoryA.cc',
+      'kernel32/u/GetTempPathA.cc',
+      'kernel32/u/GetVolumeInformationA.cc',
       'kernel32/u/K32GetModuleFileNameExA.cc',
       'kernel32/u/LoadLibraryA.cc',
+      'kernel32/u/LoadLibraryExA.cc',
       'kernel32/u/MoveFileExA.cc',
+      'kernel32/u/Module32First.cc',
+      'kernel32/u/Module32Next.cc',
       'kernel32/u/MultiByteToWideChar.cc',
       'kernel32/u/NeedCurrentDirectoryForExePathA.cc',
+      'kernel32/u/OpenEventA.cc',
+      'kernel32/u/OpenFileMappingA.cc',
+      'kernel32/u/OpenMutexA.cc',
+      'kernel32/u/OpenSemaphoreA.cc',
+      'kernel32/u/OutputDebugStringA.cc',
+      'kernel32/u/PeekConsoleInputA.cc',
+      'kernel32/u/ReadConsoleInputA.cc',
       'kernel32/u/SearchPathA.cc',
+      'kernel32/u/SetCurrentDirectoryA.cc',
+      'kernel32/u/SetEnvironmentVariableA.cc',
       'kernel32/u/WideCharToMultiByte.cc',
+      'kernel32/u/WriteConsoleA.cc',
       -- GCC calls WriteFile to write to console until 16
       'kernel32/u/WriteFile.cc')
     if ntddi_version() < ntddi_win98() then
@@ -198,7 +237,10 @@ target('overlay-kernel32')
         'kernel32/a/4.0/MoveFileExA.cc')
     end
     if ntddi_version() < ntddi_win2k() then
-      add_files('kernel32/a/5.0/GetCPInfoExA.cc')
+      add_files(
+        'kernel32/a/5.0/GetCPInfoExA.cc',
+        'kernel32/a/5.0/Module32First.cc',
+        'kernel32/a/5.0/Module32Next.cc')
     end
     if ntddi_version() < ntddi_winxp() then
       add_files(
@@ -233,6 +275,7 @@ target('overlay-kernel32')
         'kernel32/w/CopyFileW.cc',
         'kernel32/w/CreateFileW.cc',
         'kernel32/w/DeleteFileW.cc',
+        'kernel32/w/FillConsoleOutputCharacterW.cc',
         'kernel32/w/FindFirstFileW.cc',
         'kernel32/w/FindNextFileW.cc',
         'kernel32/w/GetCurrentDirectoryW.cc',
@@ -241,6 +284,9 @@ target('overlay-kernel32')
         'kernel32/w/GetFullPathNameW.cc',
         'kernel32/w/LoadLibraryW.cc',
         'kernel32/w/MoveFileExW.cc',
+        'kernel32/w/OutputDebugStringW.cc',
+        'kernel32/w/PeekConsoleInputW.cc',
+        'kernel32/w/ReadConsoleInputW.cc',
         'kernel32/w/RemoveDirectoryW.cc',
         'kernel32/w/WriteConsoleW.cc')
     end
@@ -344,8 +390,8 @@ target('thunk-kernel32')
       'kernel32/5.0/GetLongPathNameW.cc',
       'kernel32/5.0/GetVolumePathNameW.cc',
       'kernel32/5.0/GlobalMemoryStatusEx.cc',
-      'kernel32/5.0/Module32First.cc',
-      'kernel32/5.0/Module32Next.cc',
+      'kernel32/5.0/Module32FirstW.cc',
+      'kernel32/5.0/Module32NextW.cc',
       'kernel32/5.0/OpenThread.cc',
       'kernel32/5.0/Process32FirstW.cc',
       'kernel32/5.0/Process32NextW.cc',
@@ -402,6 +448,8 @@ target('thunk-kernel32-a')
       'kernel32/a/4.0/CopyFileExA.cc',
       'kernel32/a/4.0/MoveFileExA.cc',
       'kernel32/a/5.0/GetCPInfoExA.cc',
+      'kernel32/a/5.0/Module32First.cc',
+      'kernel32/a/5.0/Module32Next.cc',
       'kernel32/a/5.1/GetModuleHandleExA.cc',
       'kernel32/a/5.1/GetSystemWow64DirectoryA.cc',
       'kernel32/a/5.2/NeedCurrentDirectoryForExePathA.cc')
@@ -422,6 +470,7 @@ target('thunk-kernel32-u')
     'kernel32/u/CopyFileExA.cc',
     'kernel32/u/CreateFileA.cc',
     'kernel32/u/CreateProcessA.cc',
+    'kernel32/u/FillConsoleOutputCharacterA.cc',
     'kernel32/u/FindFirstFileA.cc',
     'kernel32/u/FindNextFileA.cc',
     'kernel32/u/GetACP.cc',
@@ -429,12 +478,21 @@ target('thunk-kernel32-u')
     'kernel32/u/GetFileAttributesExA.cc',
     'kernel32/u/GetFinalPathNameByHandleA.cc',
     'kernel32/u/GetFullPathNameA.cc',
+    'kernel32/u/GetLocaleInfoA.cc',
     'kernel32/u/GetModuleFileNameA.cc',
+    'kernel32/u/GetModuleHandleA.cc',
     'kernel32/u/GetModuleHandleExA.cc',
     'kernel32/u/GetOEMCP.cc',
+    'kernel32/u/GetStartupInfoA.cc',
+    'kernel32/u/GetVolumeInformationA.cc',
     'kernel32/u/K32GetModuleFileNameExA.cc',
     'kernel32/u/LoadLibraryA.cc',
+    'kernel32/u/Module32First.cc',
+    'kernel32/u/Module32Next.cc',
     'kernel32/u/MultiByteToWideChar.cc',
+    'kernel32/u/OutputDebugStringA.cc',
+    'kernel32/u/PeekConsoleInputA.cc',
+    'kernel32/u/ReadConsoleInputA.cc',
     'kernel32/u/SearchPathA.cc',
     'kernel32/u/WideCharToMultiByte.cc',
     'kernel32/u/WriteFile.cc')
@@ -451,7 +509,9 @@ target('thunk-kernel32-u')
 target('test-kernel32-u')
   add_tests('default')
   add_deps('thunk-kernel32-u')
-  add_files('kernel32/u/GetFullPathNameA.test.cc')
+  add_files(
+    'kernel32/u/GetFullPathNameA.test.cc',
+    'kernel32/u/GetLocaleInfoA.test.cc')
   enable_test_options()
   skip_install()
 
@@ -461,13 +521,17 @@ target('thunk-kernel32-w')
     'kernel32/w/CopyFileW.cc',
     'kernel32/w/CreateDirectoryW.cc',
     'kernel32/w/CreateEventW.cc',
+    'kernel32/w/CreateFileMappingW.cc',
     'kernel32/w/CreateFileW.cc',
+    'kernel32/w/CreateMutexW.cc',
     'kernel32/w/CreateProcessW.cc',
     'kernel32/w/CreateSemaphoreW.cc',
     'kernel32/w/CreateWaitableTimerW.cc',
     'kernel32/w/DeleteFileW.cc',
+    'kernel32/w/FillConsoleOutputCharacterW.cc',
     'kernel32/w/FindFirstFileW.cc',
     'kernel32/w/FindNextFileW.cc',
+    'kernel32/w/FormatMessageW.cc',
     'kernel32/w/FreeEnvironmentStringsW.cc',
     'kernel32/w/GetCurrentDirectoryW.cc',
     'kernel32/w/GetEnvironmentStringsW.cc',
@@ -475,10 +539,21 @@ target('thunk-kernel32-w')
     'kernel32/w/GetFileAttributesExW.cc',
     'kernel32/w/GetFileAttributesW.cc',
     'kernel32/w/GetFullPathNameW.cc',
+    'kernel32/w/GetLocaleInfoW.cc',
     'kernel32/w/GetModuleFileNameW.cc',
+    'kernel32/w/GetModuleHandleW.cc',
+    'kernel32/w/GetStartupInfoW.cc',
     'kernel32/w/GetTempPathW.cc',
+    'kernel32/w/GetVolumeInformationW.cc',
     'kernel32/w/LoadLibraryW.cc',
     'kernel32/w/MoveFileExW.cc',
+    'kernel32/w/OpenEventW.cc',
+    'kernel32/w/OpenFileMappingW.cc',
+    'kernel32/w/OpenMutexW.cc',
+    'kernel32/w/OpenSemaphoreW.cc',
+    'kernel32/w/OutputDebugStringW.cc',
+    'kernel32/w/PeekConsoleInputW.cc',
+    'kernel32/w/ReadConsoleInputW.cc',
     'kernel32/w/RemoveDirectoryW.cc',
     'kernel32/w/SearchPathW.cc',
     'kernel32/w/SetCurrentDirectoryW.cc',
@@ -492,7 +567,10 @@ target('thunk-kernel32-w')
 target('test-kernel32-w')
   add_tests('default')
   add_deps('thunk-kernel32-w')
-  add_files('kernel32/w/GetFullPathNameW.test.cc')
+  add_files(
+    'kernel32/w/FormatMessageW.test.cc',
+    'kernel32/w/GetFullPathNameW.test.cc',
+    'kernel32/w/GetLocaleInfoW.test.cc')
   enable_if_x86_32()
   enable_test_options()
   skip_install()

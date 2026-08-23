@@ -1,0 +1,3 @@
+LIBRARY api-ms-win-crt-time-l1-1-0.dll
+EXPORTS
+  __ms__utime64 == _utime64

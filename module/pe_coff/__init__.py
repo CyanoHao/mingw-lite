@@ -21,6 +21,7 @@ from .import_library import (
 )
 from .machine import PeMachine
 from .nm import read_archive_symbols
+from .pe_image import parse_pe_imports, pe_rva_to_offset, read_pe_imports
 
 __all__ = [
   'ArchiveMember',
@@ -37,8 +38,11 @@ __all__ = [
   'is_external',
   'is_weak',
   'parse_coff_object',
+  'parse_pe_imports',
   'parse_short_import',
+  'pe_rva_to_offset',
   'read_archive_members',
   'read_archive_symbols',
   'read_import_library',
+  'read_pe_imports',
 ]
