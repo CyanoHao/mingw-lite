@@ -2,18 +2,30 @@ LIBRARY api-ms-win-crt-stdio-l1-1-0.dll
 EXPORTS
   __ms___stdio_common_vfprintf == __stdio_common_vfprintf
   __ms___stdio_common_vfscanf == __stdio_common_vfscanf
+  __ms___stdio_common_vfwscanf == __stdio_common_vfwscanf
+  __ms___stdio_common_vsscanf == __stdio_common_vsscanf
+  __ms___stdio_common_vswscanf == __stdio_common_vswscanf
+  __ms__close == _close
+  __ms__fgetc_nolock == _fgetc_nolock
+  __ms__get_printf_count_output == _get_printf_count_output
   __ms__getcwd == _getcwd
   __ms__open == _open
   __ms__popen == _popen
   __ms__read == _read
+  __ms__set_printf_count_output == _set_printf_count_output
+  __ms__sopen == _sopen
+  __ms__tempnam == _tempnam
   __ms__write == _write
+  __ms_fclose == fclose
   __ms_fflush == fflush
   __ms_fgetc == fgetc
+  __ms_fgetc_nolock == _fgetc_nolock
   __ms_fgets == fgets
   __ms_fopen == fopen
   __ms_fputc == fputc
   __ms_fputs == fputs
   __ms_fread == fread
+  __ms_freopen == freopen
   __ms_fwrite == fwrite
   __ms_getc == getc
   __ms_getchar == getchar
@@ -23,5 +35,6 @@ EXPORTS
   __ms_putc == putc
   __ms_puts == puts
   __ms_read == _read
+  __ms_tmpnam == tmpnam
   __ms_ungetc == ungetc
   __ms_write == _write

@@ -12,9 +12,18 @@ namespace mingw_thunk
 {
   namespace musl
   {
-#define LD_B1B_DIG 2
-#define LD_B1B_MAX 9007199, 254740991
-#define KMAX 128
+    /* Branch selection from upstream floatscan.c: this target's long
+     * double is the 80-bit x87 type (LDBL_MANT_DIG == 64,
+     * LDBL_MAX_EXP == 16384), so the B1B normalization works on 3
+     * 10^9-words with a 2^31-ish threshold.  The original M2 port
+     * hardcoded the 53-bit-branch constants (LD_B1B_DIG 2 / KMAX 128),
+     * which calibrated the whole decfloat rounding pipeline for a
+     * 64-bit long double and cost ~2^-43 of relative precision at
+     * prec 0/1 — invisible to callers that only folded simple literals,
+     * exposed by the M11 strtod anchors (found 2026-09-28). */
+#define LD_B1B_DIG 3
+#define LD_B1B_MAX 18, 446744073, 709551615
+#define KMAX 2048
 
 #define MASK (KMAX - 1)
 
@@ -477,16 +486,22 @@ namespace mingw_thunk
           if (i < 2)
             c = shgetc(f);
       if (i == 3) {
+        /* Native-anchored deviation from musl (M11, plan-3 §3.7):
+         * ucrtbase's strtod("-nan") yields a negative NaN ("nan(ind)"
+         * display, sign bit set — wine probe A), while upstream musl
+         * drops the sign on this path.  The negation must be explicit:
+         * x87 multiplication passes a NaN operand through UNCHANGED
+         * (no sign XOR), so `sign * NAN` would stay positive. */
         if (shgetc(f) != '(') {
           shunget(f);
-          return NAN;
+          return sign < 0 ? -NAN : NAN;
         }
         for (i = 1;; i++) {
           c = shgetc(f);
           if (c - '0' < 10U || c - 'A' < 26U || c - 'a' < 26U || c == '_')
             continue;
           if (c == ')')
-            return NAN;
+            return sign < 0 ? -NAN : NAN;
           shunget(f);
           if (!pok) {
             errno = EINVAL;
@@ -495,9 +510,9 @@ namespace mingw_thunk
           }
           while (i--)
             shunget(f);
-          return NAN;
+          return sign < 0 ? -NAN : NAN;
         }
-        return NAN;
+        return sign < 0 ? -NAN : NAN;
       }
 
       if (i) {

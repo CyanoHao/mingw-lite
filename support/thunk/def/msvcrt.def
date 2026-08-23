@@ -5,8 +5,10 @@ EXPORTS
   __ms__wputenv == _wputenv
 
   ; stdio
+  __ms__close == _close
   __ms__read == _read
   __ms__write == _write
+  __ms_fclose == fclose
   __ms_fflush == fflush
   __ms_fgetc == fgetc
   __ms_fgets == fgets

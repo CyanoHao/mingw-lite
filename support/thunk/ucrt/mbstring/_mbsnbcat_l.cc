@@ -1,0 +1,47 @@
+#include <thunk/_common.h>
+
+#include "mbs_str.h"
+
+namespace mingw_thunk
+{
+  // Locale argument ignored; the _l twin of _mbsnbcat.
+  __DEFINE_THUNK(api_ms_win_crt_multibyte_l1_1_0,
+                 0,
+                 unsigned char *,
+                 __cdecl,
+                 _mbsnbcat_l,
+                 unsigned char *dst,
+                 const unsigned char *src,
+                 size_t count,
+                 _locale_t locale)
+  {
+    (void)locale;
+    if (!count)
+      return dst;
+    if (!dst || !src) {
+      _set_errno(EINVAL);
+      return nullptr;
+    }
+    size_t at = 0;
+    while (dst[at])
+      ++at;
+    // a destination ending in an incomplete character drops it rather
+    // than gluing the source's first byte onto it: the reference backs
+    // the pointer up one byte over the same test, and the start is
+    // read back off the string for the reason in _mbsncpy above
+    if (at) {
+      const unsigned char *dtail = mbstring::last_char_start(dst, at);
+      if (mbstring::incomplete_at(dtail, dst + at)) {
+        at = (size_t)(dtail - dst);
+        dst[at] = 0;
+      }
+    }
+    size_t used = 0;
+    mbstring::copy_chars(dst + at, src, (size_t)-1, count, &used);
+    dst[at + used] = 0;
+    const unsigned char *tail = mbstring::last_char_start(src, used);
+    if (used && mbstring::incomplete_at(tail, src + used))
+      dst[at + (tail - src)] = 0;
+    return dst;
+  }
+} // namespace mingw_thunk

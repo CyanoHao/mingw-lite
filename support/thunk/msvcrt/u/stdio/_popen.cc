@@ -1,5 +1,6 @@
 #include <thunk/_common.h>
 #include <thunk/string.h>
+#include <thunk/u8crt/musl.h>
 
 #include <errno.h>
 #include <stdio.h>
@@ -26,6 +27,9 @@ namespace mingw_thunk
       return nullptr;
     }
 
-    return _wpopen(w_command.c_str(), w_type.c_str());
+    FILE *fp = _wpopen(w_command.c_str(), w_type.c_str());
+    if (fp)
+      musl::console_channel_on_open(_fileno(fp));
+    return fp;
   }
 } // namespace mingw_thunk

@@ -1,5 +1,6 @@
 #include <thunk/_common.h>
 #include <thunk/string.h>
+#include <thunk/u8crt/musl.h>
 
 #include <errno.h>
 #include <fcntl.h>
@@ -27,6 +28,9 @@ namespace mingw_thunk
       return -1;
     }
 
-    return _wopen(w_path.c_str(), flags, mode);
+    int fd = _wopen(w_path.c_str(), flags, mode);
+    if (fd != -1)
+      musl::console_channel_on_open(fd);
+    return fd;
   }
 } // namespace mingw_thunk

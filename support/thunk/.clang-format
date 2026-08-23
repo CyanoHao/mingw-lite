@@ -15,4 +15,5 @@ BraceWrapping:
   AfterNamespace: true
   AfterExternBlock: true
 BreakBeforeBraces: Custom
+BreakConstructorInitializers: BeforeComma
 NamespaceIndentation: All

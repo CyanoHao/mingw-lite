@@ -25,8 +25,8 @@ index 8951ac56ee2..0047dfd79c7 100644
 +     stmxcsr, and handling illegal instruction exception. But that's so tricky
 +     that we simply check OS version and disable this optimization. */
 +
-+  OSVERSIONINFOA osvi = { sizeof(osvi) };
-+  GetVersionExA(&osvi);
++  OSVERSIONINFOW osvi = { sizeof(osvi) };
++  GetVersionExW(&osvi);
 +  if (osvi.dwMajorVersion < 5)
 +  {
 +    search_line_fast = search_line_acc_char;

@@ -1,0 +1,21 @@
+#include <thunk/_common.h>
+
+#include "mbs_str.h"
+
+namespace mingw_thunk
+{
+  // Locale argument ignored; the _l twin of _mbscoll.
+  __DEFINE_THUNK(api_ms_win_crt_multibyte_l1_1_0,
+                 0,
+                 int,
+                 __cdecl,
+                 _mbscoll_l,
+                 const unsigned char *s1,
+                 const unsigned char *s2,
+                 _locale_t locale)
+  {
+    (void)locale;
+    return mbstring::mbs_compare(
+        s1, s2, 0, mbstring::CMP_RAW, mbstring::BND_STR);
+  }
+} // namespace mingw_thunk

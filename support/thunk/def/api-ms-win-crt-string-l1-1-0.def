@@ -1,0 +1,6 @@
+LIBRARY api-ms-win-crt-string-l1-1-0.dll
+EXPORTS
+  __ms_mbrlen == mbrlen
+  __ms_strcoll == strcoll
+  __ms_towlower == towlower
+  __ms_towupper == towupper

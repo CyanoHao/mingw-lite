@@ -11,7 +11,10 @@ target('overlay-advapi32')
   end
 
   if profile_toolchain_utf8() then
+    add_files('advapi32/u/CryptAcquireContextA.cc')
     add_files('advapi32/u/RegDeleteKeyExA.cc')
+    add_files('advapi32/u/RegOpenKeyExA.cc')
+    add_files('advapi32/u/RegQueryValueExA.cc')
   end
 
   if profile_toolchain() then
@@ -37,7 +40,11 @@ target('thunk-advapi32-a')
   skip_install()
 
 target('thunk-advapi32-u')
-  add_files('advapi32/u/RegDeleteKeyExA.cc')
+  add_files(
+    'advapi32/u/CryptAcquireContextA.cc',
+    'advapi32/u/RegDeleteKeyExA.cc',
+    'advapi32/u/RegOpenKeyExA.cc',
+    'advapi32/u/RegQueryValueExA.cc')
   enable_thunk_options()
   merge_win32_alias()
   skip_install()

@@ -1,11 +1,12 @@
 #include <thunk/_common.h>
 #include <thunk/_no_thunk.h>
-#include <thunk/utf8-musl.h>
+#include <thunk/u8crt/musl.h>
 
+#include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 
-#include "@stdio.h"
+#include "printf_shell.h"
 
 namespace mingw_thunk
 {
@@ -20,11 +21,23 @@ namespace mingw_thunk
                  _locale_t locale,
                  va_list arglist)
   {
-    int fd = _fileno(stream);
-    if (!i::is_console(fd))
-      return __ms___stdio_common_vfprintf(
-          options, stream, format, locale, arglist);
+    (void)locale;
 
-    return musl::vfprintf(musl::g_fp_from_fd(fd), format, arglist);
+    if (!stream || !format) {
+      errno = EINVAL;
+      return -1;
+    }
+
+    int fd = _fileno(stream);
+
+    i::shell::exp_guard guard(options);
+
+    if (musl_ucrt::is_console(fd))
+      return musl::vfprintf(musl::g_fp_from_fd(fd), format, arglist);
+
+    /* native FILE carrying: the engine renders, the bridge writes the
+     * bytes back to the same stream (its buffering and position stay
+     * authoritative); trailing partial UTF-8 is flushed by the bridge */
+    return musl::vfprintf_to_native(stream, format, arglist);
   }
 } // namespace mingw_thunk
