@@ -1,0 +1,9 @@
+LIBRARY api-ms-win-crt-convert-l1-1-0.dll
+EXPORTS
+  __ms_mbrtowc == mbrtowc
+  __ms_mbsrtowcs == mbsrtowcs
+  __ms_mbstowcs == mbstowcs
+  __ms_mbtowc == mbtowc
+  __ms_wcrtomb == wcrtomb
+  __ms_wcsrtombs == wcsrtombs
+  __ms_wcstombs == wcstombs

@@ -1,10 +1,8 @@
 #include <thunk/_common.h>
 #include <thunk/_no_thunk.h>
-#include <thunk/utf8-musl.h>
+#include <thunk/u8crt/ucrt.h>
 
 #include <stdio.h>
-
-#include "@stdio.h"
 
 namespace mingw_thunk
 {
@@ -16,12 +14,6 @@ namespace mingw_thunk
                  const char *s,
                  FILE *stream)
   {
-    int fd = _fileno(stream);
-    if (!i::is_console(fd))
-      return __ms_fputs(s, stream);
-
-    size_t len = strlen(s);
-    musl::fwrite(s, 1, len, musl::g_fp_from_fd(fd));
-    return len;
+    return ucrt::fputs(s, stream);
   }
 } // namespace mingw_thunk

@@ -69,9 +69,17 @@ namespace mingw_thunk
   {
     inline const d::win32_version os_version() noexcept
     {
+#if THUNK_LEVEL >= NTDDI_WIN4
+      static OSVERSIONINFOW osvi = {sizeof(OSVERSIONINFOW)};
+#else
       static OSVERSIONINFOA osvi = {sizeof(OSVERSIONINFOA)};
+#endif
       if (!osvi.dwMajorVersion) {
-        GetVersionExA(&osvi);
+#if THUNK_LEVEL >= NTDDI_WIN4
+        __ms_GetVersionExW(&osvi);
+#else
+        __ms_GetVersionExA(&osvi);
+#endif
 #if THUNK_LEVEL >= NTDDI_WINXP
         const auto RtlGetNtVersionNumbers = &__ms_RtlGetNtVersionNumbers;
 #else

@@ -11,7 +11,11 @@ EXPORTS
   __ms_CreateEventW@16 == CreateEventW
   __ms_CreateFileA@28 == CreateFileA
   __ms_CreateFileW@28 == CreateFileW
+  __ms_CreateFileMappingA@24 == CreateFileMappingA
+  __ms_CreateFileMappingW@24 == CreateFileMappingW
   __ms_CreateHardLinkW@12 == CreateHardLinkW
+  __ms_CreateMutexA@12 == CreateMutexA
+  __ms_CreateMutexW@12 == CreateMutexW
   __ms_CreateProcessA@40 == CreateProcessA
   __ms_CreateProcessW@40 == CreateProcessW
   __ms_CreateSemaphoreA@16 == CreateSemaphoreA
@@ -22,6 +26,8 @@ EXPORTS
   __ms_CreateWaitableTimerW@12 == CreateWaitableTimerW
   __ms_DeleteFileA@4 == DeleteFileA
   __ms_DeleteFileW@4 == DeleteFileW
+  __ms_FillConsoleOutputCharacterA@20 == FillConsoleOutputCharacterA
+  __ms_FillConsoleOutputCharacterW@20 == FillConsoleOutputCharacterW
   __ms_FindFirstFileA@8 == FindFirstFileA
   __ms_FindFirstFileW@8 == FindFirstFileW
   __ms_FindFirstVolumeW@8 == FindFirstVolumeW
@@ -29,6 +35,8 @@ EXPORTS
   __ms_FindNextFileW@8 == FindNextFileW
   __ms_FindNextVolumeW@12 == FindNextVolumeW
   __ms_FindVolumeClose@4 == FindVolumeClose
+  __ms_FormatMessageA@28 == FormatMessageA
+  __ms_FormatMessageW@28 == FormatMessageW
   __ms_FreeEnvironmentStringsA@4 == FreeEnvironmentStringsA
   __ms_FreeEnvironmentStringsW@4 == FreeEnvironmentStringsW
   __ms_GetCurrentDirectoryA@8 == GetCurrentDirectoryA
@@ -50,10 +58,20 @@ EXPORTS
   __ms_GetHandleInformation@8 == GetHandleInformation
   __ms_GetModuleFileNameA@12 == GetModuleFileNameA
   __ms_GetModuleFileNameW@12 == GetModuleFileNameW
+  __ms_GetModuleHandleA@4 == GetModuleHandleA
+  __ms_GetModuleHandleW@4 == GetModuleHandleW
   __ms_GetModuleHandleExA@12 == GetModuleHandleExA
   __ms_GetModuleHandleExW@12 == GetModuleHandleExW
+  __ms_GetStartupInfoA@4 == GetStartupInfoA
+  __ms_GetStartupInfoW@4 == GetStartupInfoW
   __ms_GetTempPathA@8 == GetTempPathA
   __ms_GetTempPathW@8 == GetTempPathW
+  __ms_GetVersionExA@4 == GetVersionExA
+  __ms_GetVersionExW@4 == GetVersionExW
+  __ms_GetLocaleInfoA@16 == GetLocaleInfoA
+  __ms_GetLocaleInfoW@16 == GetLocaleInfoW
+  __ms_GetVolumeInformationA@32 == GetVolumeInformationA
+  __ms_GetVolumeInformationW@32 == GetVolumeInformationW
   __ms_GetUserGeoID@4 == GetUserGeoID
   __ms_IsDebuggerPresent@0 == IsDebuggerPresent
   __ms_LCMapStringW@24 == LCMapStringW
@@ -66,6 +84,20 @@ EXPORTS
   __ms_MoveFileExW@12 == MoveFileExW
   __ms_MoveFileW@8 == MoveFileW
   __ms_MultiByteToWideChar@24 == MultiByteToWideChar
+  __ms_OpenEventA@12 == OpenEventA
+  __ms_OpenEventW@12 == OpenEventW
+  __ms_OpenFileMappingA@12 == OpenFileMappingA
+  __ms_OpenFileMappingW@12 == OpenFileMappingW
+  __ms_OpenMutexA@12 == OpenMutexA
+  __ms_OpenMutexW@12 == OpenMutexW
+  __ms_OpenSemaphoreA@12 == OpenSemaphoreA
+  __ms_OpenSemaphoreW@12 == OpenSemaphoreW
+  __ms_OutputDebugStringA@4 == OutputDebugStringA
+  __ms_OutputDebugStringW@4 == OutputDebugStringW
+  __ms_PeekConsoleInputA@16 == PeekConsoleInputA
+  __ms_PeekConsoleInputW@16 == PeekConsoleInputW
+  __ms_ReadConsoleInputA@16 == ReadConsoleInputA
+  __ms_ReadConsoleInputW@16 == ReadConsoleInputW
   __ms_RemoveDirectoryA@4 == RemoveDirectoryA
   __ms_RemoveDirectoryW@4 == RemoveDirectoryW
   __ms_RemoveVectoredExceptionHandler@4 == RemoveVectoredExceptionHandler

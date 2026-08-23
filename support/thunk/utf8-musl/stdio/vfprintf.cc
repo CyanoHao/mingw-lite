@@ -1,6 +1,7 @@
 #include "../include/limits.h"
 #include "../include/stdlib.h"
 #include "../internal/stdio_impl.h"
+#include "ws_wctomb.h"
 
 #include <errno.h>
 #include <float.h>
@@ -298,6 +299,12 @@ namespace mingw_thunk
     static_assert(sizeof(long double) < 9);
 #endif
 
+    /* Minimum exponent digits for %e/%f/%g output (2 = C default; the
+     * printf shell raises it to 3 for the UCRT three-digit-exponent
+     * option 0x10). Thread-local: per-call state without threading a
+     * parameter through printf_core/fmt_fp. */
+    __thread int exp_digits_min = 2;
+
     static int fmt_fp(FILE *f, long double y, int w, int p, int fl, int t)
     {
       uint32_t big[(LDBL_MANT_DIG + 28) / 29 + 1 // mantissa expansion
@@ -527,7 +534,7 @@ namespace mingw_thunk
           l += e;
       } else {
         estr = fmt_u(e < 0 ? -e : e, ebuf);
-        while (ebuf - estr < 2)
+        while (ebuf - estr < exp_digits_min)
           *--estr = '0';
         *--estr = (e < 0 ? '-' : '+');
         *--estr = t;
@@ -840,7 +847,7 @@ namespace mingw_thunk
         case 'S':
           ws = (wchar_t *)arg.p;
           for (i = l = 0;
-               i < p && *ws && (l = wctomb(mb, *ws++)) >= 0 && l <= p - i;
+               i < 0U + p && *ws && (l = ws_wctomb(mb, ws)) >= 0 && l <= p - i;
                i += l)
             ;
           if (l < 0)
@@ -850,7 +857,7 @@ namespace mingw_thunk
           p = i;
           pad(f, ' ', w, p, fl);
           ws = (wchar_t *)arg.p;
-          for (i = 0; i < 0U + p && *ws && i + (l = wctomb(mb, *ws++)) <= p;
+          for (i = 0; i < 0U + p && *ws && i + (l = ws_wctomb(mb, ws)) <= p;
                i += l)
             out(f, mb, l);
           pad(f, ' ', w, p, fl ^ LEFT_ADJ);

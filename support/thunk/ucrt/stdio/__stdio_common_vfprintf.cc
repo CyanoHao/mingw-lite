@@ -1,11 +1,8 @@
 #include <thunk/_common.h>
-#include <thunk/_no_thunk.h>
-#include <thunk/utf8-musl.h>
+#include <thunk/u8crt/ucrt.h>
 
 #include <stdint.h>
 #include <stdio.h>
-
-#include "@stdio.h"
 
 namespace mingw_thunk
 {
@@ -20,11 +17,7 @@ namespace mingw_thunk
                  _locale_t locale,
                  va_list arglist)
   {
-    int fd = _fileno(stream);
-    if (!i::is_console(fd))
-      return __ms___stdio_common_vfprintf(
-          options, stream, format, locale, arglist);
-
-    return musl::vfprintf(musl::g_fp_from_fd(fd), format, arglist);
+    return ucrt::__stdio_common_vfprintf(
+        options, stream, format, locale, arglist);
   }
 } // namespace mingw_thunk

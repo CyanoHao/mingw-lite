@@ -1,5 +1,6 @@
 #include <thunk/_common.h>
 #include <thunk/string.h>
+#include <thunk/u8crt/ucrt.h>
 
 #include <errno.h>
 #include <fcntl.h>
@@ -33,6 +34,12 @@ namespace mingw_thunk
       return -1;
     }
 
-    return _wopen(w_path.c_str(), flags, mode);
+    int fd = _wopen(w_path.c_str(), flags, mode);
+    if (fd < 0) {
+      return -1;
+    }
+
+    ucrt::console_open(fd);
+    return fd;
   }
 } // namespace mingw_thunk

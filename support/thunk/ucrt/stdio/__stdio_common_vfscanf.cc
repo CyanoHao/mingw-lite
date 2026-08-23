@@ -1,11 +1,10 @@
 #include <thunk/_common.h>
 #include <thunk/_no_thunk.h>
-#include <thunk/utf8-musl.h>
+#include <thunk/u8crt/musl.h>
 
+#include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
-
-#include "@stdio.h"
 
 namespace mingw_thunk
 {
@@ -20,14 +19,25 @@ namespace mingw_thunk
                  _locale_t locale,
                  va_list arglist)
   {
-    (void)options;
-    (void)locale;
+    if (!stream || !format) {
+      errno = EINVAL;
+      return -1;
+    }
 
-    int fd = _fileno(stream);
-    if (!i::is_console(fd))
+    /* _CRT_INTERNAL_SCANF_SECURECRT (0x1): the _s wrappers pass a
+     * size_t after every %s/%[/%c pointer, a va_list layout the engine
+     * cannot consume — the whole call stays native */
+    if (options & 0x1)
       return __ms___stdio_common_vfscanf(
           options, stream, format, locale, arglist);
 
-    return musl::vfscanf(musl::g_fp_from_fd(fd), format, arglist);
+    int fd = _fileno(stream);
+
+    if (musl_ucrt::is_console(fd))
+      return musl::vfscanf(musl::g_fp_from_fd(fd), format, arglist);
+
+    /* native FILE carrying: the bridge pulls bytes through the same
+     * stream (locked, at most one lookahead byte pushed back) */
+    return musl::vfscanf_from_native(stream, format, arglist);
   }
 } // namespace mingw_thunk

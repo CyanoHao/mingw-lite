@@ -59,6 +59,9 @@ jobs:
           wsl --distribution mlenv --exec `
             ./main.py --branch ${{ inputs.branch }} --profile ${{ inputs.profile }}
 
+          wsl --distribution mlenv --exec `
+            ./u8crt_verify.py --branch ${{ inputs.branch }} --profile ${{ inputs.profile }} --verbose
+
           wsl --shutdown
           wsl --unregister mlenv
 

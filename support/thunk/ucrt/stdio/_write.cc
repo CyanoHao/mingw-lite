@@ -1,8 +1,8 @@
 #include <thunk/_common.h>
 #include <thunk/_no_thunk.h>
-#include <thunk/utf8-musl.h>
+#include <thunk/u8crt/ucrt.h>
 
-#include "@stdio.h"
+#include <io.h>
 
 namespace mingw_thunk
 {
@@ -15,9 +15,6 @@ namespace mingw_thunk
                  const void *buffer,
                  unsigned int count)
   {
-    if (!i::is_console(fd))
-      return __ms__write(fd, buffer, count);
-
-    return musl::write(fd, buffer, count);
+    return ucrt::_write(fd, buffer, count);
   }
 } // namespace mingw_thunk

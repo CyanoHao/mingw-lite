@@ -1,5 +1,6 @@
 #include <thunk/_common.h>
 #include <thunk/string.h>
+#include <thunk/u8crt/ucrt.h>
 
 #include <errno.h>
 #include <stdio.h>
@@ -31,6 +32,12 @@ namespace mingw_thunk
       return nullptr;
     }
 
-    return _wfopen(w_path.c_str(), w_mode.c_str());
+    FILE *fp = _wfopen(w_path.c_str(), w_mode.c_str());
+    if (!fp) {
+      return nullptr;
+    }
+
+    ucrt::console_open(_fileno(fp));
+    return fp;
   }
 } // namespace mingw_thunk

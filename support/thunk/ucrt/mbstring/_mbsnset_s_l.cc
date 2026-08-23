@@ -1,0 +1,22 @@
+#include <thunk/_common.h>
+
+#include "mbs_str.h"
+
+namespace mingw_thunk
+{
+  // Locale argument ignored; the _l twin of _mbsnset_s.
+  __DEFINE_THUNK(api_ms_win_crt_multibyte_l1_1_0,
+                 0,
+                 errno_t,
+                 __cdecl,
+                 _mbsnset_s_l,
+                 unsigned char *dst,
+                 size_t size,
+                 unsigned int val,
+                 size_t count,
+                 _locale_t locale)
+  {
+    (void)locale;
+    return mbstring::set_s(dst, size, val, count, false);
+  }
+} // namespace mingw_thunk

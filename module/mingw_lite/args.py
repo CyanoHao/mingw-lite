@@ -89,6 +89,17 @@ def parse_args(require_build_compiler: bool = False) -> argparse.Namespace:
     help = 'Download sources only',
   )
   parser.add_argument(
+    '--u8crt-verify-update',
+    action = 'store_true',
+    help = 'Update the UTF-8 thunk import baseline instead of verifying it',
+  )
+  parser.add_argument(
+    '--u8crt-verify-layer-dir',
+    type = str,
+    required = False,
+    help = 'Toolchain layer directory containing ABB/ (default: build directory)',
+  )
+  parser.add_argument(
     '-v', '--verbose',
     action = 'count',
     default = 0,

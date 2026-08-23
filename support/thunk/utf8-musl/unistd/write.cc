@@ -1,8 +1,8 @@
-#include "../win32/utf8_buffer.h"
+#include "../ucrt/utf8_buffer.h"
 
 #include <thunk/string.h>
 #include <thunk/unicode.h>
-#include <thunk/utf8-musl.h>
+#include <thunk/u8crt/musl.h>
 
 #include <io.h>
 #include <string.h>

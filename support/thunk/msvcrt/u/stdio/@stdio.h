@@ -17,8 +17,8 @@ namespace mingw_thunk
 
     inline bool is_console(int fd) noexcept
     {
-      return (fd == 0 || fd == 1 || fd == 2) && _isatty(fd) &&
-             is_console((HANDLE)_get_osfhandle(fd));
+      intptr_t h = _get_osfhandle(fd);
+      return h != -1 && is_console((HANDLE)h);
     }
 
     inline bool is_console(FILE *fp) noexcept
