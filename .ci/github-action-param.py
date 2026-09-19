@@ -96,7 +96,7 @@ alt_branch = ['current']
 alt_profile = ['64-mcf']
 alt_osrel = [
   'archlinux',
-  'debian13', 'debian12', 'debian11',
+  'debian13', 'debian12',
   'ubuntu2604',
   'alpine324',
 ]
