@@ -4,12 +4,13 @@ from pathlib import Path
 import shutil
 import subprocess
 import time
+from typing import Optional, Sequence
 from urllib.error import URLError
 from urllib.request import urlopen
 
 from .checksum import CHECKSUMS
 
-def validate_and_download(path: Path, url: str):
+def validate_and_download(path: Path, urls: Sequence[str]):
   MAX_RETRY = 5
   checksum = CHECKSUMS[path.name]
   if path.exists():
@@ -23,28 +24,35 @@ def validate_and_download(path: Path, url: str):
   else:
     logging.info('Downloading %s' % path.name)
     retry_count = 0
+    last_error: Optional[URLError] = None
     while True:
       retry_count += 1
-      try:
-        response = urlopen(url)
-        body = response.read()
-        if checksum != sha256(body).hexdigest():
-          message = 'Download fail: checksum mismatch for %s' % path.name
-          logging.critical(message)
-          raise Exception(message)
-        with open(path, "wb") as f:
-          f.write(body)
-          return
-      except URLError as e:
-        message = f'Download fail: {e.reason} (retry {retry_count}/{MAX_RETRY})'
-        if retry_count < MAX_RETRY:
-          logging.warning(message)
-          wait_time = 2 ** retry_count
-          logging.warning(f'Retry in {wait_time} seconds...')
-          time.sleep(wait_time)
-        else:
-          logging.critical(message)
-          raise e
+      for source_index, url in enumerate(urls):
+        try:
+          logging.info('Trying source %d/%d for %s' % (source_index + 1, len(urls), path.name))
+          response = urlopen(url)
+          body = response.read()
+          if checksum != sha256(body).hexdigest():
+            message = 'Download fail: checksum mismatch for %s' % path.name
+            logging.critical(message)
+            raise Exception(message)
+          with open(path, "wb") as f:
+            f.write(body)
+            return
+        except URLError as e:
+          last_error = e
+          message = f'Download fail: {e.reason} (source {source_index + 1}/{len(urls)}, retry {retry_count}/{MAX_RETRY})'
+          if retry_count < MAX_RETRY:
+            logging.warning(message)
+          else:
+            logging.critical(message)
+      if retry_count < MAX_RETRY:
+        wait_time = 2 ** retry_count
+        logging.warning(f'Retry in {wait_time} seconds...')
+        time.sleep(wait_time)
+      else:
+        assert last_error is not None
+        raise last_error
 
 def check_and_extract(path: Path, arx: Path):
   # check if already extracted

@@ -6,16 +6,17 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
-from urllib.error import URLError
-from urllib.request import urlopen
 
 from .fetch import validate_and_download, check_and_extract, check_and_sync, patch, patch_done
 from .path import ProjectPaths
 from .profile import BranchProfile
 
 def _binutils(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
-  url = f'https://ftpmirror.gnu.org/gnu/binutils/{paths.src_arx.binutils.name}'
-  validate_and_download(paths.src_arx.binutils, url)
+  urls = [
+    f'https://ftpmirror.gnu.org/gnu/binutils/{paths.src_arx.binutils.name}',
+    f'https://ftp.gnu.org/gnu/binutils/{paths.src_arx.binutils.name}',
+  ]
+  validate_and_download(paths.src_arx.binutils, urls)
   if download_only:
     return
 
@@ -61,7 +62,7 @@ def _expat(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   v = Version(ver.expat)
   tag = f'R_{v.major}_{v.minor}_{v.micro}'
   url = f'https://github.com/libexpat/libexpat/releases/download/{tag}/{paths.src_arx.expat.name}'
-  validate_and_download(paths.src_arx.expat, url)
+  validate_and_download(paths.src_arx.expat, [url])
   if download_only:
     return
 
@@ -73,11 +74,14 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
 
   is_snapshot = re.search(r'-\d{8}$', ver.gcc)
   if is_snapshot:
-    url = f'https://gcc.gnu.org/pub/gcc/snapshots/{ver.gcc}/{paths.src_arx.gcc.name}'
+    urls = [f'https://gcc.gnu.org/pub/gcc/snapshots/{ver.gcc}/{paths.src_arx.gcc.name}']
   else:
-    url = f'https://ftpmirror.gnu.org/gnu/gcc/gcc-{ver.gcc}/{paths.src_arx.gcc.name}'
+    urls = [
+      f'https://ftpmirror.gnu.org/gnu/gcc/gcc-{ver.gcc}/{paths.src_arx.gcc.name}',
+      f'https://ftp.gnu.org/gnu/gcc/gcc-{ver.gcc}/{paths.src_arx.gcc.name}',
+    ]
 
-  validate_and_download(paths.src_arx.gcc, url)
+  validate_and_download(paths.src_arx.gcc, urls)
   if download_only:
     return
 
@@ -205,8 +209,11 @@ def _gcc(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     patch_done(paths.src_dir.gcc)
 
 def _gdb(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
-  url = f'https://ftpmirror.gnu.org/gnu/gdb/{paths.src_arx.gdb.name}'
-  validate_and_download(paths.src_arx.gdb, url)
+  urls = [
+    f'https://ftpmirror.gnu.org/gnu/gdb/{paths.src_arx.gdb.name}',
+    f'https://ftp.gnu.org/gnu/gdb/{paths.src_arx.gdb.name}',
+  ]
+  validate_and_download(paths.src_arx.gdb, urls)
   if download_only:
     return
 
@@ -255,8 +262,11 @@ def _gdb(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     patch_done(paths.src_dir.gdb)
 
 def _gmp(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
-  url = f'https://ftpmirror.gnu.org/gnu/gmp/{paths.src_arx.gmp.name}'
-  validate_and_download(paths.src_arx.gmp, url)
+  urls = [
+    f'https://ftpmirror.gnu.org/gnu/gmp/{paths.src_arx.gmp.name}',
+    f'https://ftp.gnu.org/gnu/gmp/{paths.src_arx.gmp.name}',
+  ]
+  validate_and_download(paths.src_arx.gmp, urls)
   if download_only:
     return
 
@@ -264,8 +274,11 @@ def _gmp(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   patch_done(paths.src_dir.gmp)
 
 def _iconv_gnu(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
-  url = f'https://ftpmirror.gnu.org/gnu/libiconv/{paths.src_arx.iconv.name}'
-  validate_and_download(paths.src_arx.iconv, url)
+  urls = [
+    f'https://ftpmirror.gnu.org/gnu/libiconv/{paths.src_arx.iconv.name}',
+    f'https://ftp.gnu.org/gnu/libiconv/{paths.src_arx.iconv.name}',
+  ]
+  validate_and_download(paths.src_arx.iconv, urls)
   if download_only:
     return
 
@@ -306,7 +319,7 @@ def _intl(ver: BranchProfile, paths: ProjectPaths):
 
 def _isl(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   url = f'https://libisl.sourceforge.io/{paths.src_arx.isl.name}'
-  validate_and_download(paths.src_arx.isl, url)
+  validate_and_download(paths.src_arx.isl, [url])
   if download_only:
     return
 
@@ -314,8 +327,11 @@ def _isl(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   patch_done(paths.src_dir.isl)
 
 def _make(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
-  url = f'https://ftpmirror.gnu.org/gnu/make/{paths.src_arx.make.name}'
-  validate_and_download(paths.src_arx.make, url)
+  urls = [
+    f'https://ftpmirror.gnu.org/gnu/make/{paths.src_arx.make.name}',
+    f'https://ftp.gnu.org/gnu/make/{paths.src_arx.make.name}',
+  ]
+  validate_and_download(paths.src_arx.make, urls)
   if download_only:
     return
 
@@ -324,7 +340,7 @@ def _make(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
 
 def _mcfgthread(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   url = f'https://github.com/lhmouse/mcfgthread/archive/refs/tags/v{ver.mcfgthread}.tar.gz'
-  validate_and_download(paths.src_arx.mcfgthread, url)
+  validate_and_download(paths.src_arx.mcfgthread, [url])
   if download_only:
     return
 
@@ -339,7 +355,7 @@ def _mcfgthread(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
 
 def _meson(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   url = f'https://github.com/mesonbuild/meson/releases/download/{ver.meson}/{paths.src_arx.meson.name}'
-  validate_and_download(paths.src_arx.meson, url)
+  validate_and_download(paths.src_arx.meson, [url])
   if download_only:
     return
 
@@ -348,7 +364,7 @@ def _meson(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
 
 def _mingw(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   url = f'https://downloads.sourceforge.net/project/mingw-w64/mingw-w64/mingw-w64-release/{paths.src_arx.mingw.name}'
-  validate_and_download(paths.src_arx.mingw, url)
+  validate_and_download(paths.src_arx.mingw, [url])
   if download_only:
     return
 
@@ -394,8 +410,11 @@ def _mingw(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
     patch_done(paths.src_dir.mingw)
 
 def _mpc(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
-  url = f'https://ftpmirror.gnu.org/gnu/mpc/{paths.src_arx.mpc.name}'
-  validate_and_download(paths.src_arx.mpc, url)
+  urls = [
+    f'https://ftpmirror.gnu.org/gnu/mpc/{paths.src_arx.mpc.name}',
+    f'https://ftp.gnu.org/gnu/mpc/{paths.src_arx.mpc.name}',
+  ]
+  validate_and_download(paths.src_arx.mpc, urls)
   if download_only:
     return
 
@@ -403,8 +422,11 @@ def _mpc(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   patch_done(paths.src_dir.mpc)
 
 def _mpfr(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
-  url = f'https://ftpmirror.gnu.org/gnu/mpfr/{paths.src_arx.mpfr.name}'
-  validate_and_download(paths.src_arx.mpfr, url)
+  urls = [
+    f'https://ftpmirror.gnu.org/gnu/mpfr/{paths.src_arx.mpfr.name}',
+    f'https://ftp.gnu.org/gnu/mpfr/{paths.src_arx.mpfr.name}',
+  ]
+  validate_and_download(paths.src_arx.mpfr, urls)
   if download_only:
     return
 
@@ -413,7 +435,7 @@ def _mpfr(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
 
 def _nowide(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   url = f'https://github.com/boostorg/nowide/releases/download/v{ver.nowide}/{paths.src_arx.nowide.name}'
-  validate_and_download(paths.src_arx.nowide, url)
+  validate_and_download(paths.src_arx.nowide, [url])
   if download_only:
     return
 
@@ -422,7 +444,7 @@ def _nowide(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
 
 def _pdcurses(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   url = f'https://github.com/wmcbrine/PDCurses/archive/refs/tags/{ver.pdcurses}.tar.gz'
-  validate_and_download(paths.src_arx.pdcurses, url)
+  validate_and_download(paths.src_arx.pdcurses, [url])
   if download_only:
     return
 
@@ -437,7 +459,7 @@ def _pkgconf(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   else:
     url = f'https://github.com/pkgconf/pkgconf/archive/refs/tags/pkgconf-{ver.pkgconf}.tar.gz'
 
-  validate_and_download(paths.src_arx.pkgconf, url)
+  validate_and_download(paths.src_arx.pkgconf, [url])
   if download_only:
     return
 
@@ -454,7 +476,7 @@ def _pkgconf(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
 
 def _python(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   url = f'https://www.python.org/ftp/python/{ver.python}/{paths.src_arx.python.name}'
-  validate_and_download(paths.src_arx.python, url)
+  validate_and_download(paths.src_arx.python, [url])
   if download_only:
     return
 
@@ -486,7 +508,7 @@ def _python(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
 
 def _setuptools(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   url = f'https://github.com/pypa/setuptools/archive/refs/tags/v{ver.setuptools}.tar.gz'
-  validate_and_download(paths.src_arx.setuptools, url)
+  validate_and_download(paths.src_arx.setuptools, [url])
   if download_only:
     return
 
@@ -509,7 +531,7 @@ def _thunk(ver: BranchProfile, paths: ProjectPaths):
 def _xmake(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   release_name = paths.src_arx.xmake.name.replace('xmake-', 'xmake-v')
   url = f'https://github.com/xmake-io/xmake/releases/download/v{ver.xmake}/{release_name}'
-  validate_and_download(paths.src_arx.xmake, url)
+  validate_and_download(paths.src_arx.xmake, [url])
   if download_only:
     return
 
@@ -549,7 +571,7 @@ def _xmake(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
 
 def _zlib_net(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   url = f'https://github.com/madler/zlib/releases/download/v{ver.zlib_net}/{paths.src_arx.zlib_net.name}'
-  validate_and_download(paths.src_arx.zlib_net, url)
+  validate_and_download(paths.src_arx.zlib_net, [url])
   if download_only:
     return
 
@@ -558,7 +580,7 @@ def _zlib_net(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
 
 def _zstd(ver: BranchProfile, paths: ProjectPaths, download_only: bool):
   url = f'https://github.com/facebook/zstd/releases/download/v{ver.zstd}/{paths.src_arx.zstd.name}'
-  validate_and_download(paths.src_arx.zstd, url)
+  validate_and_download(paths.src_arx.zstd, [url])
   if download_only:
     return
 
