@@ -37,7 +37,7 @@ jobs:
 
       - name: Download source
         run: |
-          ./main.py --branch ${{ matrix.branch }} --profile 64-mcf --download-only
+          ./main.py --branch ${{ matrix.branch }} --profile 64-mcf --download-only --verbose
 
       - uses: actions/upload-artifact@v7
         with:
