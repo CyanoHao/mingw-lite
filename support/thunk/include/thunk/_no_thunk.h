@@ -234,6 +234,7 @@ namespace mingw_thunk
 #endif
   __DECLARE_MS_IMPORT(_close)
   __DECLARE_MS_IMPORT(_fgetc_nolock)
+  __DECLARE_MS_IMPORT(_fputc_nolock)
   __DECLARE_MS_IMPORT(_lock_file)
   __DECLARE_MS_IMPORT(_open)
   __DECLARE_MS_IMPORT(_popen)

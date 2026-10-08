@@ -66,6 +66,8 @@ function utf8_musl_files()
     'utf8-ucrt/convert/mbrtowc.cc',
     'utf8-ucrt/convert/mbtowc.cc',
     'utf8-ucrt/convert/wctomb.cc',
+    'utf8-ucrt/mingw/console.cc',
+    'utf8-ucrt/mingw/msvcrt.cc',
     'utf8-ucrt/stdio/fputc.cc',
     'utf8-ucrt/stdio/fputwc.cc',
     'utf8-ucrt/stdio/input.cc',

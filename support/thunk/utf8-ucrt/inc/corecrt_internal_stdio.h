@@ -1,6 +1,7 @@
 #pragma once
 
 #include "corecrt_internal.h"
+#include "corecrt_internal_ptd_propagation.h"
 #include "corecrt_internal_traits.h"
 
 #include <errno.h>
@@ -69,8 +70,22 @@ namespace mingw_thunk::ucrt
   public:
     explicit __acrt_stdio_temporary_buffering_guard(FILE *const stream,
                                                     __crt_cached_ptd_host &ptd)
+        : _stream(stream), _ptd(ptd)
     {
+      _batch = console_utf8_begin(stream);
     }
+
+    ~__acrt_stdio_temporary_buffering_guard() noexcept
+    {
+      console_utf8_end(_batch, _ptd);
+    }
+
+  private:
+    FILE *_stream;
+    __crt_cached_ptd_host &_ptd;
+    bool _flag;
+
+    console_utf8_batch _batch{};
   };
 
   template <typename Character>

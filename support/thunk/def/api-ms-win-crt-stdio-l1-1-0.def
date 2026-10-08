@@ -7,6 +7,7 @@ EXPORTS
   __ms___stdio_common_vswscanf == __stdio_common_vswscanf
   __ms__close == _close
   __ms__fgetc_nolock == _fgetc_nolock
+  __ms__fputc_nolock == _fputc_nolock
   __ms__get_printf_count_output == _get_printf_count_output
   __ms__getcwd == _getcwd
   __ms__open == _open
