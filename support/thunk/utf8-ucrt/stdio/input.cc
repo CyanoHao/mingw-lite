@@ -1,5 +1,8 @@
 #include "../inc/corecrt_internal_stdio_input.h"
 
+#include "../mingw/console.h"
+#include "../mingw/thunk.h"
+
 namespace mingw_thunk::ucrt
 {
 
@@ -23,6 +26,17 @@ namespace mingw_thunk::ucrt
         [&]()
         {
           _LocaleUpdate locale_update(locale);
+
+          /* classic CRT doctrine: a read from console stdin flushes
+           * stdout/stderr first, so prompts sitting in the UTF-8
+           * console channels become visible before the input wait */
+          if (_fileno(stream) == 0 && is_console(0))
+          {
+            if (console *const out = console::get(1, false))
+              out->flush_stdout_or_stderr();
+            if (console *const err = console::get(2, false))
+              err->flush_stdout_or_stderr();
+          }
 
           processor_type processor(stream_input_adapter<Character>(stream),
                                    options,

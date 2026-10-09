@@ -4,6 +4,8 @@
 #include "corecrt_internal_ptd_propagation.h"
 #include "corecrt_internal_traits.h"
 
+#include "../mingw/console.h"
+
 #include <errno.h>
 #include <stdio.h>
 
@@ -65,27 +67,51 @@ namespace mingw_thunk::ucrt
     return action();
   }
 
+  /* Ported _sftbuf: brackets one stdio call.  For a console stream it
+   * holds the console object lock for the whole call (installed into
+   * the ptd so every _fputc_nolock_internal finds it: no re-resolve,
+   * no re-lock per byte) and flushes stdout/stderr once at the end --
+   * one WriteConsoleW per stdio call.  Non-console streams resolve to
+   * a negative-cache object and put() falls back to the original CRT
+   * per byte.  Nested guards on the same console only keep the
+   * outermost lock; get() failing (allocation failure) leaves the
+   * guard inert and each byte retries get() on its own. */
   class __acrt_stdio_temporary_buffering_guard
   {
   public:
     explicit __acrt_stdio_temporary_buffering_guard(FILE *const stream,
                                                     __crt_cached_ptd_host &ptd)
-        : _stream(stream), _ptd(ptd)
+        : _ptd(ptd)
     {
-      _batch = console_utf8_begin(stream);
+      console *const c = console::get(stream, true);
+
+      if (c && ptd.active_console() != c)
+      {
+        c->acquire();
+        _previous = ptd.set_active_console(c);
+        _held = c;
+      }
     }
 
     ~__acrt_stdio_temporary_buffering_guard() noexcept
     {
-      console_utf8_end(_batch, _ptd);
+      if (_held)
+      {
+        _held->flush_stdout_or_stderr_nolock();
+        (void)_ptd.set_active_console(_previous);
+        _held->release();
+      }
     }
 
-  private:
-    FILE *_stream;
-    __crt_cached_ptd_host &_ptd;
-    bool _flag;
+    __acrt_stdio_temporary_buffering_guard(
+        __acrt_stdio_temporary_buffering_guard const &) = delete;
+    __acrt_stdio_temporary_buffering_guard &
+    operator=(__acrt_stdio_temporary_buffering_guard const &) = delete;
 
-    console_utf8_batch _batch{};
+  private:
+    __crt_cached_ptd_host &_ptd;
+    console *_held = nullptr;
+    console *_previous = nullptr;
   };
 
   template <typename Character>

@@ -8,6 +8,8 @@
 namespace mingw_thunk::ucrt
 {
 
+  struct console;
+
   class __crt_cached_ptd_host
   {
   public:
@@ -135,9 +137,29 @@ namespace mingw_thunk::ucrt
       return _current_doserrno;
     }
 
+    /* The console whose object lock this thread holds for the current
+     * stdio call; the ported __acrt_stdio_temporary_buffering_guard
+     * installs it so _fputc_nolock_internal neither re-resolves nor
+     * re-locks per byte.  A plain pointer suffices -- the RAII lock
+     * lives in the guard itself, and nested guards on the same console
+     * only keep the outermost lock (the object lock is not
+     * reentrant). */
+    console *active_console() const noexcept
+    {
+      return _active_console;
+    }
+
+    console *set_active_console(console *c) noexcept
+    {
+      console *const previous = _active_console;
+      _active_console = c;
+      return previous;
+    }
+
   private:
     cached<errno_t> _current_errno;
     cached<unsigned long> _current_doserrno;
+    console *_active_console = nullptr;
   };
 
 #define _UCRT_VALIDATE_RETURN(ptd, expr, errorcode, retexpr)                   \
