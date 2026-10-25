@@ -493,6 +493,9 @@ def _gcc_1(ver: BranchProfile, paths: ProjectPaths, config: argparse.Namespace):
   ensure(build_dir)
 
   with overlayfs_ro('/usr/local', [
+    # 8383ac6fcda32c79291a54f01fcdc688f8f832f0 (build: let configure-gcc start once gmp is configured)
+    paths.layer_AAA.gmp / 'usr/local',
+
     # override CRT
     paths.layer_AAB.utf8 / 'usr/local',
 
